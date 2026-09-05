@@ -1,0 +1,363 @@
+/* =========================================================
+   AGENDA
+   ========================================================= */
+
+.agenda {
+  position: relative;
+
+  background-color: var(--cor-branco);
+  color: var(--cor-preto);
+
+  padding-block: clamp(4rem, 8vw, 8rem);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.agenda__cabecalho {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--espaco-3);
+
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+.agenda__indice {
+  color: var(--cor-preto);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  opacity: 0.65;
+}
+
+.agenda__titulo {
+  display: flex;
+  flex-direction: column;
+
+  max-width: 9ch;
+
+  font-size: clamp(4rem, 8vw, 8.5rem);
+  font-weight: 700;
+
+  line-height: 0.84;
+
+  letter-spacing: -0.055em;
+
+  text-transform: uppercase;
+}
+
+.agenda__titulo span {
+  margin-left: clamp(1rem, 6vw, 6rem);
+}
+
+
+/* =========================================================
+   CORPO
+   ========================================================= */
+
+.agenda__corpo {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(260px, 0.45fr);
+
+  gap: clamp(2rem, 5vw, 6rem);
+
+  align-items: start;
+}
+
+
+/* =========================================================
+   LISTA
+   ========================================================= */
+
+.agenda__lista {
+  position: relative;
+
+  z-index: 2;
+
+  border-top: 1px solid rgba(12, 13, 13, 0.25);
+}
+
+.agenda__evento {
+  display: grid;
+
+  grid-template-columns:
+    minmax(85px, 0.55fr)
+    minmax(0, 2fr)
+    minmax(110px, 0.8fr)
+    auto;
+
+  align-items: center;
+
+  gap: var(--espaco-3);
+
+  min-height: 120px;
+
+  border-bottom: 1px solid rgba(12, 13, 13, 0.25);
+
+  transition:
+    padding-inline var(--transicao-rapida),
+    background-color var(--transicao-rapida);
+}
+
+.agenda__evento:hover,
+.agenda__evento:focus-visible {
+  padding-inline: var(--espaco-2);
+
+  background-color: rgba(12, 13, 13, 0.04);
+}
+
+
+/* =========================================================
+   INFORMAÇÕES
+   ========================================================= */
+
+.agenda__data {
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.agenda__nome {
+  font-family: var(--fonte-display);
+
+  font-size: clamp(2rem, 3vw, 3.8rem);
+  font-weight: 700;
+
+  line-height: 0.92;
+
+  letter-spacing: -0.03em;
+
+  text-transform: uppercase;
+}
+
+.agenda__local {
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  opacity: 0.65;
+}
+
+.agenda__seta {
+  font-size: 1.5rem;
+
+  transition:
+    transform var(--transicao-rapida);
+}
+
+.agenda__evento:hover .agenda__seta,
+.agenda__evento:focus-visible .agenda__seta {
+  transform: translateX(6px);
+}
+
+
+/* =========================================================
+   PREVIEW DA IMAGEM
+   ========================================================= */
+
+.agenda__preview {
+  position: sticky;
+  top: 130px;
+
+  width: 100%;
+
+  aspect-ratio: 4 / 5;
+
+  overflow: hidden;
+
+  background-color: var(--cor-preto-suave);
+
+  opacity: 0;
+
+  transform: translateY(12px);
+
+  pointer-events: none;
+
+  transition:
+    opacity var(--transicao-padrao),
+    transform var(--transicao-padrao);
+}
+
+.agenda__preview--visivel {
+  opacity: 1;
+
+  transform: translateY(0);
+}
+
+.agenda__preview img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .agenda__corpo {
+    grid-template-columns: 1fr;
+  }
+
+  .agenda__preview {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .agenda {
+    padding-block: var(--espaco-7);
+  }
+
+  .agenda__titulo {
+    max-width: 100%;
+
+    font-size: clamp(3.5rem, 12vw, 6rem);
+  }
+
+  .agenda__titulo span {
+    margin-left: 0;
+  }
+
+  .agenda__evento {
+    grid-template-columns:
+      auto
+      minmax(0, 1fr)
+      auto;
+
+    min-height: 110px;
+  }
+
+  .agenda__data {
+    grid-column: 1;
+  }
+
+  .agenda__nome {
+    grid-column: 2;
+  }
+
+  .agenda__local {
+    display: none;
+  }
+
+  .agenda__seta {
+    grid-column: 3;
+  }
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .agenda {
+    padding-block: var(--espaco-6);
+  }
+
+  .agenda__titulo {
+    font-size: clamp(3rem, 13vw, 5rem);
+  }
+
+  .agenda__evento {
+    grid-template-columns:
+      1fr
+      auto;
+
+    gap: var(--espaco-2);
+
+    padding-block: var(--espaco-3);
+  }
+
+  .agenda__data {
+    grid-column: 1 / -1;
+
+    opacity: 0.6;
+  }
+
+  .agenda__nome {
+    grid-column: 1;
+  }
+
+  .agenda__seta {
+    grid-column: 2;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .agenda {
+    padding-block: var(--espaco-6);
+  }
+
+  .agenda__titulo {
+    font-size: clamp(2.8rem, 12vw, 4.8rem);
+  }
+
+  .agenda__evento {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    gap: var(--espaco-2);
+
+    min-height: auto;
+
+    padding-block: var(--espaco-3);
+  }
+
+  .agenda__data {
+    grid-column: 1 / -1;
+
+    font-size: 0.7rem;
+
+    opacity: 0.6;
+  }
+
+  .agenda__nome {
+    grid-column: 1;
+
+    min-width: 0;
+
+    font-size: clamp(1.7rem, 8vw, 2.6rem);
+
+    overflow-wrap: normal;
+  }
+
+  .agenda__seta {
+    grid-column: 2;
+
+    align-self: center;
+  }
+}

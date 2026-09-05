@@ -1,0 +1,172 @@
+/* =========================================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+
+  scroll-padding-top: 110px;
+  /* =========================================================
+   ÂNCORAS
+   Mantém as seções visíveis abaixo do cabeçalho sticky.
+   ========================================================= */
+
+section[id] {
+  scroll-margin-top: 110px;
+}
+}
+
+body {
+ margin: 0;
+
+  min-width: 320px;
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+
+  font-family: var(--fonte-texto);
+  font-size: var(--texto-base);
+
+  line-height: 1.5;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+
+/* =========================================================
+   ELEMENTOS DE TEXTO
+   ========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--fonte-display);
+  font-weight: 700;
+}
+
+p {
+  color: var(--cor-texto-suave);
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   IMAGENS
+   ========================================================= */
+
+img,
+picture,
+video {
+  display: block;
+
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   FORMULÁRIOS
+   ========================================================= */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+:focus-visible {
+  outline: 2px solid var(--cor-branco);
+  outline-offset: 4px;
+}
+
+
+/* =========================================================
+   CONTAINER PADRÃO
+   ========================================================= */
+
+.container {
+  width: 100%;
+
+  max-width: var(--largura-maxima);
+
+  margin-inline: auto;
+
+  padding-inline: var(--margem-horizontal);
+}
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+
+@media (max-width: 900px) {
+  html {
+    scroll-padding-top: 90px;
+  }
+
+  section[id] {
+    scroll-margin-top: 90px;
+  }
+}
+
+/* =========================================================
+   AJUSTES GERAIS MOBILE
+   ========================================================= */
+
+img,
+video {
+  max-width: 100%;
+}
+
+section {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --margem-horizontal: 1.25rem;
+  }
+}

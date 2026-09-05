@@ -1,0 +1,99 @@
+/* =========================================================
+   MANIFESTO
+   Seção tipográfica de grande impacto visual.
+   ========================================================= */
+
+.manifesto {
+  background-color: var(--cor-branco);
+  color: var(--cor-preto);
+
+  padding-block: var(--espaco-8);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+.manifesto__conteudo {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--espaco-5);
+}
+
+
+/* =========================================================
+   ÍNDICE
+   ========================================================= */
+
+.manifesto__indice {
+  color: var(--cor-preto);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.manifesto__titulo {
+  display: flex;
+  flex-direction: column;
+
+  max-width: 10ch;
+
+  font-size: clamp(4rem, 10vw, 11rem);
+  font-weight: 700;
+
+  line-height: 0.82;
+
+  letter-spacing: -0.05em;
+
+  text-transform: uppercase;
+}
+
+.manifesto__titulo span {
+  display: block;
+
+  margin-left: clamp(1rem, 8vw, 8rem);
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .manifesto {
+    padding-block: var(--espaco-7);
+  }
+
+  .manifesto__titulo {
+    max-width: 100%;
+
+    font-size: clamp(3.5rem, 13vw, 7rem);
+  }
+
+  .manifesto__titulo span {
+    margin-left: 0;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .manifesto {
+    padding-block: var(--espaco-6);
+  }
+
+  .manifesto__titulo {
+    font-size: clamp(3rem, 14vw, 5rem);
+  }
+}

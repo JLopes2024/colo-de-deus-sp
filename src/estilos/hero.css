@@ -1,0 +1,375 @@
+/* =========================================================
+   HERO
+   Carrossel automático de imagens ao fundo.
+   ========================================================= */
+
+.hero {
+  position: relative;
+
+  min-height: calc(100svh - 88px);
+
+  overflow: hidden;
+
+  background-color: var(--cor-branco);
+  color: var(--cor-preto);
+}
+
+
+/* =========================================================
+   CARROSSEL
+   ========================================================= */
+
+.hero__carrossel {
+  position: absolute;
+  inset: 0;
+
+  z-index: 0;
+
+  overflow: hidden;
+
+  background-color: var(--cor-branco);
+}
+
+.hero__imagem {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  /*
+    Ajuste geral do enquadramento.
+    Pode ser refinado por imagem depois se necessário.
+  */
+  object-position: center center;
+
+  opacity: 0;
+
+  filter:
+    grayscale(12%)
+    saturate(0.78)
+    contrast(0.92)
+    brightness(1.08);
+
+  transform: scale(1.015);
+
+  transition:
+    opacity 1.4s ease,
+    transform 6s ease;
+}
+
+.hero__imagem--ativa {
+  opacity: 1;
+
+  transform: scale(1.055);
+}
+
+
+/* =========================================================
+   CAMADA CLARA
+   Mantém a fotografia visível sem competir com o título.
+   ========================================================= */
+
+.hero__camada {
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(242, 241, 237, 0.89) 0%,
+      rgba(242, 241, 237, 0.80) 38%,
+      rgba(242, 241, 237, 0.62) 68%,
+      rgba(242, 241, 237, 0.48) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(242, 241, 237, 0.74) 0%,
+      rgba(242, 241, 237, 0.18) 62%
+    );
+}
+
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+.hero__conteudo {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: calc(100svh - 88px);
+
+  padding-top: var(--espaco-4);
+  padding-bottom: var(--espaco-4);
+}
+
+
+/* =========================================================
+   TOPO
+   ========================================================= */
+
+.hero__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: var(--espaco-3);
+}
+
+.hero__identificacao,
+.hero__atalho {
+  color: var(--cor-preto);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero__atalho {
+  display: inline-flex;
+  align-items: center;
+
+  gap: var(--espaco-1);
+
+  transition:
+    gap var(--transicao-rapida),
+    opacity var(--transicao-rapida);
+}
+
+.hero__atalho:hover {
+  gap: var(--espaco-2);
+
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.hero__principal {
+  display: flex;
+  align-items: center;
+
+  flex: 1;
+
+  padding-block: clamp(2rem, 6vh, 5rem);
+}
+
+.hero__titulo {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  color: var(--cor-preto);
+
+  font-size: clamp(4rem, 9.5vw, 10rem);
+  font-weight: 500;
+
+  line-height: 0.82;
+
+  letter-spacing: -0.055em;
+
+  text-transform: uppercase;
+
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.hero__titulo span {
+  display: block;
+}
+
+.hero__titulo span:nth-child(2) {
+  margin-left: 4vw;
+}
+
+.hero__titulo span:nth-child(3) {
+  margin-left: 12vw;
+}
+
+.hero__titulo span:nth-child(4) {
+  margin-left: 2vw;
+}
+
+.hero__titulo span:nth-child(5) {
+  margin-left: 8vw;
+}
+
+
+/* =========================================================
+   RODAPÉ
+   ========================================================= */
+
+.hero__rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: var(--espaco-4);
+}
+
+.hero__rodape p {
+  max-width: 340px;
+
+  color: var(--cor-preto);
+
+  font-size: var(--texto-sm);
+
+  line-height: 1.5;
+}
+
+.hero__acao {
+  display: inline-flex;
+  align-items: center;
+
+  gap: var(--espaco-2);
+
+  padding-bottom: 0.35rem;
+
+  border-bottom: 1px solid var(--cor-preto);
+
+  color: var(--cor-preto);
+
+  font-size: var(--texto-sm);
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  transition:
+    gap var(--transicao-rapida),
+    opacity var(--transicao-rapida);
+}
+
+.hero__acao:hover {
+  gap: var(--espaco-3);
+
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   TABLET / MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: calc(100svh - 72px);
+  }
+
+  .hero__conteudo {
+    min-height: calc(100svh - 72px);
+  }
+
+  .hero__imagem {
+    object-position: center center;
+  }
+
+  .hero__camada {
+    background:
+      linear-gradient(
+        0deg,
+        rgba(242, 241, 237, 0.95) 0%,
+        rgba(242, 241, 237, 0.82) 55%,
+        rgba(242, 241, 237, 0.55) 100%
+      );
+  }
+
+  .hero__titulo {
+    font-size: clamp(3.4rem, 14vw, 7rem);
+  }
+
+  .hero__titulo span:nth-child(2),
+  .hero__titulo span:nth-child(3),
+  .hero__titulo span:nth-child(4),
+  .hero__titulo span:nth-child(5) {
+    margin-left: 0;
+  }
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .hero__topo {
+    align-items: center;
+  }
+
+  .hero__atalho {
+    display: none;
+  }
+
+  .hero__principal {
+    padding-block: var(--espaco-5);
+  }
+
+  .hero__titulo {
+    font-size: clamp(3rem, 15vw, 5rem);
+  }
+
+  .hero__rodape {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   Desativa troca automática visualmente agressiva para quem
+   prefere menos movimento.
+   ========================================================= */
+@media (max-width: 600px) {
+  .hero__topo {
+    align-items: center;
+  }
+
+  .hero__atalho {
+    display: none;
+  }
+
+  .hero__principal {
+    padding-block: var(--espaco-5);
+  }
+
+  .hero__titulo {
+    max-width: 100%;
+
+    font-size: clamp(2.8rem, 14vw, 4.8rem);
+
+    line-height: 0.86;
+
+    letter-spacing: -0.045em;
+  }
+
+  .hero__titulo span {
+    margin-left: 0 !important;
+  }
+
+  .hero__rodape {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: var(--espaco-3);
+  }
+
+  .hero__rodape p {
+    max-width: 100%;
+  }
+}

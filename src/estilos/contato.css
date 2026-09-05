@@ -1,0 +1,224 @@
+/* =========================================================
+   CONTATO
+   ========================================================= */
+
+.contato {
+  background-color: var(--cor-preto);
+  color: var(--cor-branco);
+
+  padding-block: var(--espaco-8);
+}
+
+.contato__conteudo {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.8fr)
+    minmax(0, 1.2fr);
+
+  gap: clamp(4rem, 10vw, 10rem);
+}
+
+
+/* =========================================================
+   APRESENTAÇÃO
+   ========================================================= */
+
+.contato__apresentacao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: var(--espaco-3);
+}
+
+.contato__indice {
+  color: var(--cor-texto-suave);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contato__titulo {
+  max-width: 8ch;
+
+  font-size: clamp(3.5rem, 7vw, 7rem);
+
+  line-height: 0.86;
+
+  letter-spacing: -0.045em;
+
+  text-transform: uppercase;
+}
+
+.contato__texto {
+  max-width: 440px;
+
+  margin-top: var(--espaco-2);
+
+  color: var(--cor-texto-suave);
+
+  font-size: var(--texto-md);
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   FORMULÁRIO
+   ========================================================= */
+
+.contato__formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: var(--espaco-4);
+}
+
+.contato__campo {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--espaco-1);
+}
+
+.contato__campo--inteiro {
+  grid-column: 1 / -1;
+}
+
+.contato__campo label {
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+.contato__campo input,
+.contato__campo textarea {
+  width: 100%;
+
+  border: 0;
+  border-bottom: 1px solid rgba(242, 241, 237, 0.45);
+  border-radius: 0;
+
+  padding: 0.75rem 0;
+
+  background: transparent;
+  color: var(--cor-branco);
+
+  outline: 0;
+
+  transition:
+    border-color var(--transicao-rapida);
+}
+
+.contato__campo textarea {
+  min-height: 150px;
+
+  resize: vertical;
+}
+
+.contato__campo input:focus,
+.contato__campo textarea:focus {
+  border-color: var(--cor-branco);
+}
+
+
+/* =========================================================
+   BOTÃO
+   ========================================================= */
+
+.contato__botao {
+  grid-column: 1 / -1;
+
+  justify-self: start;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: var(--espaco-2);
+
+  margin-top: var(--espaco-2);
+  padding: 1rem 1.4rem;
+
+  border: 1px solid var(--cor-branco);
+
+  background: transparent;
+  color: var(--cor-branco);
+
+  font-size: var(--texto-sm);
+  font-weight: 700;
+
+  letter-spacing: 0.06em;
+
+  text-transform: uppercase;
+
+  transition:
+    background-color var(--transicao-rapida),
+    color var(--transicao-rapida),
+    gap var(--transicao-rapida);
+}
+
+.contato__botao:hover {
+  gap: var(--espaco-3);
+
+  background-color: var(--cor-branco);
+  color: var(--cor-preto);
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .contato {
+    padding-block: var(--espaco-7);
+  }
+
+  .contato__conteudo {
+    grid-template-columns: 1fr;
+
+    gap: var(--espaco-6);
+  }
+
+  .contato__titulo {
+    max-width: 10ch;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .contato__conteudo {
+    gap: var(--espaco-5);
+  }
+
+  .contato__titulo {
+    max-width: 100%;
+
+    font-size: clamp(2.8rem, 11vw, 4.6rem);
+  }
+
+  .contato__texto {
+    font-size: 1rem;
+  }
+
+  .contato__formulario {
+    gap: var(--espaco-3);
+  }
+
+  .contato__campo input,
+  .contato__campo textarea {
+    font-size: 16px;
+  }
+
+  .contato__botao {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+}

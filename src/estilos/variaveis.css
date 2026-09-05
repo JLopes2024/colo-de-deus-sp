@@ -1,0 +1,96 @@
+/* =========================================================
+   VARIÁVEIS GLOBAIS
+   Centraliza cores, tipografia, espaçamentos e medidas.
+   Alterações de identidade devem começar por este arquivo.
+   ========================================================= */
+
+:root {
+  /* =======================================================
+     CORES PRINCIPAIS
+     ======================================================= */
+
+  --cor-preto: #0c0d0d;
+  --cor-preto-suave: #181818;
+
+  --cor-branco: #f2f1ed;
+  --cor-cinza: #999895;
+
+  /* Cores de apoio inspiradas na identidade fotográfica */
+  --cor-vermelho: #a9333e;
+  --cor-azul: #27344d;
+
+
+  /* =======================================================
+     CORES DE USO
+     ======================================================= */
+
+  --cor-fundo: var(--cor-preto);
+  --cor-fundo-secundario: var(--cor-preto-suave);
+
+  --cor-texto: var(--cor-branco);
+  --cor-texto-suave: var(--cor-cinza);
+
+
+  /* =======================================================
+     TIPOGRAFIA
+     As fontes oficiais serão configuradas depois.
+     ======================================================= */
+
+  --fonte-display:
+    "Arial Narrow",
+    "Roboto Condensed",
+    Arial,
+    sans-serif;
+
+  --fonte-texto:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+
+  /* =======================================================
+     TAMANHOS DE TEXTO
+     ======================================================= */
+
+  --texto-xs: 0.75rem;
+  --texto-sm: 0.875rem;
+  --texto-base: 1rem;
+  --texto-md: 1.25rem;
+  --texto-lg: 1.5rem;
+
+  --titulo-sm: clamp(2.5rem, 6vw, 5rem);
+  --titulo-md: clamp(4rem, 9vw, 8rem);
+  --titulo-xl: clamp(5rem, 13vw, 12rem);
+
+
+  /* =======================================================
+     ESPAÇAMENTOS
+     ======================================================= */
+
+  --espaco-1: 0.5rem;
+  --espaco-2: 1rem;
+  --espaco-3: 1.5rem;
+  --espaco-4: 2rem;
+  --espaco-5: 3rem;
+  --espaco-6: 4rem;
+  --espaco-7: 6rem;
+  --espaco-8: 8rem;
+
+
+  /* =======================================================
+     LAYOUT
+     ======================================================= */
+
+  --largura-maxima: 1440px;
+
+  --margem-horizontal:
+    clamp(1.25rem, 4vw, 5rem);
+
+
+  /* =======================================================
+     TRANSIÇÕES
+     ======================================================= */
+
+  --transicao-rapida: 180ms ease;
+  --transicao-padrao: 300ms ease;
+}

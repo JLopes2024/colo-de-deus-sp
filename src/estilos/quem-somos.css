@@ -1,0 +1,343 @@
+/* =========================================================
+   QUEM SOMOS
+   Layout editorial assimétrico.
+   ========================================================= */
+
+.quem-somos {
+  background-color: var(--cor-preto);
+  color: var(--cor-branco);
+
+  padding-block: clamp(4rem, 8vw, 8rem);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   ESTRUTURA PRINCIPAL
+   ========================================================= */
+
+.quem-somos__conteudo {
+  display: grid;
+
+  grid-template-columns:
+    minmax(30px, 0.18fr)
+    minmax(0, 1.82fr);
+
+  gap: clamp(2rem, 5vw, 6rem);
+
+  align-items: end;
+
+  min-height: 580px;
+
+  padding-left: 0;
+  padding-right: var(--margem-horizontal);
+}
+
+.quem-somos__vazio {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   BLOCO PRINCIPAL
+   ========================================================= */
+
+.quem-somos__bloco {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.quem-somos__cabecalho {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--espaco-3);
+
+  min-width: 0;
+}
+
+.quem-somos__indice {
+  color: var(--cor-texto-suave);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.quem-somos__titulo {
+  width: 100%;
+  max-width: 12ch;
+
+  color: var(--cor-branco);
+
+  font-size: clamp(3rem, 5.6vw, 6.5rem);
+  font-weight: 700;
+
+  line-height: 0.86;
+
+  letter-spacing: -0.05em;
+
+  text-transform: uppercase;
+
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+
+/* =========================================================
+   CORPO
+   ========================================================= */
+
+.quem-somos__corpo {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(300px, 0.85fr);
+
+  gap: clamp(1.5rem, 4vw, 4rem);
+
+  align-items: end;
+
+  min-width: 0;
+}
+
+
+/* =========================================================
+   TEXTO
+   ========================================================= */
+
+.quem-somos__texto {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--espaco-3);
+
+  max-width: 640px;
+}
+
+.quem-somos__texto p {
+  color: var(--cor-branco);
+
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+
+  line-height: 1.7;
+
+  opacity: 0.82;
+}
+
+
+/* =========================================================
+   IMAGEM
+   ========================================================= */
+
+.quem-somos__imagem {
+  position: relative;
+
+  width: 100%;
+  min-height: 340px;
+
+  overflow: hidden;
+
+  background-color: var(--cor-preto-suave);
+}
+
+.quem-somos__imagem img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 340px;
+
+  object-fit: cover;
+  object-position: center;
+
+  filter:
+    saturate(0.82)
+    contrast(0.96);
+
+  transition:
+    transform 500ms ease;
+}
+
+.quem-somos__imagem:hover img {
+  transform: scale(1.015);
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .quem-somos__conteudo {
+    grid-template-columns:
+      minmax(20px, 0.12fr)
+      minmax(0, 1.88fr);
+
+    gap: var(--espaco-4);
+  }
+
+  .quem-somos__titulo {
+    max-width: 11ch;
+
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
+  }
+
+  .quem-somos__corpo {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(260px, 0.8fr);
+  }
+}
+
+
+/* =========================================================
+   MOBILE / TABLET VERTICAL
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .quem-somos {
+    padding-block: var(--espaco-7);
+  }
+
+  .quem-somos__conteudo {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+
+    gap: 0;
+
+    padding-left: var(--margem-horizontal);
+    padding-right: var(--margem-horizontal);
+  }
+
+  .quem-somos__vazio {
+    display: none;
+  }
+
+  .quem-somos__bloco {
+    width: 100%;
+  }
+
+  .quem-somos__titulo {
+    max-width: 10ch;
+
+    font-size: clamp(3.2rem, 10vw, 6rem);
+  }
+
+  .quem-somos__corpo {
+    grid-template-columns: 1fr;
+
+    gap: var(--espaco-5);
+  }
+
+  .quem-somos__imagem {
+    min-height: 360px;
+  }
+
+  .quem-somos__imagem img {
+    min-height: 360px;
+  }
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 650px) {
+  .quem-somos {
+    padding-block: var(--espaco-6);
+  }
+
+  .quem-somos__titulo {
+    max-width: 100%;
+
+    font-size: clamp(2.8rem, 12vw, 4.7rem);
+
+    line-height: 0.88;
+  }
+
+  .quem-somos__texto {
+    max-width: 100%;
+  }
+
+  .quem-somos__imagem {
+    min-height: 280px;
+  }
+
+  .quem-somos__imagem img {
+    min-height: 280px;
+  }
+}
+
+
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
+
+@media (max-width: 420px) {
+  .quem-somos__titulo {
+    font-size: clamp(2.6rem, 12vw, 4rem);
+
+    letter-spacing: -0.04em;
+  }
+
+  .quem-somos__texto p {
+    font-size: 0.95rem;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+@media (max-width: 650px) {
+  .quem-somos__conteudo {
+    padding-inline: var(--margem-horizontal);
+  }
+
+  .quem-somos__titulo {
+    max-width: 100%;
+
+    font-size: clamp(2.7rem, 11vw, 4.5rem);
+
+    line-height: 0.88;
+  }
+
+  .quem-somos__texto {
+    gap: var(--espaco-3);
+  }
+
+  .quem-somos__texto p {
+    font-size: 0.96rem;
+
+    line-height: 1.65;
+  }
+
+  .quem-somos__imagem,
+  .quem-somos__imagem img {
+    min-height: 260px;
+  }
+}

@@ -1,0 +1,359 @@
+/* =========================================================
+   COMUNIDADES
+   Células + Cenáculos em composição editorial.
+   ========================================================= */
+
+.comunidades {
+  width: 100%;
+}
+
+
+/* =========================================================
+   BASE DAS SEÇÕES
+   ========================================================= */
+
+.comunidade {
+  width: 100%;
+
+  padding-block: clamp(4rem, 7vw, 7rem);
+
+  overflow: hidden;
+}
+
+.comunidade--celulas {
+  background-color: var(--cor-branco);
+  color: var(--cor-preto);
+}
+
+.comunidade--cenaculos {
+  background-color: var(--cor-preto);
+  color: var(--cor-branco);
+}
+
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+.comunidade__conteudo {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 0.9fr)
+    minmax(420px, 1.1fr);
+
+  gap: clamp(2.5rem, 5vw, 6rem);
+
+  align-items: center;
+}
+
+.comunidade__conteudo--invertido {
+  grid-template-columns:
+    minmax(420px, 1.05fr)
+    minmax(0, 0.95fr);
+}
+
+
+/* =========================================================
+   TEXTO
+   ========================================================= */
+
+.comunidade__texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  min-width: 0;
+
+  gap: var(--espaco-3);
+}
+
+.comunidade__indice {
+  color: inherit;
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.comunidade__titulo {
+  width: 100%;
+  max-width: 10ch;
+
+  font-size: clamp(3.2rem, 5.2vw, 6.2rem);
+  font-weight: 700;
+
+  line-height: 0.86;
+
+  letter-spacing: -0.05em;
+
+  text-transform: uppercase;
+
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Células pode ficar um pouco mais aberto */
+.comunidade--celulas .comunidade__titulo {
+  max-width: 9ch;
+}
+
+/* Cenáculos precisa de mais largura para evitar quebras ruins */
+.comunidade--cenaculos .comunidade__titulo {
+  max-width: 11ch;
+
+  font-size: clamp(3rem, 4.8vw, 5.8rem);
+}
+
+
+/* =========================================================
+   DESCRIÇÃO
+   ========================================================= */
+
+.comunidade__descricao {
+  max-width: 520px;
+
+  color: inherit;
+
+  font-size: clamp(1rem, 1.1vw, 1.15rem);
+
+  line-height: 1.65;
+
+  opacity: 0.82;
+}
+
+
+/* =========================================================
+   AÇÃO
+   ========================================================= */
+
+.comunidade__acao {
+  display: inline-flex;
+  align-items: center;
+
+  gap: var(--espaco-2);
+
+  margin-top: var(--espaco-2);
+  padding-bottom: 0.4rem;
+
+  border-bottom: 1px solid currentColor;
+
+  font-size: var(--texto-sm);
+  font-weight: 700;
+
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  transition:
+    gap var(--transicao-rapida),
+    opacity var(--transicao-rapida);
+}
+
+.comunidade__acao:hover {
+  gap: var(--espaco-3);
+
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   MÍDIA
+   ========================================================= */
+
+.comunidade__midia {
+  position: relative;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  background-color: var(--cor-preto-suave);
+}
+
+.comunidade__midia img {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  aspect-ratio: 1 / 1;
+
+  object-fit: cover;
+
+  transition:
+    transform 500ms ease;
+}
+
+.comunidade__midia:hover img {
+  transform: scale(1.015);
+}
+
+
+/* =========================================================
+   PLACEHOLDER CENÁCULOS
+   ========================================================= */
+
+.comunidade__midia--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  aspect-ratio: 1 / 1;
+
+  border: 1px solid rgba(242, 241, 237, 0.18);
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--cor-azul),
+      var(--cor-preto)
+    );
+}
+
+.comunidade__midia--placeholder span {
+  color: var(--cor-branco);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .comunidade__conteudo,
+  .comunidade__conteudo--invertido {
+    grid-template-columns:
+      minmax(320px, 1fr)
+      minmax(0, 1fr);
+
+    gap: var(--espaco-5);
+  }
+
+  .comunidade__titulo {
+    font-size: clamp(3rem, 5.5vw, 5.5rem);
+  }
+
+  .comunidade--cenaculos .comunidade__titulo {
+    font-size: clamp(2.8rem, 5vw, 5rem);
+  }
+}
+
+
+/* =========================================================
+   MOBILE / TABLET VERTICAL
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .comunidade {
+    padding-block: var(--espaco-7);
+  }
+
+  .comunidade__conteudo,
+  .comunidade__conteudo--invertido {
+    grid-template-columns: 1fr;
+
+    gap: var(--espaco-5);
+  }
+
+  .comunidade__titulo,
+  .comunidade--celulas .comunidade__titulo,
+  .comunidade--cenaculos .comunidade__titulo {
+    max-width: 10ch;
+
+    font-size: clamp(3.2rem, 10vw, 6rem);
+  }
+
+  .comunidade__midia {
+    order: 2;
+  }
+
+  .comunidade__texto {
+    order: 1;
+  }
+
+  .comunidade--cenaculos .comunidade__midia {
+    order: 1;
+  }
+
+  .comunidade--cenaculos .comunidade__texto {
+    order: 2;
+  }
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .comunidade {
+    padding-block: var(--espaco-6);
+  }
+
+  .comunidade__titulo,
+  .comunidade--celulas .comunidade__titulo,
+  .comunidade--cenaculos .comunidade__titulo {
+    max-width: 100%;
+
+    font-size: clamp(2.8rem, 12vw, 4.7rem);
+
+    line-height: 0.88;
+  }
+
+  .comunidade__descricao {
+    max-width: 100%;
+
+    font-size: 1rem;
+  }
+
+  .comunidade__acao {
+    font-size: 0.78rem;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+@media (max-width: 520px) {
+  .comunidade__conteudo,
+  .comunidade__conteudo--invertido {
+    gap: var(--espaco-4);
+  }
+
+  .comunidade__titulo,
+  .comunidade--celulas .comunidade__titulo,
+  .comunidade--cenaculos .comunidade__titulo {
+    max-width: 100%;
+
+    font-size: clamp(2.7rem, 11vw, 4.5rem);
+
+    line-height: 0.88;
+  }
+
+  .comunidade__descricao {
+    font-size: 0.96rem;
+
+    line-height: 1.6;
+  }
+
+  .comunidade__acao {
+    max-width: 100%;
+  }
+}

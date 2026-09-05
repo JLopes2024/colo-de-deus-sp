@@ -1,0 +1,269 @@
+/* =========================================================
+   BALUARTES
+   Faixa editorial logo abaixo do Hero.
+   ========================================================= */
+
+.baluartes {
+  background-color: var(--cor-preto);
+  color: var(--cor-branco);
+
+  padding-top: var(--espaco-5);
+  padding-bottom: var(--espaco-6);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.baluartes__cabecalho {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--espaco-2);
+
+  margin-bottom: var(--espaco-4);
+}
+
+.baluartes__indice {
+  color: var(--cor-texto-suave);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.baluartes__titulo {
+  display: flex;
+  flex-direction: column;
+
+  max-width: 10ch;
+
+  font-size: clamp(3rem, 6.5vw, 6.5rem);
+  font-weight: 700;
+
+  line-height: 0.86;
+
+  letter-spacing: -0.045em;
+
+  text-transform: uppercase;
+}
+
+.baluartes__titulo span {
+  margin-left: clamp(1rem, 6vw, 6rem);
+}
+
+
+/* =========================================================
+   FAIXA
+   Desktop ocupa toda a largura.
+   Mobile vira scroll horizontal.
+   ========================================================= */
+
+.baluartes__faixa {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 2px;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   ITEM
+   ========================================================= */
+
+.baluartes__item {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   IMAGEM
+   ========================================================= */
+
+.baluartes__imagem {
+  position: relative;
+
+  aspect-ratio: 16 / 10;
+
+  overflow: hidden;
+
+  background-color: var(--cor-preto-suave);
+}
+
+.baluartes__imagem img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition:
+    transform var(--transicao-padrao),
+    filter var(--transicao-padrao);
+}
+
+
+/* =========================================================
+   NOME
+   ========================================================= */
+
+.baluartes__nome {
+  margin-top: var(--espaco-3);
+  padding-inline: var(--espaco-2);
+
+  color: var(--cor-branco);
+
+  font-size: var(--texto-xs);
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  transition:
+    opacity var(--transicao-rapida),
+    transform var(--transicao-rapida);
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.baluartes__item:hover .baluartes__imagem img {
+  transform: translateY(-4px);
+
+  filter: contrast(1.05);
+}
+
+.baluartes__item:hover .baluartes__nome {
+  opacity: 0.7;
+
+  transform: translateX(4px);
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — TABLET / MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .baluartes {
+    padding-top: var(--espaco-4);
+    padding-bottom: var(--espaco-5);
+  }
+
+  .baluartes__cabecalho {
+    margin-bottom: var(--espaco-4);
+  }
+
+  .baluartes__titulo {
+    max-width: 100%;
+
+    font-size: clamp(3rem, 12vw, 6rem);
+  }
+
+  .baluartes__titulo span {
+    margin-left: 0;
+  }
+
+  .baluartes__faixa {
+    display: flex;
+
+    gap: var(--espaco-3);
+
+    width: auto;
+
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+
+    padding-left: var(--margem-horizontal);
+    padding-right: calc(var(--margem-horizontal) + 2rem);
+
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--margem-horizontal);
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .baluartes__faixa::-webkit-scrollbar {
+    display: none;
+  }
+
+  .baluartes__item {
+    flex: 0 0 min(82vw, 520px);
+
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+
+  .baluartes__nome {
+    padding-inline: 0;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — CELULAR
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .baluartes {
+    padding-top: var(--espaco-4);
+  }
+
+  .baluartes__titulo {
+    font-size: clamp(3rem, 13vw, 5rem);
+
+    line-height: 0.9;
+  }
+
+  .baluartes__faixa {
+    gap: var(--espaco-3);
+  }
+
+  .baluartes__item {
+    flex-basis: 80vw;
+  }
+
+  .baluartes__imagem {
+    aspect-ratio: 16 / 10;
+  }
+
+  .baluartes__nome {
+    margin-top: var(--espaco-2);
+
+    font-size: 0.7rem;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+@media (max-width: 520px) {
+  .baluartes__item {
+    flex-basis: 82vw;
+  }
+
+  .baluartes__imagem {
+    aspect-ratio: 16 / 10;
+  }
+
+  .baluartes__titulo {
+    font-size: clamp(2.8rem, 13vw, 4.8rem);
+  }
+
+  .baluartes__nome {
+    white-space: nowrap;
+  }
+}
