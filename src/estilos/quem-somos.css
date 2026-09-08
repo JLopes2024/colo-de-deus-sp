@@ -1,6 +1,14 @@
 /* =========================================================
    QUEM SOMOS
-   Layout editorial assimétrico.
+
+   Desktop:
+   título à esquerda + imagem à direita
+   texto completo abaixo
+
+   Mobile:
+   título
+   texto
+   imagem
    ========================================================= */
 
 .quem-somos {
@@ -14,7 +22,8 @@
 
 
 /* =========================================================
-   ESTRUTURA PRINCIPAL
+   ESTRUTURA EXTERNA
+   Mantém a linguagem assimétrica da seção.
    ========================================================= */
 
 .quem-somos__conteudo {
@@ -25,8 +34,6 @@
     minmax(0, 1.82fr);
 
   gap: clamp(2rem, 5vw, 6rem);
-
-  align-items: end;
 
   min-height: 580px;
 
@@ -41,16 +48,33 @@
 
 /* =========================================================
    BLOCO PRINCIPAL
+
+   Desktop:
+   ┌──────────── título ────────────┬──── imagem ────┐
+   │                                │                │
+   └────────────────────────────────┴────────────────┘
+   ┌──────────────── texto completo ────────────────┐
+   └────────────────────────────────────────────────┘
    ========================================================= */
 
 .quem-somos__bloco {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.08fr)
+    minmax(360px, 0.92fr);
+
+  grid-template-areas:
+    "cabecalho imagem"
+    "texto     texto";
+
+  gap:
+    clamp(3rem, 5vw, 5rem)
+    clamp(3rem, 6vw, 7rem);
+
+  align-items: end;
+
   min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-
-  gap: clamp(2rem, 4vw, 4rem);
 }
 
 
@@ -59,8 +83,12 @@
    ========================================================= */
 
 .quem-somos__cabecalho {
+  grid-area: cabecalho;
+
   display: flex;
   flex-direction: column;
+
+  justify-content: flex-end;
 
   gap: var(--espaco-3);
 
@@ -84,16 +112,16 @@
 
 .quem-somos__titulo {
   width: 100%;
-  max-width: 12ch;
+  max-width: 9ch;
 
   color: var(--cor-branco);
 
-  font-size: clamp(3rem, 5.6vw, 6.5rem);
+  font-size: clamp(3.5rem, 6vw, 7rem);
   font-weight: 700;
 
-  line-height: 0.86;
+  line-height: 0.84;
 
-  letter-spacing: -0.05em;
+  letter-spacing: -0.055em;
 
   text-transform: uppercase;
 
@@ -104,57 +132,17 @@
 
 
 /* =========================================================
-   CORPO
-   ========================================================= */
-
-.quem-somos__corpo {
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1.15fr)
-    minmax(300px, 0.85fr);
-
-  gap: clamp(1.5rem, 4vw, 4rem);
-
-  align-items: end;
-
-  min-width: 0;
-}
-
-
-/* =========================================================
-   TEXTO
-   ========================================================= */
-
-.quem-somos__texto {
-  display: flex;
-  flex-direction: column;
-
-  gap: var(--espaco-3);
-
-  max-width: 640px;
-}
-
-.quem-somos__texto p {
-  color: var(--cor-branco);
-
-  font-size: clamp(0.9rem, 1vw, 1.05rem);
-
-  line-height: 1.7;
-
-  opacity: 0.82;
-}
-
-
-/* =========================================================
    IMAGEM
+   Fica ao lado do título no desktop.
    ========================================================= */
 
 .quem-somos__imagem {
+  grid-area: imagem;
+
   position: relative;
 
   width: 100%;
-  min-height: 340px;
+  height: clamp(320px, 34vw, 470px);
 
   overflow: hidden;
 
@@ -166,8 +154,6 @@
 
   width: 100%;
   height: 100%;
-
-  min-height: 340px;
 
   object-fit: cover;
   object-position: center;
@@ -186,7 +172,38 @@
 
 
 /* =========================================================
-   TABLET
+   TEXTO
+   Todo o conteúdo textual fica abaixo do título + imagem.
+   ========================================================= */
+
+.quem-somos__texto {
+  grid-area: texto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: clamp(2rem, 4vw, 5rem);
+
+  width: 100%;
+}
+
+.quem-somos__texto p {
+  margin: 0;
+
+  color: var(--cor-branco);
+
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+
+  line-height: 1.7;
+
+  opacity: 0.82;
+}
+
+
+/* =========================================================
+   TABLET / DESKTOP MENOR
    ========================================================= */
 
 @media (max-width: 1100px) {
@@ -198,22 +215,35 @@
     gap: var(--espaco-4);
   }
 
+  .quem-somos__bloco {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(300px, 0.85fr);
+
+    column-gap: var(--espaco-5);
+  }
+
   .quem-somos__titulo {
-    max-width: 11ch;
+    max-width: 9ch;
 
     font-size: clamp(3rem, 6.5vw, 5.5rem);
   }
 
-  .quem-somos__corpo {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(260px, 0.8fr);
+  .quem-somos__imagem {
+    height: clamp(300px, 36vw, 420px);
+  }
+
+  .quem-somos__texto {
+    gap: var(--espaco-4);
   }
 }
 
 
 /* =========================================================
    MOBILE / TABLET VERTICAL
+
+   Ordem visual volta para:
+   título → texto → imagem
    ========================================================= */
 
 @media (max-width: 900px) {
@@ -228,8 +258,7 @@
 
     gap: 0;
 
-    padding-left: var(--margem-horizontal);
-    padding-right: var(--margem-horizontal);
+    padding-inline: var(--margem-horizontal);
   }
 
   .quem-somos__vazio {
@@ -237,6 +266,15 @@
   }
 
   .quem-somos__bloco {
+    grid-template-columns: 1fr;
+
+    grid-template-areas:
+      "cabecalho"
+      "texto"
+      "imagem";
+
+    gap: var(--espaco-5);
+
     width: 100%;
   }
 
@@ -246,18 +284,17 @@
     font-size: clamp(3.2rem, 10vw, 6rem);
   }
 
-  .quem-somos__corpo {
-    grid-template-columns: 1fr;
+  .quem-somos__texto {
+    display: flex;
+    flex-direction: column;
 
-    gap: var(--espaco-5);
+    gap: var(--espaco-3);
+
+    max-width: 100%;
   }
 
   .quem-somos__imagem {
-    min-height: 360px;
-  }
-
-  .quem-somos__imagem img {
-    min-height: 360px;
+    height: 360px;
   }
 }
 
@@ -274,27 +311,25 @@
   .quem-somos__titulo {
     max-width: 100%;
 
-    font-size: clamp(2.8rem, 12vw, 4.7rem);
+    font-size: clamp(2.7rem, 11vw, 4.5rem);
 
     line-height: 0.88;
   }
 
-  .quem-somos__texto {
-    max-width: 100%;
+  .quem-somos__texto p {
+    font-size: 0.96rem;
+
+    line-height: 1.65;
   }
 
   .quem-somos__imagem {
-    min-height: 280px;
-  }
-
-  .quem-somos__imagem img {
-    min-height: 280px;
+    height: 260px;
   }
 }
 
 
 /* =========================================================
-   CELULARES PEQUENOS
+   CELULAR PEQUENO
    ========================================================= */
 
 @media (max-width: 420px) {
@@ -304,8 +339,8 @@
     letter-spacing: -0.04em;
   }
 
-  .quem-somos__texto p {
-    font-size: 0.95rem;
+  .quem-somos__imagem {
+    height: 240px;
   }
 }
 
@@ -313,31 +348,13 @@
 /* =========================================================
    MOVIMENTO REDUZIDO
    ========================================================= */
-@media (max-width: 650px) {
-  .quem-somos__conteudo {
-    padding-inline: var(--margem-horizontal);
-  }
 
-  .quem-somos__titulo {
-    max-width: 100%;
-
-    font-size: clamp(2.7rem, 11vw, 4.5rem);
-
-    line-height: 0.88;
-  }
-
-  .quem-somos__texto {
-    gap: var(--espaco-3);
-  }
-
-  .quem-somos__texto p {
-    font-size: 0.96rem;
-
-    line-height: 1.65;
-  }
-
-  .quem-somos__imagem,
+@media (prefers-reduced-motion: reduce) {
   .quem-somos__imagem img {
-    min-height: 260px;
+    transition: none;
+  }
+
+  .quem-somos__imagem:hover img {
+    transform: none;
   }
 }
