@@ -1,6 +1,21 @@
 /* =========================================================
    COMUNIDADES
    Células + Cenáculos em composição editorial.
+
+   Princípio principal aplicado:
+   SERIAL POSITION EFFECT
+
+   A ideia é tornar o começo e o fim de cada bloco
+   mais memoráveis:
+
+   INÍCIO:
+   índice + título grande
+
+   MEIO:
+   descrição mais neutra
+
+   FIM:
+   CTA visualmente forte
    ========================================================= */
 
 .comunidades {
@@ -20,10 +35,22 @@
   overflow: hidden;
 }
 
+
+/* =========================================================
+   CÉLULAS
+   Fundo claro + texto escuro
+   ========================================================= */
+
 .comunidade--celulas {
   background-color: var(--cor-branco);
   color: var(--cor-preto);
 }
+
+
+/* =========================================================
+   CENÁCULOS
+   Fundo escuro + texto claro
+   ========================================================= */
 
 .comunidade--cenaculos {
   background-color: var(--cor-preto);
@@ -32,12 +59,16 @@
 
 
 /* =========================================================
-   CONTEÚDO
+   CONTEÚDO PRINCIPAL
    ========================================================= */
 
 .comunidade__conteudo {
   display: grid;
 
+  /*
+   * Primeira coluna: conteúdo textual.
+   * Segunda coluna: imagem.
+   */
   grid-template-columns:
     minmax(0, 0.9fr)
     minmax(420px, 1.1fr);
@@ -47,6 +78,13 @@
   align-items: center;
 }
 
+
+/* =========================================================
+   LAYOUT INVERTIDO
+   Usado em Cenáculos.
+   Imagem fica à esquerda e texto à direita.
+   ========================================================= */
+
 .comunidade__conteudo--invertido {
   grid-template-columns:
     minmax(420px, 1.05fr)
@@ -55,7 +93,7 @@
 
 
 /* =========================================================
-   TEXTO
+   BLOCO DE TEXTO
    ========================================================= */
 
 .comunidade__texto {
@@ -65,29 +103,43 @@
 
   min-width: 0;
 
-  gap: var(--espaco-3);
+  /*
+   * O gap entre elementos é controlado individualmente
+   * mais abaixo, para reforçar melhor o Serial Position.
+   */
 }
 
+
+/* =========================================================
+   ÍNDICE
+   Pequeno elemento de entrada editorial.
+   ========================================================= */
+
 .comunidade__indice {
+  margin: 0 0 var(--espaco-2);
+
   color: inherit;
 
   font-size: var(--texto-xs);
   font-weight: 700;
 
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 
 /* =========================================================
    TÍTULO
+   Primeiro grande elemento memorável da seção.
    ========================================================= */
 
 .comunidade__titulo {
   width: 100%;
   max-width: 10ch;
+
+  margin: 0 0 var(--espaco-4);
 
   font-size: clamp(3.2rem, 5.2vw, 6.2rem);
   font-weight: 700;
@@ -98,17 +150,31 @@
 
   text-transform: uppercase;
 
+  /*
+   * Evita que palavras longas quebrem de forma estranha.
+   */
   word-break: normal;
   overflow-wrap: normal;
   hyphens: none;
 }
 
-/* Células pode ficar um pouco mais aberto */
+
+/* =========================================================
+   AJUSTE ESPECÍFICO — CÉLULAS
+   ========================================================= */
+
 .comunidade--celulas .comunidade__titulo {
   max-width: 9ch;
 }
 
-/* Cenáculos precisa de mais largura para evitar quebras ruins */
+
+/* =========================================================
+   AJUSTE ESPECÍFICO — CENÁCULOS
+
+   Ganha um pouco mais de largura para evitar quebras
+   muito agressivas no título.
+   ========================================================= */
+
 .comunidade--cenaculos .comunidade__titulo {
   max-width: 11ch;
 
@@ -118,10 +184,16 @@
 
 /* =========================================================
    DESCRIÇÃO
+   Parte intermediária da sequência.
+
+   Aqui diminuímos um pouco a força visual para deixar
+   a entrada e a saída mais memoráveis.
    ========================================================= */
 
 .comunidade__descricao {
   max-width: 520px;
+
+  margin: 0 0 var(--espaco-5);
 
   color: inherit;
 
@@ -129,40 +201,121 @@
 
   line-height: 1.65;
 
-  opacity: 0.82;
+  opacity: 0.78;
 }
 
 
 /* =========================================================
-   AÇÃO
+   CTA
+   Último grande ponto de memória da seção.
+
+   Em vez de um link pequeno sublinhado,
+   vira uma faixa editorial clicável.
    ========================================================= */
 
 .comunidade__acao {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 
-  gap: var(--espaco-2);
+  gap: var(--espaco-3);
 
-  margin-top: var(--espaco-2);
-  padding-bottom: 0.4rem;
+  /*
+   * O CTA ocupa uma largura significativa,
+   * sem virar necessariamente um "botão de app".
+   */
+  width: min(100%, 480px);
 
-  border-bottom: 1px solid currentColor;
+  min-height: 58px;
+
+  padding:
+    0.9rem
+    1rem;
+
+  border: 1px solid currentColor;
 
   font-size: var(--texto-sm);
   font-weight: 700;
 
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+
   text-transform: uppercase;
 
   transition:
-    gap var(--transicao-rapida),
-    opacity var(--transicao-rapida);
+    background-color var(--transicao-rapida),
+    color var(--transicao-rapida),
+    padding-inline var(--transicao-rapida);
 }
 
-.comunidade__acao:hover {
-  gap: var(--espaco-3);
 
-  opacity: 0.65;
+/* =========================================================
+   SETA DO CTA
+   ========================================================= */
+
+.comunidade__acao-seta {
+  flex-shrink: 0;
+
+  font-size: 1.25rem;
+
+  transition:
+    transform var(--transicao-rapida);
+}
+
+
+/* =========================================================
+   HOVER GENÉRICO
+   ========================================================= */
+
+.comunidade__acao:hover {
+  padding-inline:
+    1.15rem
+    0.85rem;
+}
+
+.comunidade__acao:hover .comunidade__acao-seta {
+  transform: translateX(5px);
+}
+
+
+/* =========================================================
+   CTA — CÉLULAS
+   Fundo branco inicialmente.
+   Hover inverte para preto.
+   ========================================================= */
+
+.comunidade--celulas .comunidade__acao {
+  border-color: var(--cor-preto);
+
+  color: var(--cor-preto);
+
+  background-color: transparent;
+}
+
+.comunidade--celulas .comunidade__acao:hover {
+  background-color: var(--cor-preto);
+
+  color: var(--cor-branco);
+}
+
+
+/* =========================================================
+   CTA — CENÁCULOS
+   Fundo preto inicialmente.
+   Hover inverte para branco.
+   ========================================================= */
+
+.comunidade--cenaculos .comunidade__acao {
+  border-color: var(--cor-branco);
+
+  color: var(--cor-branco);
+
+  background-color: transparent;
+}
+
+.comunidade--cenaculos .comunidade__acao:hover {
+  background-color: var(--cor-branco);
+
+  color: var(--cor-preto);
 }
 
 
@@ -180,6 +333,11 @@
   background-color: var(--cor-preto-suave);
 }
 
+
+/* =========================================================
+   IMAGEM
+   ========================================================= */
+
 .comunidade__midia img {
   display: block;
 
@@ -194,45 +352,19 @@
     transform 500ms ease;
 }
 
+
+/* =========================================================
+   HOVER DA IMAGEM
+   Movimento muito discreto para não competir com o CTA.
+   ========================================================= */
+
 .comunidade__midia:hover img {
   transform: scale(1.015);
 }
 
 
 /* =========================================================
-   PLACEHOLDER CENÁCULOS
-   ========================================================= */
-
-.comunidade__midia--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  aspect-ratio: 1 / 1;
-
-  border: 1px solid rgba(242, 241, 237, 0.18);
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--cor-azul),
-      var(--cor-preto)
-    );
-}
-
-.comunidade__midia--placeholder span {
-  color: var(--cor-branco);
-
-  font-size: var(--texto-xs);
-  font-weight: 700;
-
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-
-/* =========================================================
-   TABLET
+   TABLET / DESKTOP MENOR
    ========================================================= */
 
 @media (max-width: 1100px) {
@@ -252,6 +384,10 @@
   .comunidade--cenaculos .comunidade__titulo {
     font-size: clamp(2.8rem, 5vw, 5rem);
   }
+
+  .comunidade__acao {
+    width: min(100%, 420px);
+  }
 }
 
 
@@ -264,6 +400,9 @@
     padding-block: var(--espaco-7);
   }
 
+  /*
+   * As duas seções passam a uma coluna.
+   */
   .comunidade__conteudo,
   .comunidade__conteudo--invertido {
     grid-template-columns: 1fr;
@@ -271,6 +410,9 @@
     gap: var(--espaco-5);
   }
 
+  /*
+   * Títulos precisam de mais largura no mobile.
+   */
   .comunidade__titulo,
   .comunidade--celulas .comunidade__titulo,
   .comunidade--cenaculos .comunidade__titulo {
@@ -279,20 +421,36 @@
     font-size: clamp(3.2rem, 10vw, 6rem);
   }
 
-  .comunidade__midia {
-    order: 2;
-  }
-
+  /*
+   * Células:
+   * texto primeiro, imagem depois.
+   */
   .comunidade__texto {
     order: 1;
   }
 
+  .comunidade__midia {
+    order: 2;
+  }
+
+  /*
+   * Cenáculos:
+   * preserva a inversão visual existente.
+   * imagem primeiro, texto depois.
+   */
   .comunidade--cenaculos .comunidade__midia {
     order: 1;
   }
 
   .comunidade--cenaculos .comunidade__texto {
     order: 2;
+  }
+
+  /*
+   * CTA ocupa largura total disponível no mobile.
+   */
+  .comunidade__acao {
+    width: 100%;
   }
 }
 
@@ -306,23 +464,51 @@
     padding-block: var(--espaco-6);
   }
 
+  .comunidade__conteudo,
+  .comunidade__conteudo--invertido {
+    gap: var(--espaco-4);
+  }
+
+  /*
+   * Redução controlada do título para evitar overflow.
+   */
   .comunidade__titulo,
   .comunidade--celulas .comunidade__titulo,
   .comunidade--cenaculos .comunidade__titulo {
     max-width: 100%;
 
-    font-size: clamp(2.8rem, 12vw, 4.7rem);
+    margin-bottom: var(--espaco-3);
+
+    font-size: clamp(2.7rem, 11vw, 4.5rem);
 
     line-height: 0.88;
   }
 
+  /*
+   * Descrição um pouco menor para preservar ritmo.
+   */
   .comunidade__descricao {
     max-width: 100%;
 
-    font-size: 1rem;
+    margin-bottom: var(--espaco-4);
+
+    font-size: 0.96rem;
+
+    line-height: 1.6;
   }
 
+  /*
+   * CTA confortável para toque.
+   */
   .comunidade__acao {
+    width: 100%;
+
+    min-height: 56px;
+
+    padding:
+      0.85rem
+      1rem;
+
     font-size: 0.78rem;
   }
 }
@@ -330,30 +516,26 @@
 
 /* =========================================================
    MOVIMENTO REDUZIDO
+
+   Respeita usuários que preferem menos animações.
    ========================================================= */
-@media (max-width: 520px) {
-  .comunidade__conteudo,
-  .comunidade__conteudo--invertido {
-    gap: var(--espaco-4);
+
+@media (prefers-reduced-motion: reduce) {
+  .comunidade__acao,
+  .comunidade__acao-seta,
+  .comunidade__midia img {
+    transition: none;
   }
 
-  .comunidade__titulo,
-  .comunidade--celulas .comunidade__titulo,
-  .comunidade--cenaculos .comunidade__titulo {
-    max-width: 100%;
-
-    font-size: clamp(2.7rem, 11vw, 4.5rem);
-
-    line-height: 0.88;
+  .comunidade__acao:hover {
+    padding-inline: 1rem;
   }
 
-  .comunidade__descricao {
-    font-size: 0.96rem;
-
-    line-height: 1.6;
+  .comunidade__acao:hover .comunidade__acao-seta {
+    transform: none;
   }
 
-  .comunidade__acao {
-    max-width: 100%;
+  .comunidade__midia:hover img {
+    transform: none;
   }
 }

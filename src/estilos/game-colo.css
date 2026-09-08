@@ -1,0 +1,1143 @@
+/* =========================================================
+   GAME COLO DE DEUS
+
+   Mini-game flutuante do site.
+
+   Princípio principal:
+   GOAL-GRADIENT EFFECT
+
+   A interface mostra claramente o avanço de 01/05 até 05/05.
+
+   Identidade visual:
+   - preto;
+   - branco;
+   - contraste alto;
+   - tipografia forte;
+   - interface editorial;
+   ========================================================= */
+
+
+/* =========================================================
+   BOTÃO FLUTUANTE
+   ========================================================= */
+
+.game-colo__gatilho {
+  position: fixed;
+
+  right: clamp(1rem, 2vw, 2rem);
+  bottom: clamp(1rem, 2vw, 2rem);
+
+  z-index: 999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 74px;
+  height: 74px;
+
+  padding: 0.85rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  border-radius: 50%;
+
+  background-color: var(--cor-preto);
+
+  color: var(--cor-branco);
+
+  cursor: pointer;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.24);
+
+  transition:
+    transform var(--transicao-rapida),
+    box-shadow var(--transicao-rapida),
+    border-color var(--transicao-rapida);
+}
+
+
+.game-colo__gatilho img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+
+.game-colo__gatilho:hover {
+  transform:
+    translateY(-4px)
+    rotate(-2deg);
+
+  border-color:
+    rgba(255, 255, 255, 0.45);
+
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.3);
+}
+
+
+.game-colo__gatilho:focus-visible {
+  outline: 3px solid var(--cor-branco);
+
+  outline-offset: 4px;
+}
+
+
+/* =========================================================
+   TEXTO AO LADO DO BOTÃO
+
+   Desktop:
+   aparece no hover.
+
+   Mobile:
+   fica sempre visível.
+   ========================================================= */
+
+.game-colo__gatilho-texto {
+  position: absolute;
+
+  right: calc(100% + 0.9rem);
+
+  width: max-content;
+
+  padding:
+    0.55rem
+    0.75rem;
+
+  background-color:
+    var(--cor-preto);
+
+  color:
+    var(--cor-branco);
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  line-height: 1;
+
+  letter-spacing: 0.06em;
+
+  text-transform: uppercase;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform:
+    translateX(8px);
+
+  transition:
+    opacity var(--transicao-rapida),
+    transform var(--transicao-rapida);
+}
+
+
+.game-colo__gatilho:hover
+.game-colo__gatilho-texto {
+  opacity: 1;
+
+  transform:
+    translateX(0);
+}
+
+
+/* =========================================================
+   OVERLAY
+   ========================================================= */
+
+.game-colo__overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1000;
+
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: flex-end;
+
+  padding:
+    clamp(1rem, 2vw, 2rem);
+
+  background-color:
+    rgba(0, 0, 0, 0.52);
+
+  backdrop-filter:
+    blur(5px);
+
+  -webkit-backdrop-filter:
+    blur(5px);
+}
+
+
+/* =========================================================
+   PAINEL
+   ========================================================= */
+
+.game-colo__painel {
+  width:
+    min(
+      100%,
+      520px
+    );
+
+  max-height:
+    min(
+      760px,
+      calc(100vh - 4rem)
+    );
+
+  padding:
+    clamp(
+      1.5rem,
+      4vw,
+      2.25rem
+    );
+
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+
+  background-color:
+    var(--cor-branco);
+
+  color:
+    var(--cor-preto);
+
+  box-shadow:
+    0 24px 80px
+    rgba(0, 0, 0, 0.32);
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.game-colo__cabecalho {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: var(--espaco-4);
+
+  margin-bottom:
+    var(--espaco-5);
+}
+
+
+.game-colo__indice {
+  margin-bottom:
+    var(--espaco-2);
+
+  font-size:
+    var(--texto-xs);
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.1em;
+
+  text-transform:
+    uppercase;
+
+  opacity: 0.55;
+}
+
+
+.game-colo__cabecalho h2 {
+  max-width: 10ch;
+
+  font-size:
+    clamp(
+      2.2rem,
+      6vw,
+      4rem
+    );
+
+  line-height:
+    0.9;
+
+  letter-spacing:
+    -0.045em;
+
+  text-transform:
+    uppercase;
+}
+
+
+/* =========================================================
+   BOTÃO FECHAR
+   ========================================================= */
+
+.game-colo__fechar {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  padding: 0;
+
+  border:
+    1px solid currentColor;
+
+  background:
+    transparent;
+
+  color:
+    inherit;
+
+  font-size: 1.8rem;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transicao-rapida),
+    color var(--transicao-rapida);
+}
+
+
+.game-colo__fechar:hover {
+  background-color:
+    var(--cor-preto);
+
+  color:
+    var(--cor-branco);
+}
+
+
+.game-colo__fechar:focus-visible {
+  outline:
+    3px solid currentColor;
+
+  outline-offset:
+    3px;
+}
+
+
+/* =========================================================
+   GOAL-GRADIENT
+   ========================================================= */
+
+.game-colo__progresso {
+  margin-bottom:
+    var(--espaco-5);
+}
+
+
+.game-colo__progresso-topo {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--espaco-3);
+
+  margin-bottom:
+    var(--espaco-2);
+}
+
+
+/* =========================================================
+   PONTOS DE PROGRESSO
+   ========================================================= */
+
+.game-colo__pontos {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.45rem;
+}
+
+
+.game-colo__ponto {
+  width: 9px;
+  height: 9px;
+
+  border:
+    1px solid
+    var(--cor-preto);
+
+  border-radius: 50%;
+
+  background-color:
+    transparent;
+
+  transition:
+    background-color
+    var(--transicao-rapida),
+    transform
+    var(--transicao-rapida);
+}
+
+
+.game-colo__ponto--ativo {
+  background-color:
+    var(--cor-preto);
+
+  transform:
+    scale(1.08);
+}
+
+
+/* =========================================================
+   CONTADOR
+   ========================================================= */
+
+.game-colo__contador {
+  font-size:
+    var(--texto-xs);
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.08em;
+}
+
+
+/* =========================================================
+   BARRA DE PROGRESSO
+   ========================================================= */
+
+.game-colo__barra {
+  width: 100%;
+  height: 4px;
+
+  overflow: hidden;
+
+  background-color:
+    rgba(0, 0, 0, 0.12);
+}
+
+
+.game-colo__barra span {
+  display: block;
+
+  height: 100%;
+
+  background-color:
+    var(--cor-preto);
+
+  transition:
+    width 400ms ease;
+}
+
+
+/* =========================================================
+   PERGUNTA
+   ========================================================= */
+
+.game-colo__pergunta {
+  margin-bottom:
+    var(--espaco-4);
+}
+
+
+.game-colo__rotulo {
+  margin-bottom:
+    var(--espaco-2);
+
+  font-size:
+    var(--texto-xs);
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.08em;
+
+  text-transform:
+    uppercase;
+
+  opacity: 0.5;
+}
+
+
+.game-colo__pergunta h3 {
+  max-width: 20ch;
+
+  font-size:
+    clamp(
+      1.45rem,
+      3vw,
+      2rem
+    );
+
+  line-height: 1.1;
+}
+
+
+/* =========================================================
+   ALTERNATIVAS
+   ========================================================= */
+
+.game-colo__alternativas {
+  display: grid;
+
+  gap: 0.6rem;
+}
+
+
+.game-colo__alternativa {
+  width: 100%;
+
+  min-height: 52px;
+
+  padding:
+    0.85rem
+    1rem;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.22);
+
+  background-color:
+    transparent;
+
+  color:
+    var(--cor-preto);
+
+  font: inherit;
+
+  font-weight: 600;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color
+    var(--transicao-rapida),
+    color
+    var(--transicao-rapida),
+    border-color
+    var(--transicao-rapida),
+    transform
+    var(--transicao-rapida),
+    opacity
+    var(--transicao-rapida);
+}
+
+
+.game-colo__alternativa:hover:not(:disabled) {
+  border-color:
+    var(--cor-preto);
+
+  transform:
+    translateX(4px);
+}
+
+
+.game-colo__alternativa:focus-visible {
+  outline:
+    3px solid
+    var(--cor-preto);
+
+  outline-offset:
+    2px;
+}
+
+
+.game-colo__alternativa:disabled {
+  cursor: default;
+}
+
+
+/* =========================================================
+   RESPOSTA CORRETA
+   ========================================================= */
+
+.game-colo__alternativa--correta {
+  border-color:
+    var(--cor-preto);
+
+  background-color:
+    var(--cor-preto);
+
+  color:
+    var(--cor-branco);
+}
+
+
+/* =========================================================
+   RESPOSTA ERRADA
+   ========================================================= */
+
+.game-colo__alternativa--errada {
+  opacity: 0.42;
+
+  text-decoration:
+    line-through;
+}
+
+
+/* =========================================================
+   FEEDBACK
+   ========================================================= */
+
+.game-colo__feedback {
+  margin-top:
+    var(--espaco-4);
+
+  padding-top:
+    var(--espaco-4);
+
+  border-top:
+    1px solid
+    rgba(0, 0, 0, 0.18);
+}
+
+
+.game-colo__feedback strong {
+  display: block;
+
+  margin-bottom:
+    var(--espaco-2);
+
+  font-size:
+    1.1rem;
+
+  text-transform:
+    uppercase;
+}
+
+
+.game-colo__feedback p {
+  max-width: 42ch;
+
+  margin-bottom:
+    var(--espaco-3);
+
+  line-height: 1.55;
+
+  opacity: 0.75;
+}
+
+
+/* =========================================================
+   BOTÃO PRÓXIMA
+   ========================================================= */
+
+.game-colo__proxima {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: var(--espaco-2);
+
+  min-height: 48px;
+
+  padding:
+    0.7rem
+    1rem;
+
+  border:
+    1px solid
+    var(--cor-preto);
+
+  background-color:
+    var(--cor-preto);
+
+  color:
+    var(--cor-branco);
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.05em;
+
+  text-transform:
+    uppercase;
+
+  cursor: pointer;
+
+  transition:
+    gap var(--transicao-rapida);
+}
+
+
+.game-colo__proxima:hover {
+  gap:
+    var(--espaco-3);
+}
+
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+.game-colo__resultado {
+  padding-top:
+    var(--espaco-2);
+}
+
+
+.game-colo__resultado-pontos {
+  margin-bottom:
+    var(--espaco-4);
+
+  font-size:
+    clamp(
+      4rem,
+      14vw,
+      7rem
+    );
+
+  font-weight: 700;
+
+  line-height: 0.85;
+
+  letter-spacing:
+    -0.06em;
+}
+
+
+.game-colo__resultado h3 {
+  max-width: 12ch;
+
+  margin-bottom:
+    var(--espaco-3);
+
+  font-size:
+    clamp(
+      2rem,
+      6vw,
+      3.5rem
+    );
+
+  line-height: 0.92;
+
+  letter-spacing:
+    -0.04em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.game-colo__resultado
+> p:not(.game-colo__resultado-pontos) {
+  max-width: 40ch;
+
+  margin-bottom:
+    var(--espaco-4);
+
+  line-height: 1.6;
+
+  opacity: 0.75;
+}
+
+
+/* =========================================================
+   CTA DO RESULTADO
+   ========================================================= */
+
+.game-colo__resultado-acao {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--espaco-3);
+
+  width: 100%;
+
+  min-height: 58px;
+
+  padding:
+    0.9rem
+    1rem;
+
+  border:
+    1px solid
+    var(--cor-preto);
+
+  background-color:
+    var(--cor-preto);
+
+  color:
+    var(--cor-branco);
+
+  font-size:
+    var(--texto-sm);
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.05em;
+
+  text-transform:
+    uppercase;
+
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   JOGAR NOVAMENTE
+   ========================================================= */
+
+.game-colo__recomecar {
+  margin-top:
+    var(--espaco-3);
+
+  padding:
+    0.6rem 0;
+
+  border: 0;
+
+  border-bottom:
+    1px solid currentColor;
+
+  background:
+    transparent;
+
+  color:
+    inherit;
+
+  font-size:
+    var(--texto-xs);
+
+  font-weight: 700;
+
+  text-transform:
+    uppercase;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 620px) {
+
+  /* -------------------------------------------------------
+     BOTÃO FLUTUANTE
+     ------------------------------------------------------- */
+
+  .game-colo__gatilho {
+    right: 1rem;
+    bottom: 1.25rem;
+
+    width: 64px;
+    height: 64px;
+
+    padding: 0.78rem;
+
+    border-color:
+      rgba(255, 255, 255, 0.28);
+
+    box-shadow:
+      0 10px 28px
+      rgba(0, 0, 0, 0.28);
+  }
+
+
+  /* -------------------------------------------------------
+     TEXTO SEMPRE VISÍVEL NO MOBILE
+
+     Diferente do desktop, não dependemos de hover.
+     ------------------------------------------------------- */
+
+  .game-colo__gatilho-texto {
+    display: block;
+
+    right: calc(100% + 0.85rem);
+
+    padding: 0;
+
+    background:
+      transparent;
+
+    color:
+      var(--cor-branco);
+
+    font-size: 0.68rem;
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: 0.035em;
+
+    opacity: 1;
+
+    transform: none;
+  }
+
+
+  /* -------------------------------------------------------
+     OVERLAY EM TELA INTEIRA
+     ------------------------------------------------------- */
+
+  .game-colo__overlay {
+    display: block;
+
+    padding: 0;
+
+    background-color:
+      var(--cor-branco);
+
+    backdrop-filter: none;
+
+    -webkit-backdrop-filter: none;
+  }
+
+
+  /* -------------------------------------------------------
+     PAINEL MOBILE
+
+     100dvh considera melhor a barra do navegador mobile.
+     ------------------------------------------------------- */
+
+  .game-colo__painel {
+    width: 100%;
+
+    height: 100vh;
+    height: 100dvh;
+
+    max-height: none;
+
+    padding:
+      1.25rem
+      var(--margem-horizontal)
+      2rem;
+
+    overflow-y: auto;
+
+    overscroll-behavior:
+      contain;
+
+    box-shadow: none;
+  }
+
+
+  /* -------------------------------------------------------
+     CABEÇALHO
+     ------------------------------------------------------- */
+
+  .game-colo__cabecalho {
+    gap: 1rem;
+
+    margin-bottom: 1.25rem;
+  }
+
+
+  .game-colo__indice {
+    margin-bottom: 0.4rem;
+
+    font-size: 0.65rem;
+  }
+
+
+  .game-colo__cabecalho h2 {
+    max-width: 11ch;
+
+    font-size:
+      clamp(
+        1.9rem,
+        8vw,
+        2.8rem
+      );
+
+    line-height: 0.9;
+  }
+
+
+  /* -------------------------------------------------------
+     FECHAR
+     ------------------------------------------------------- */
+
+  .game-colo__fechar {
+    width: 40px;
+    height: 40px;
+
+    font-size: 1.6rem;
+  }
+
+
+  /* -------------------------------------------------------
+     PROGRESSO
+     ------------------------------------------------------- */
+
+  .game-colo__progresso {
+    margin-bottom: 1.5rem;
+  }
+
+
+  .game-colo__progresso-topo {
+    margin-bottom: 0.55rem;
+  }
+
+
+  /* -------------------------------------------------------
+     PERGUNTA
+     ------------------------------------------------------- */
+
+  .game-colo__pergunta {
+    margin-bottom: 1.25rem;
+  }
+
+
+  .game-colo__rotulo {
+    margin-bottom: 0.45rem;
+  }
+
+
+  .game-colo__pergunta h3 {
+    max-width: 100%;
+
+    font-size:
+      clamp(
+        1.35rem,
+        5.8vw,
+        1.8rem
+      );
+
+    line-height: 1.08;
+  }
+
+
+  /* -------------------------------------------------------
+     ALTERNATIVAS
+     ------------------------------------------------------- */
+
+  .game-colo__alternativas {
+    gap: 0.55rem;
+
+    padding-bottom: 1rem;
+  }
+
+
+  .game-colo__alternativa {
+    min-height: 50px;
+
+    padding:
+      0.75rem
+      0.9rem;
+  }
+
+
+  /* -------------------------------------------------------
+     FEEDBACK
+     ------------------------------------------------------- */
+
+  .game-colo__feedback {
+    margin-top: 1.25rem;
+
+    padding-top: 1.25rem;
+  }
+
+
+  .game-colo__feedback p {
+    margin-bottom: 1rem;
+  }
+
+
+  /* -------------------------------------------------------
+     RESULTADO
+     ------------------------------------------------------- */
+
+  .game-colo__resultado-pontos {
+    font-size:
+      clamp(
+        4rem,
+        22vw,
+        7rem
+      );
+  }
+
+
+  .game-colo__resultado h3 {
+    font-size:
+      clamp(
+        2rem,
+        10vw,
+        3.3rem
+      );
+  }
+}
+
+
+/* =========================================================
+   TELAS MUITO PEQUENAS
+
+   Evita que a frase encoste demais na lateral esquerda.
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .game-colo__gatilho {
+    width: 58px;
+    height: 58px;
+
+    right: 0.8rem;
+    bottom: 1rem;
+  }
+
+
+  .game-colo__gatilho-texto {
+    right: calc(100% + 0.6rem);
+
+    font-size: 0.61rem;
+
+    letter-spacing: 0.02em;
+  }
+}
+
+
+/* =========================================================
+   DISPOSITIVOS SEM HOVER
+   ========================================================= */
+
+@media (hover: none) {
+
+  .game-colo__gatilho:hover {
+    transform: none;
+  }
+
+
+  .game-colo__alternativa:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .game-colo__gatilho,
+  .game-colo__gatilho-texto,
+  .game-colo__barra span,
+  .game-colo__ponto,
+  .game-colo__alternativa,
+  .game-colo__proxima,
+  .game-colo__fechar {
+    transition: none;
+  }
+
+
+  .game-colo__gatilho:hover,
+  .game-colo__alternativa:hover:not(:disabled) {
+    transform: none;
+  }
+}

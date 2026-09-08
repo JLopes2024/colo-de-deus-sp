@@ -1,5 +1,16 @@
-import { baluartes } from '../dados/baluartes.js';
+{/*
+Coloque em cada baluarte, um link para o vídeo do youtube que temos no nosso site da sede
+*/}
 
+{/*
+Link São João Paulo II: https://www.youtube.com/watch?v=_DBCG7TglZo 
+*/}
+
+{/*
+Busque os demais links
+*/}
+
+import { baluartes } from '../dados/baluartes.js';
 import '../estilos/baluartes.css';
 
 function Baluartes() {

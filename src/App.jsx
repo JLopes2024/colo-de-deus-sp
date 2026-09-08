@@ -7,6 +7,7 @@ import Agenda from './componentes/Agenda.jsx';
 import Contato from './componentes/Contato.jsx';
 import Rodape from './componentes/Rodape.jsx';
 import Baluartes from './componentes/Baluartes.jsx';
+import GameColo from './componentes/GameColo.jsx';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Comunidades />
         <Agenda />
         <Contato />
+        <GameColo />
       </main>
 
       <Rodape />
