@@ -1,26 +1,25 @@
-export const eventos = [
+export const agenda = [
   {
     id: 1,
-    data: '13 SET',
-    titulo: 'Summer Beats',
-    local: 'São Paulo',
+    titulo: 'Nome do evento',
+    data: '2026-10-18',
+    local: 'São Paulo, SP',
     link: '#',
-    imagem: '/imagens/eventos/summer-beats.jpg',
   },
+
   {
     id: 2,
-    data: '19 SET',
-    titulo: 'Águas Profundas',
-    local: 'São Paulo',
+    titulo: 'Outro evento',
+    data: '2026-11-02',
+    local: 'São Paulo, SP',
     link: '#',
-    imagem: '/imagens/eventos/aguas-profundas.jpg',
   },
+
   {
     id: 3,
-    data: '11–13 DEZ',
-    titulo: 'Geração Atômika',
-    local: 'Aparecida',
+    titulo: 'Mais um evento',
+    data: '2026-11-15',
+    local: 'São Paulo, SP',
     link: '#',
-    imagem: '/imagens/eventos/geracao-atomika.jpg',
   },
 ];

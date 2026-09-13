@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import '../estilos/manifesto.css';
 
@@ -10,16 +14,18 @@ function Manifesto() {
     const secao = secaoRef.current;
 
     if (!secao) {
-      return;
+      return undefined;
     }
 
-    const prefereMenosMovimento = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
+    const prefereMenosMovimento =
+      window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches;
 
     if (prefereMenosMovimento) {
       setAnimar(true);
-      return;
+
+      return undefined;
     }
 
     const observador = new IntersectionObserver(
@@ -51,15 +57,21 @@ function Manifesto() {
   return (
     <section
       ref={secaoRef}
-      className={`manifesto ${
-        animar ? 'manifesto--visivel' : ''
-      }`}
+      className={[
+        'manifesto',
+        animar
+          ? 'manifesto--visivel'
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       aria-labelledby="manifesto-titulo"
     >
       <div className="manifesto__conteudo container">
+
         <div className="manifesto__texto">
           <p className="manifesto__indice">
-            02 — Nossa essência
+            02 // Nossa essência
           </p>
 
           <h2
@@ -77,7 +89,8 @@ function Manifesto() {
             <span className="manifesto__linha">
               Eucarísticos,
             </span>
-              <span className="manifesto__linha">
+
+            <span className="manifesto__linha">
               Pentecostais
             </span>
 
@@ -99,6 +112,7 @@ function Manifesto() {
             alt="Comunidade Colo de Deus"
           />
         </div>
+
       </div>
     </section>
   );

@@ -1,0 +1,744 @@
+/* =========================================================
+   ADMIN
+   Painel simples e funcional para manutenção da agenda.
+   ========================================================= */
+
+.admin {
+  min-height: 100vh;
+
+  padding:
+    clamp(1.5rem, 4vw, 4rem);
+
+  background-color: #f2f1ed;
+  color: #111;
+
+  font-family: inherit;
+}
+
+
+/* =========================================================
+   ESTADOS CENTRALIZADOS
+   ========================================================= */
+
+.admin--centralizado,
+.admin--login {
+  display: grid;
+
+  place-items: center;
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+.admin__login {
+  width: min(100%, 440px);
+
+  padding: clamp(
+    2rem,
+    5vw,
+    4rem
+  );
+
+  background-color: #111;
+  color: #fff;
+}
+
+
+.admin__login h1 {
+  margin:
+    1rem
+    0
+    2.5rem;
+
+  font-size: clamp(
+    2.5rem,
+    7vw,
+    4.5rem
+  );
+
+  font-weight: 700;
+
+  line-height: 0.9;
+
+  letter-spacing: -0.05em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   TEXTOS PEQUENOS
+   ========================================================= */
+
+.admin__marca,
+.admin__indice {
+  margin: 0;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+
+  opacity: 0.62;
+}
+
+
+/* =========================================================
+   TOPO DO PAINEL
+   ========================================================= */
+
+.admin__topo {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 2rem;
+
+  width: 100%;
+  max-width: 1500px;
+
+  margin-inline: auto;
+
+  padding-bottom: 2rem;
+
+  border-bottom:
+    1px
+    solid
+    rgba(0, 0, 0, 0.18);
+}
+
+
+.admin__topo h1 {
+  margin:
+    0.5rem
+    0
+    0;
+
+  font-size: clamp(
+    3rem,
+    8vw,
+    7rem
+  );
+
+  font-weight: 700;
+
+  line-height: 0.85;
+
+  letter-spacing: -0.055em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   SAIR
+   ========================================================= */
+
+.admin__sair {
+  min-width: 80px;
+  min-height: 44px;
+
+  padding:
+    0.75rem
+    1rem;
+
+  border:
+    1px
+    solid
+    #111;
+
+  background: transparent;
+
+  color: #111;
+
+  font: inherit;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   GRADE PRINCIPAL
+   ========================================================= */
+
+.admin__grade {
+  display: grid;
+
+  grid-template-columns:
+    minmax(300px, 0.75fr)
+    minmax(0, 1.25fr);
+
+  gap: clamp(
+    3rem,
+    7vw,
+    8rem
+  );
+
+  width: 100%;
+  max-width: 1500px;
+
+  margin-inline: auto;
+
+  padding-top: 3rem;
+}
+
+
+/* =========================================================
+   EDITOR
+   ========================================================= */
+
+.admin__editor {
+  position: sticky;
+
+  top: 2rem;
+
+  align-self: start;
+}
+
+
+/* =========================================================
+   FORMULÁRIO
+   ========================================================= */
+
+.admin__formulario {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1.25rem;
+
+  margin-top: 2rem;
+}
+
+
+.admin__formulario label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.5rem;
+
+  color: inherit;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  letter-spacing: 0.04em;
+
+  text-transform: uppercase;
+}
+
+
+.admin__opcional {
+  margin-left: 0.35rem;
+
+  font-size: 0.65rem;
+  font-weight: 400;
+
+  opacity: 0.5;
+
+  text-transform: lowercase;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.admin__formulario input {
+  width: 100%;
+
+  min-height: 48px;
+
+  padding:
+    0.75rem
+    0;
+
+  border: 0;
+
+  border-bottom:
+    1px
+    solid
+    currentColor;
+
+  border-radius: 0;
+
+  background-color: transparent;
+
+  color: inherit;
+
+  font: inherit;
+
+  font-size: 1rem;
+  font-weight: 400;
+
+  letter-spacing: normal;
+
+  text-transform: none;
+
+  outline: none;
+}
+
+
+.admin__formulario input:focus {
+  border-bottom-width: 2px;
+}
+
+
+/* =========================================================
+   BOTÃO PRINCIPAL
+   ========================================================= */
+
+.admin__formulario button {
+  min-height: 48px;
+
+  padding:
+    0.9rem
+    1.25rem;
+
+  border:
+    1px
+    solid
+    #111;
+
+  background-color: #111;
+
+  color: #fff;
+
+  font: inherit;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    opacity 180ms ease;
+}
+
+
+.admin__login .admin__formulario button {
+  border-color: #fff;
+
+  background-color: #fff;
+
+  color: #111;
+}
+
+
+.admin__formulario button:hover {
+  opacity: 0.78;
+}
+
+
+.admin__formulario button:disabled {
+  opacity: 0.45;
+
+  cursor: wait;
+}
+
+
+/* =========================================================
+   AÇÕES DO FORMULÁRIO
+   ========================================================= */
+
+.admin__acoes-formulario {
+  display: flex;
+
+  gap: 0.75rem;
+
+  margin-top: 0.5rem;
+}
+
+
+.admin__acoes-formulario button {
+  flex: 1;
+}
+
+
+.admin__formulario
+.admin__botao-secundario {
+  background-color: transparent;
+
+  color: #111;
+}
+
+
+/* =========================================================
+   MENSAGENS
+   ========================================================= */
+
+.admin__mensagem {
+  margin: 0;
+
+  padding: 0.85rem;
+
+  font-size: 0.8rem;
+
+  line-height: 1.4;
+}
+
+
+.admin__mensagem--erro {
+  border:
+    1px
+    solid
+    currentColor;
+}
+
+
+.admin__mensagem--sucesso {
+  border:
+    1px
+    solid
+    currentColor;
+}
+
+
+/* =========================================================
+   CABEÇALHO DA LISTA
+   ========================================================= */
+
+.admin__eventos-cabecalho {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding-bottom: 1rem;
+
+  border-bottom:
+    1px
+    solid
+    rgba(0, 0, 0, 0.18);
+}
+
+
+.admin__eventos-cabecalho > span {
+  display: grid;
+
+  place-items: center;
+
+  width: 32px;
+  height: 32px;
+
+  background-color: #111;
+
+  color: #fff;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   LISTA
+   ========================================================= */
+
+.admin__lista {
+  width: 100%;
+}
+
+
+/* =========================================================
+   EVENTO
+   ========================================================= */
+
+.admin__evento {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 2rem;
+
+  align-items: center;
+
+  padding:
+    2rem
+    0;
+
+  border-bottom:
+    1px
+    solid
+    rgba(0, 0, 0, 0.18);
+}
+
+
+.admin__evento--encerrado {
+  opacity: 0.45;
+}
+
+
+/* =========================================================
+   META
+   ========================================================= */
+
+.admin__evento-meta {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
+  margin-bottom: 0.7rem;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+.admin__evento-meta span {
+  padding:
+    0.3rem
+    0.45rem;
+
+  border:
+    1px
+    solid
+    currentColor;
+}
+
+
+/* =========================================================
+   NOME
+   ========================================================= */
+
+.admin__evento h2 {
+  margin: 0;
+
+  font-size: clamp(
+    1.4rem,
+    2vw,
+    2rem
+  );
+
+  line-height: 1;
+
+  letter-spacing: -0.03em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   LOCAL
+   ========================================================= */
+
+.admin__evento-conteudo > p {
+  margin:
+    0.5rem
+    0
+    0;
+
+  font-size: 0.82rem;
+
+  opacity: 0.65;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   INGRESSO
+   ========================================================= */
+
+.admin__evento-conteudo > a {
+  display: inline-block;
+
+  margin-top: 0.9rem;
+
+  color: inherit;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  letter-spacing: 0.06em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   AÇÕES DO EVENTO
+   ========================================================= */
+
+.admin__evento-acoes {
+  display: flex;
+
+  gap: 0.5rem;
+}
+
+
+.admin__evento-acoes button {
+  min-height: 42px;
+
+  padding:
+    0.65rem
+    0.9rem;
+
+  border:
+    1px
+    solid
+    #111;
+
+  background-color: transparent;
+
+  color: #111;
+
+  font: inherit;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+}
+
+
+.admin__evento-acoes
+.admin__excluir {
+  background-color: #111;
+
+  color: #fff;
+}
+
+
+/* =========================================================
+   ESTADO VAZIO
+   ========================================================= */
+
+.admin__vazio {
+  margin: 0;
+
+  padding:
+    3rem
+    0;
+
+  border-bottom:
+    1px
+    solid
+    rgba(0, 0, 0, 0.18);
+
+  font-size: 1rem;
+
+  opacity: 0.6;
+}
+
+
+/* =========================================================
+   FOCO
+   ========================================================= */
+
+.admin button:focus-visible,
+.admin a:focus-visible,
+.admin input:focus-visible {
+  outline:
+    2px
+    solid
+    currentColor;
+
+  outline-offset: 4px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .admin__grade {
+    grid-template-columns: 1fr;
+
+    gap: 4rem;
+  }
+
+
+  .admin__editor {
+    position: static;
+  }
+
+
+  .admin__evento {
+    grid-template-columns: 1fr;
+
+    gap: 1.5rem;
+  }
+
+
+  .admin__evento-acoes {
+    width: 100%;
+  }
+
+
+  .admin__evento-acoes button {
+    flex: 1;
+  }
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .admin {
+    padding: 1.25rem;
+  }
+
+
+  .admin__topo {
+    align-items: center;
+  }
+
+
+  .admin__topo h1 {
+    font-size: 3.2rem;
+  }
+
+
+  .admin__acoes-formulario {
+    flex-direction: column;
+  }
+
+
+  .admin__evento-acoes {
+    flex-direction: column;
+  }
+}
+
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .admin__formulario button {
+    transition: none;
+  }
+}

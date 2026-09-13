@@ -1,19 +1,29 @@
-# React + Vite
+# Admin da Agenda — Colo de Deus // Missão SP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Pacote para adicionar o CRUD da agenda ao projeto React + Vite + Supabase.
 
-Currently, two official plugins are available:
+## Ordem
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Copie `src/admin/` para o projeto.
+2. Execute `supabase/01-admin-eventos.sql` no SQL Editor do Supabase.
+3. Em Supabase > Authentication > Users, crie o usuário administrador.
+4. Use `src/admin/INTEGRACAO_MAIN.jsx.txt` para ajustar o seu `src/main.jsx`.
+5. Use os dois arquivos `AGENDA_*` para adicionar o link opcional de ingresso na agenda pública.
+6. Se a Vercel ainda não possui rewrite para SPA, use o conteúdo de `vercel.json.example`.
 
-## React Compiler
+## Segurança
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+O frontend continua usando somente a chave pública/publishable do Supabase.
+Nunca coloque `service_role` no React.
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+As policies permitem:
+- visitante anônimo: SELECT;
+- usuário autenticado: SELECT, INSERT, UPDATE e DELETE.
 
-## Expanding the ESLint configuration
+## Datas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Eventos antigos não são apagados automaticamente. O site público continua filtrando `data_evento >= hoje`, então um evento fica visível durante todo o seu dia e some a partir do dia seguinte. No admin ele permanece no histórico como `Encerrado`.
+
+## Link de ingresso
+
+`link_ingresso` é opcional. Se estiver vazio, nenhum botão é renderizado no site.

@@ -1,0 +1,14 @@
+// No select do Agenda.jsx, inclua:
+// link_ingresso
+
+// Depois de agenda__local:
+{evento.link_ingresso && (
+  <a
+    className="agenda__ingresso"
+    href={evento.link_ingresso}
+    target="_blank"
+    rel="noreferrer"
+  >
+    Ingressos <span aria-hidden="true">↗</span>
+  </a>
+)}

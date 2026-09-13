@@ -16,12 +16,13 @@ function App() {
 
       <main>
        <Hero />
-        <Baluartes />
         <QuemSomos />
         <Manifesto />
         <Comunidades />
         <Agenda />
         <Contato />
+                <Baluartes />
+
         <GameColo />
       </main>
 

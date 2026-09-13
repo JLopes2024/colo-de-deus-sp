@@ -1,16 +1,5 @@
-{/*
-Coloque em cada baluarte, um link para o vídeo do youtube que temos no nosso site da sede
-*/}
-
-{/*
-Link São João Paulo II: https://www.youtube.com/watch?v=_DBCG7TglZo 
-*/}
-
-{/*
-Busque os demais links
-*/}
-
 import { baluartes } from '../dados/baluartes.js';
+
 import '../estilos/baluartes.css';
 
 function Baluartes() {
@@ -35,9 +24,13 @@ function Baluartes() {
 
       <div className="baluartes__faixa">
         {baluartes.map((baluarte) => (
-          <article
+          <a
             className="baluartes__item"
+            href={baluarte.video}
+            target="_blank"
+            rel="noreferrer"
             key={baluarte.id}
+            aria-label={`Assistir vídeo sobre ${baluarte.nome} no YouTube`}
           >
             <div className="baluartes__imagem">
               <img
@@ -46,10 +39,19 @@ function Baluartes() {
               />
             </div>
 
-            <p className="baluartes__nome">
-              {baluarte.nome}
-            </p>
-          </article>
+            <div className="baluartes__rodape">
+              <p className="baluartes__nome">
+                {baluarte.nome}
+              </p>
+
+              <span className="baluartes__assistir">
+                Assistir
+                <span aria-hidden="true">
+                  ↗
+                </span>
+              </span>
+            </div>
+          </a>
         ))}
       </div>
     </section>

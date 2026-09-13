@@ -1,0 +1,16 @@
+// Ajuste seu src/main.jsx usando esta ideia.
+// Preserve os imports globais que você já possui.
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import AdminApp from './admin/AdminApp.jsx';
+import './estilos/global.css';
+
+const ehAdmin = window.location.pathname.startsWith('/admin');
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    {ehAdmin ? <AdminApp /> : <App />}
+  </React.StrictMode>,
+);

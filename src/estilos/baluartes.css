@@ -4,21 +4,11 @@
    Princípio visual principal:
    LAW OF SIMILARITY
 
-   Os quatro baluartes possuem personalidades visuais muito
-   diferentes nas artes, mas pertencem à mesma "família".
+   Os quatro baluartes possuem personalidades visuais
+   diferentes, mas compartilham a mesma estrutura,
+   proporção, tipografia e comportamento.
 
-   Para comunicar isso visualmente, todos compartilham:
-   - mesma proporção;
-   - mesma estrutura;
-   - mesmo alinhamento;
-   - mesma tipografia;
-   - mesmo espaçamento;
-   - mesma interação;
-   - mesmo comportamento responsivo.
-
-   IMPORTANTE:
-   Não transformamos os itens em cards tradicionais.
-   A intenção continua sendo editorial.
+   O item inteiro é clicável e leva ao vídeo do baluarte.
    ========================================================= */
 
 .baluartes {
@@ -36,12 +26,6 @@
 
 /* =========================================================
    CABEÇALHO
-
-   O cabeçalho é propositalmente diferente dos itens.
-   Ele apresenta a "categoria".
-
-   Os quatro baluartes abaixo são os elementos que utilizam
-   Similarity entre si.
    ========================================================= */
 
 .baluartes__cabecalho {
@@ -71,7 +55,7 @@
 
 
 /* =========================================================
-   TÍTULO PRINCIPAL
+   TÍTULO
    ========================================================= */
 
 .baluartes__titulo {
@@ -92,8 +76,7 @@
 
 
 /*
- * O deslocamento da segunda linha mantém
- * a composição editorial assimétrica.
+ * Mantém a composição editorial assimétrica.
  */
 .baluartes__titulo span {
   margin-left: clamp(1rem, 6vw, 6rem);
@@ -101,26 +84,15 @@
 
 
 /* =========================================================
-   FAIXA DE BALUARTES
-
-   SIMILARITY:
-   Todos recebem exatamente a mesma fração da tela.
-
-   Nenhum baluarte ganha mais espaço ou importância
-   estrutural do que outro.
+   FAIXA
    ========================================================= */
 
 .baluartes__faixa {
   display: grid;
 
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 
-  /*
-   * Gap mínimo.
-   *
-   * Mantemos os elementos visualmente próximos para
-   * reforçar a ideia de conjunto.
-   */
   gap: 2px;
 
   width: 100%;
@@ -128,14 +100,11 @@
 
 
 /* =========================================================
-   ITEM / BALUARTE
+   ITEM
 
-   Cada item possui exatamente a mesma estrutura:
-   IMAGEM
-   +
-   NOME
-
-   Isso é o núcleo da Law of Similarity nesta seção.
+   O próprio link é o elemento estrutural completo.
+   Isso aumenta a área clicável sem criar aparência
+   de botão ou card tradicional.
    ========================================================= */
 
 .baluartes__item {
@@ -143,16 +112,17 @@
   flex-direction: column;
 
   min-width: 0;
+
+  color: inherit;
+
+  text-decoration: none;
+
+  outline: none;
 }
 
 
 /* =========================================================
    IMAGEM
-
-   Todas as imagens usam rigorosamente a mesma proporção.
-
-   Mesmo que as artes sejam completamente diferentes,
-   a moldura visual permanece igual.
    ========================================================= */
 
 .baluartes__imagem {
@@ -170,8 +140,6 @@
 
 /* =========================================================
    IMAGEM INTERNA
-
-   Todas recebem exatamente o mesmo tratamento.
    ========================================================= */
 
 .baluartes__imagem img {
@@ -189,31 +157,35 @@
 
 
 /* =========================================================
-   NOME
+   RODAPÉ DO ITEM
 
-   SIMILARITY:
-   O nome ocupa uma área consistente abaixo da imagem.
-
-   Isso evita que diferenças no comprimento dos nomes
-   alterem a percepção estrutural dos quatro itens.
+   Nome + indicação de ação.
    ========================================================= */
 
-.baluartes__nome {
+.baluartes__rodape {
   display: flex;
   align-items: center;
+  justify-content: space-between;
 
-  /*
-   * Uma altura mínima comum cria uma linha visual
-   * consistente entre todos os nomes.
-   */
-  min-height: 3.5rem;
+  gap: var(--espaco-2);
 
-  margin: 0;
+  min-height: 3.75rem;
 
   padding:
     var(--espaco-2)
     var(--espaco-2)
     0;
+}
+
+
+/* =========================================================
+   NOME
+   ========================================================= */
+
+.baluartes__nome {
+  min-width: 0;
+
+  margin: 0;
 
   color: var(--cor-branco);
 
@@ -233,53 +205,88 @@
 
 
 /* =========================================================
-   INTERAÇÃO
+   ASSISTIR
 
-   Outro ponto importante da Similarity:
-
-   Se todos pertencem ao mesmo grupo,
-   todos devem responder da mesma maneira.
-
-   Por isso não existe hover especial para nenhum santo.
+   Sinal discreto de que o item possui uma ação.
    ========================================================= */
 
-.baluartes__item:hover .baluartes__imagem img {
-  transform: scale(1.02);
+.baluartes__assistir {
+  display: inline-flex;
+  align-items: center;
 
-  filter: contrast(1.05);
-}
+  gap: 0.35rem;
 
+  flex-shrink: 0;
 
-/*
- * O nome acompanha discretamente o movimento da imagem.
- */
-.baluartes__item:hover .baluartes__nome {
-  opacity: 0.72;
+  color: var(--cor-texto-suave);
 
-  transform: translateX(4px);
+  font-size: 0.66rem;
+  font-weight: 700;
+
+  line-height: 1;
+
+  letter-spacing: 0.09em;
+
+  text-transform: uppercase;
+
+  transition:
+    color var(--transicao-rapida),
+    transform var(--transicao-rapida);
 }
 
 
 /* =========================================================
-   FOCUS
-
-   Hoje os baluartes não são links.
-   Portanto não adicionamos comportamento de botão/link
-   artificialmente.
-
-   Caso futuramente cada baluarte abra uma página,
-   modal ou biografia, adicionaremos :focus-visible aqui.
+   HOVER
    ========================================================= */
+
+@media (hover: hover) {
+
+  .baluartes__item:hover .baluartes__imagem img {
+    transform: scale(1.025);
+
+    filter: contrast(1.05);
+  }
+
+
+  .baluartes__item:hover .baluartes__nome {
+    opacity: 0.75;
+
+    transform: translateX(4px);
+  }
+
+
+  .baluartes__item:hover .baluartes__assistir {
+    color: var(--cor-branco);
+
+    transform: translateX(3px);
+  }
+}
+
+
+/* =========================================================
+   FOCO PELO TECLADO
+
+   Como todo o item agora é um link, precisamos deixar
+   o estado de foco evidente.
+   ========================================================= */
+
+.baluartes__item:focus-visible {
+  outline:
+    2px
+    solid
+    var(--cor-branco);
+
+  outline-offset: -2px;
+}
+
+
+.baluartes__item:focus-visible .baluartes__assistir {
+  color: var(--cor-branco);
+}
 
 
 /* =========================================================
    TABLET / MOBILE
-
-   A partir daqui a grade se transforma em carrossel
-   horizontal.
-
-   A Similarity continua sendo preservada:
-   todos recebem exatamente a mesma largura.
    ========================================================= */
 
 @media (max-width: 900px) {
@@ -290,18 +297,10 @@
   }
 
 
-  /* ---------------------------------------------------------
-     CABEÇALHO
-     --------------------------------------------------------- */
-
   .baluartes__cabecalho {
     margin-bottom: var(--espaco-4);
   }
 
-
-  /* ---------------------------------------------------------
-     TÍTULO
-     --------------------------------------------------------- */
 
   .baluartes__titulo {
     max-width: 100%;
@@ -311,22 +310,17 @@
 
 
   /*
-   * No mobile removemos o deslocamento.
-   *
-   * Isso evita desperdício de largura e mantém
-   * a leitura mais natural em telas estreitas.
+   * Em telas menores, removemos o deslocamento para
+   * aproveitar melhor a largura disponível.
    */
   .baluartes__titulo span {
     margin-left: 0;
   }
 
 
-  /* =========================================================
+  /* =======================================================
      CARROSSEL HORIZONTAL
-
-     O scroll horizontal já existia no componente e é
-     mantido porque funciona muito bem para essa seção.
-     ========================================================= */
+     ======================================================= */
 
   .baluartes__faixa {
     display: flex;
@@ -337,58 +331,33 @@
 
     overflow-x: auto;
 
-    /*
-     * Evita que o scroll horizontal interfira demais
-     * com o scroll vertical da página.
-     */
     overscroll-behavior-x: contain;
 
-    /*
-     * Mantém a mesma margem utilizada pelo restante
-     * da interface.
-     */
-    padding-left: var(--margem-horizontal);
+    padding-left:
+      var(--margem-horizontal);
 
-    /*
-     * Espaço adicional no final para o último item
-     * não terminar colado na borda.
-     */
     padding-right:
-      calc(var(--margem-horizontal) + 2rem);
+      calc(
+        var(--margem-horizontal)
+        + 2rem
+      );
 
-    /*
-     * Faz os itens "encaixarem" durante o scroll.
-     */
-    scroll-snap-type: x mandatory;
+    scroll-snap-type:
+      x mandatory;
 
-    scroll-padding-left: var(--margem-horizontal);
+    scroll-padding-left:
+      var(--margem-horizontal);
 
-    /*
-     * Esconde scrollbar visual sem impedir scroll.
-     */
     scrollbar-width: none;
 
-    /*
-     * Scroll mais natural em dispositivos iOS.
-     */
     -webkit-overflow-scrolling: touch;
   }
 
 
-  /*
-   * Chrome / Safari / Edge.
-   */
   .baluartes__faixa::-webkit-scrollbar {
     display: none;
   }
 
-
-  /* =========================================================
-     ITEM NO CARROSSEL
-
-     Todos possuem exatamente a mesma largura.
-     Isso reforça diretamente a Similarity.
-     ========================================================= */
 
   .baluartes__item {
     flex:
@@ -402,13 +371,7 @@
   }
 
 
-  /* =========================================================
-     NOME NO MOBILE
-     ========================================================= */
-
-  .baluartes__nome {
-    min-height: 3rem;
-
+  .baluartes__rodape {
     padding-inline: 0;
   }
 }
@@ -425,22 +388,19 @@
   }
 
 
-  /* ---------------------------------------------------------
-     TÍTULO
-     --------------------------------------------------------- */
-
   .baluartes__titulo {
     max-width: 100%;
 
-    font-size: clamp(2.8rem, 13vw, 4.8rem);
+    font-size:
+      clamp(
+        2.8rem,
+        13vw,
+        4.8rem
+      );
 
     line-height: 0.9;
   }
 
-
-  /* ---------------------------------------------------------
-     CARROSSEL
-     --------------------------------------------------------- */
 
   .baluartes__faixa {
     gap: var(--espaco-3);
@@ -448,93 +408,53 @@
 
 
   /*
-   * 82vw deixa propositalmente uma pequena parte
-   * do próximo item visível.
-
-   * Isso funciona como pista visual de que existe
-   * conteúdo horizontal para explorar.
+   * Uma pequena parte do próximo item permanece
+   * visível para indicar que há conteúdo horizontal.
    */
   .baluartes__item {
     flex-basis: 82vw;
   }
 
 
-  /*
-   * Mantemos exatamente a mesma proporção
-   * para todos os baluartes.
-   */
   .baluartes__imagem {
     aspect-ratio: 16 / 10;
   }
 
 
-  /* ---------------------------------------------------------
-     NOME
-     --------------------------------------------------------- */
-
-  .baluartes__nome {
-    min-height: 2.75rem;
-
-    margin: 0;
+  .baluartes__rodape {
+    min-height: 3.25rem;
 
     padding-top: var(--espaco-2);
+  }
 
+
+  .baluartes__nome {
     font-size: 0.7rem;
-
-    /*
-     * Os nomes permanecem em uma única linha quando
-     * houver espaço suficiente.
-     */
-    white-space: nowrap;
-  }
-}
-
-
-/* =========================================================
-   DISPOSITIVOS SEM HOVER
-
-   Em touch não precisamos preparar efeitos de hover.
-   O conteúdo continua completamente funcional.
-   ========================================================= */
-
-@media (hover: none) {
-
-  .baluartes__item:hover .baluartes__imagem img {
-    transform: none;
-
-    filter: none;
   }
 
-  .baluartes__item:hover .baluartes__nome {
-    opacity: 1;
 
-    transform: none;
+  .baluartes__assistir {
+    font-size: 0.6rem;
   }
 }
 
 
 /* =========================================================
    MOVIMENTO REDUZIDO
-
-   Corrige também o @media que anteriormente estava
-   identificado como "movimento reduzido", mas ainda
-   utilizava max-width: 520px.
-
-   Agora usamos a preferência real do sistema operacional.
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
   .baluartes__imagem img,
-  .baluartes__nome {
+  .baluartes__nome,
+  .baluartes__assistir {
     transition: none;
   }
 
-  .baluartes__item:hover .baluartes__imagem img {
-    transform: none;
-  }
 
-  .baluartes__item:hover .baluartes__nome {
+  .baluartes__item:hover .baluartes__imagem img,
+  .baluartes__item:hover .baluartes__nome,
+  .baluartes__item:hover .baluartes__assistir {
     transform: none;
   }
 }
