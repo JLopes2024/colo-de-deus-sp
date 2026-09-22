@@ -1,4 +1,14 @@
-import { agenda } from '../dados/agenda.js';
+import { useEffect, useState } from 'react';
+
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from 'firebase/firestore';
+
+import { db } from '../servicos/firebase.js';
 
 import '../estilos/agenda.css';
 
@@ -19,21 +29,72 @@ function formatarData(data) {
   };
 }
 
-function Agenda() {
+function obterDataHoje() {
   const hoje = new Date();
 
-  hoje.setHours(0, 0, 0, 0);
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
 
-  const eventos = agenda
-    .filter((evento) => {
-      const dataEvento = new Date(`${evento.data}T12:00:00`);
+  return `${ano}-${mes}-${dia}`;
+}
 
-      return dataEvento >= hoje;
-    })
-    .sort(
-      (eventoA, eventoB) =>
-        new Date(eventoA.data) - new Date(eventoB.data),
-    );
+function Agenda() {
+  const [eventos, setEventos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
+
+  useEffect(() => {
+    let componenteAtivo = true;
+
+    async function carregarEventos() {
+      setCarregando(true);
+      setErro('');
+
+      try {
+        const hoje = obterDataHoje();
+
+        /*
+         * Busca somente eventos de hoje em diante.
+         * Assim o evento continua visível durante
+         * todo o dia em que acontece.
+         */
+        const consulta = query(
+          collection(db, 'eventos'),
+          where('data_evento', '>=', hoje),
+          orderBy('data_evento', 'asc'),
+        );
+
+        const resultado = await getDocs(consulta);
+
+        if (!componenteAtivo) return;
+
+        const eventosCarregados = resultado.docs.map((documento) => ({
+          id: documento.id,
+          ...documento.data(),
+        }));
+
+        setEventos(eventosCarregados);
+      } catch (error) {
+        if (!componenteAtivo) return;
+
+        console.error('Erro ao carregar agenda:', error);
+
+        setErro('Não foi possível carregar a agenda agora.');
+        setEventos([]);
+      } finally {
+        if (componenteAtivo) {
+          setCarregando(false);
+        }
+      }
+    }
+
+    carregarEventos();
+
+    return () => {
+      componenteAtivo = false;
+    };
+  }, []);
 
   return (
     <section
@@ -56,16 +117,28 @@ function Agenda() {
           </h2>
         </header>
 
-        {eventos.length > 0 ? (
+        {carregando && (
+          <div className="agenda__vazia">
+            <p>Carregando agenda...</p>
+          </div>
+        )}
+
+        {!carregando && erro && (
+          <div className="agenda__vazia" role="alert">
+            <p>{erro}</p>
+          </div>
+        )}
+
+        {!carregando && !erro && eventos.length > 0 && (
           <div className="agenda__lista">
             {eventos.map((evento) => {
-              const data = formatarData(evento.data);
+              const data = formatarData(evento.data_evento);
 
               const conteudoEvento = (
                 <>
                   <time
                     className="agenda__data"
-                    dateTime={evento.data}
+                    dateTime={evento.data_evento}
                   >
                     <span className="agenda__dia">
                       {data.dia}
@@ -78,24 +151,32 @@ function Agenda() {
 
                   <div className="agenda__informacoes">
                     <h3 className="agenda__nome">
-                      {evento.titulo}
+                      {evento.nome_evento}
                     </h3>
 
                     <p className="agenda__local">
-                      {evento.local}
+                      {evento.cidade_evento}
+                      {' // '}
+                      {evento.estado_evento}
                     </p>
                   </div>
 
-                  <span
-                    className="agenda__seta"
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
+                  {evento.link_ingresso && (
+                    <span
+                      className="agenda__seta"
+                      aria-hidden="true"
+                    >
+                      →
+                    </span>
+                  )}
                 </>
               );
 
-              if (!evento.link || evento.link === '#') {
+              /*
+               * Sem ingresso: mantém o evento como bloco normal.
+               * Com ingresso: o card inteiro vira link.
+               */
+              if (!evento.link_ingresso) {
                 return (
                   <div
                     className="agenda__evento agenda__evento--sem-link"
@@ -109,7 +190,9 @@ function Agenda() {
               return (
                 <a
                   className="agenda__evento"
-                  href={evento.link}
+                  href={evento.link_ingresso}
+                  target="_blank"
+                  rel="noreferrer"
                   key={evento.id}
                 >
                   {conteudoEvento}
@@ -117,7 +200,9 @@ function Agenda() {
               );
             })}
           </div>
-        ) : (
+        )}
+
+        {!carregando && !erro && eventos.length === 0 && (
           <div className="agenda__vazia">
             <p>Novas datas em breve.</p>
           </div>
