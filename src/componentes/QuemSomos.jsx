@@ -20,7 +20,7 @@ function QuemSomos() {
               className="quem-somos__titulo"
               id="quem-somos-titulo"
             >
-              Chamados a alcançar uma geração.
+              Chamados a alcançar uma geração
             </h2>
           </div>
 
@@ -33,11 +33,7 @@ function QuemSomos() {
 
           <div className="quem-somos__texto">
             <p>
-              Somos uma nova comunidade católica, nascida como parte da
-              Primavera da Igreja, com essência missionária e mariana.
-              Nosso carisma nos move a trazer de volta à Igreja aqueles
-              que se afastaram da fé, gestando uma humanidade cheia de
-              Pentecostes.
+            Somos uma Comunidade Católica, nascida como parte da Primavera da Igreja, com essência Mariana. Nosso carisma nos move a trazer de volta ao seio da igreja aqueles que se afastaram da fé, gestando uma humanidade cheia de Pentecostes.
             </p>
 
             <p>

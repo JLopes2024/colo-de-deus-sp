@@ -25,14 +25,16 @@ function Comunidades() {
 
             <h2 className="comunidades__titulo">
               Igreja viva
-              <span>nas casas.</span>
+              <span>nas casas</span>
             </h2>
 
             <p className="comunidades__descricao">
-              As células são pequenos grupos que se reúnem
-              nas casas para viver a fé, criar vínculos,
-              partilhar a Palavra e caminhar juntos.
+              Estamos presentes nas casas, nas famílias e na vida de jovens, crianças e adultos. Caminhamos por meio das células, cenáculos e do cuidado no um a um, tratando cada pessoa como única e preparando a volta de Cristo.
             </p>
+            <p className="comunidades__descricao">
+            As células são pequenos grupos que se reúnem nas casas para viver a fé, criar vínculos, partilhar a Palavra e caminhar juntos, mas ela foi pensada para você: Jovem comum, com chamado extaordinário!
+            </p>
+
 
             <a
               className="comunidades__acao"
@@ -68,14 +70,15 @@ function Comunidades() {
 
             <h2 className="comunidades__titulo">
               Uma casa
-              <span>de oração.</span>
+              <span>de oração</span>
             </h2>
 
             <p className="comunidades__descricao">
-              Os cenáculos são espaços de oração,
-              intimidade com Deus e experiência
-              comunitária, vividos à luz do nosso
-              carisma missionário e mariano.
+              A Colo de Deus nasceu dentro das casas, em um ambiente de oração, comunhão e encontro com Deus. É com essa mesma essência que acontece o Cenáculo: um momento de oração e intimidade com Deus, vivido junto à sua família.
+            </p>
+
+<p className="comunidades__descricao">
+Nossos missionários vão até a sua casa para levar o Carisma Colo de Deus. Juntos, nos reunimos à mesa para rezar, partilhando da Palavra e da vida.
             </p>
 
             <a

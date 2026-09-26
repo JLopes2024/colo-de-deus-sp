@@ -113,7 +113,7 @@ function Agenda() {
             id="agenda-titulo"
           >
             Próximos
-            <span>encontros.</span>
+            <span>encontros</span>
           </h2>
         </header>
 

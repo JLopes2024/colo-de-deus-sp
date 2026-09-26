@@ -3,222 +3,1158 @@
    ========================================================= */
 
 .contato {
-  background-color: var(--cor-preto);
-  color: var(--cor-branco);
+  padding: 7rem 0;
 
-  padding-block: var(--espaco-8);
+  background: #efede8;
+  color: #0a0a0a;
 }
 
 .contato__conteudo {
   display: grid;
-  grid-template-columns:
-    minmax(0, 0.8fr)
-    minmax(0, 1.2fr);
 
-  gap: clamp(4rem, 10vw, 10rem);
+  grid-template-columns:
+    minmax(0, 0.92fr)
+    minmax(480px, 1.08fr);
+
+  min-height: 760px;
 }
 
 
 /* =========================================================
-   APRESENTAÇÃO
+   FOTO PRINCIPAL
    ========================================================= */
 
-.contato__apresentacao {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.contato__foto {
+  position: relative;
 
-  gap: var(--espaco-3);
+  min-height: 760px;
+
+  overflow: hidden;
+
+  background: #111;
 }
 
-.contato__indice {
-  color: var(--cor-texto-suave);
+.contato__foto > img {
+  position: absolute;
+  inset: 0;
 
-  font-size: var(--texto-xs);
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  /*
+   * Recorte baseado na referência enviada:
+   * gesto + rosto + placa + parte do corpo.
+   */
+  object-position: 50% 62%;
+}
+
+.contato__foto-sombra {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.48) 0%,
+      rgba(0, 0, 0, 0.12) 22%,
+      transparent 43%
+    ),
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.76) 0%,
+      rgba(0, 0, 0, 0.12) 38%,
+      transparent 58%
+    ),
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.24) 0%,
+      transparent 18%,
+      transparent 82%,
+      rgba(0, 0, 0, 0.24) 100%
+    );
+
+  pointer-events: none;
+}
+
+.contato__foto::after {
+  content: '';
+
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+
+  box-shadow:
+    inset 0 0 100px rgba(0, 0, 0, 0.28);
+
+  pointer-events: none;
+}
+
+.contato__foto-legenda {
+  position: absolute;
+  z-index: 2;
+
+  left: clamp(1.5rem, 4vw, 3rem);
+  right: 2rem;
+  bottom: clamp(1.5rem, 4vw, 3rem);
+
+  color: #fff;
+}
+
+.contato__foto-legenda span {
+  display: block;
+
+  margin-bottom: 1rem;
+
+  font-size: 0.68rem;
   font-weight: 700;
 
-  letter-spacing: 0.14em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
-.contato__titulo {
-  max-width: 8ch;
+.contato__foto-legenda strong {
+  display: block;
 
-  font-size: clamp(3.5rem, 7vw, 7rem);
+  font-size: clamp(2.7rem, 5vw, 5.5rem);
+  font-weight: 800;
 
   line-height: 0.86;
-
-  letter-spacing: -0.045em;
+  letter-spacing: -0.06em;
 
   text-transform: uppercase;
-}
-
-.contato__texto {
-  max-width: 440px;
-
-  margin-top: var(--espaco-2);
-
-  color: var(--cor-texto-suave);
-
-  font-size: var(--texto-md);
-
-  line-height: 1.6;
 }
 
 
 /* =========================================================
-   FORMULÁRIO
+   ÁREA DO CHAT
    ========================================================= */
 
-.contato__formulario {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  gap: var(--espaco-4);
-}
-
-.contato__campo {
+.contato__area-chat {
   display: flex;
-  flex-direction: column;
 
-  gap: var(--espaco-1);
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(2rem, 5vw, 5rem);
 }
 
-.contato__campo--inteiro {
-  grid-column: 1 / -1;
-}
+.contato__seo {
+  position: absolute;
 
-.contato__campo label {
-  font-size: var(--texto-xs);
-  font-weight: 700;
+  width: 1px;
+  height: 1px;
 
-  letter-spacing: 0.1em;
+  padding: 0;
+  margin: -1px;
 
-  text-transform: uppercase;
-}
+  overflow: hidden;
 
-.contato__campo input,
-.contato__campo textarea {
-  width: 100%;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+
+  white-space: nowrap;
 
   border: 0;
-  border-bottom: 1px solid rgba(242, 241, 237, 0.45);
-  border-radius: 0;
-
-  padding: 0.75rem 0;
-
-  background: transparent;
-  color: var(--cor-branco);
-
-  outline: 0;
-
-  transition:
-    border-color var(--transicao-rapida);
-}
-
-.contato__campo textarea {
-  min-height: 150px;
-
-  resize: vertical;
-}
-
-.contato__campo input:focus,
-.contato__campo textarea:focus {
-  border-color: var(--cor-branco);
 }
 
 
 /* =========================================================
-   BOTÃO
+   JANELA
    ========================================================= */
 
-.contato__botao {
-  grid-column: 1 / -1;
+.chat {
+  width: min(100%, 620px);
+  height: 680px;
 
-  justify-self: start;
+  display: grid;
 
-  display: inline-flex;
+  grid-template-rows:
+    auto
+    1fr;
+
+  overflow: hidden;
+
+  background: #f8f7f3;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.16);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.13);
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.chat__cabecalho {
+  min-height: 84px;
+
+  display: flex;
+
   align-items: center;
 
-  gap: var(--espaco-2);
+  gap: 0.9rem;
 
-  margin-top: var(--espaco-2);
-  padding: 1rem 1.4rem;
+  padding:
+    1rem
+    1.25rem;
 
-  border: 1px solid var(--cor-branco);
+  background: #0a0a0a;
+  color: #fff;
+}
 
+.chat__avatar {
+  width: 50px;
+  height: 50px;
+
+  flex: 0 0 auto;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.85);
+}
+
+.chat__avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  object-position: 50% 24%;
+}
+
+.chat__identidade {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.2rem;
+}
+
+.chat__identidade strong {
+  font-size: 1rem;
+
+  line-height: 1.2;
+}
+
+.chat__identidade span {
+  font-size: 0.7rem;
+
+  line-height: 1.3;
+
+  opacity: 0.68;
+}
+
+
+/* =========================================================
+   CONVERSA
+   ========================================================= */
+
+.chat__conversa {
+  min-height: 0;
+
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+
+  padding: 1.5rem;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(0, 0, 0, 0.025) 0 1px,
+      transparent 1px
+    );
+
+  background-size:
+    18px
+    18px;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    rgba(0, 0, 0, 0.25)
+    transparent;
+}
+
+.chat__conversa::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat__conversa::-webkit-scrollbar-track {
   background: transparent;
-  color: var(--cor-branco);
+}
 
-  font-size: var(--texto-sm);
+.chat__conversa::-webkit-scrollbar-thumb {
+  background:
+    rgba(0, 0, 0, 0.22);
+
+  border-radius: 999px;
+}
+
+
+/* =========================================================
+   DATA
+   ========================================================= */
+
+.chat__data {
+  width: max-content;
+
+  margin:
+    0
+    auto
+    1.5rem;
+
+  padding:
+    0.35rem
+    0.65rem;
+
+  background:
+    rgba(0, 0, 0, 0.06);
+
+  border-radius: 999px;
+
+  font-size: 0.62rem;
   font-weight: 700;
 
   letter-spacing: 0.06em;
-
   text-transform: uppercase;
 
-  transition:
-    background-color var(--transicao-rapida),
-    color var(--transicao-rapida),
-    gap var(--transicao-rapida);
-}
-
-.contato__botao:hover {
-  gap: var(--espaco-3);
-
-  background-color: var(--cor-branco);
-  color: var(--cor-preto);
+  opacity: 0.6;
 }
 
 
 /* =========================================================
-   RESPONSIVIDADE
+   MENSAGENS
    ========================================================= */
 
-@media (max-width: 900px) {
+.chat__linha {
+  display: flex;
+
+  margin-bottom: 0.65rem;
+
+  animation:
+    chat-mensagem-entrada
+    220ms
+    ease
+    both;
+}
+
+.chat__linha--bot {
+  justify-content: flex-start;
+}
+
+.chat__linha--usuario {
+  justify-content: flex-end;
+}
+
+.chat__balao {
+  max-width:
+    min(82%, 390px);
+
+  padding:
+    0.85rem
+    1rem
+    0.55rem;
+
+  font-size: 0.94rem;
+
+  line-height: 1.45;
+}
+
+.chat__balao p {
+  margin: 0;
+
+  white-space: pre-wrap;
+
+  overflow-wrap: anywhere;
+}
+
+.chat__balao--bot {
+  background: #fff;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.1);
+
+  border-radius:
+    4px
+    16px
+    16px
+    16px;
+}
+
+.chat__balao--usuario {
+  background: #0a0a0a;
+  color: #fff;
+
+  border-radius:
+    16px
+    4px
+    16px
+    16px;
+}
+
+.chat__horario {
+  display: block;
+
+  margin-top: 0.35rem;
+
+  font-size: 0.56rem;
+
+  text-align: right;
+
+  opacity: 0.42;
+}
+
+@keyframes chat-mensagem-entrada {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   DIGITANDO
+   ========================================================= */
+
+.chat__balao--digitando {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.3rem;
+
+  padding:
+    0.9rem
+    1.1rem;
+
+  background: #fff;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.1);
+
+  border-radius:
+    4px
+    16px
+    16px
+    16px;
+}
+
+.chat__balao--digitando span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #0a0a0a;
+
+  opacity: 0.3;
+
+  animation:
+    chat-digitando
+    900ms
+    infinite;
+}
+
+.chat__balao--digitando span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.chat__balao--digitando span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes chat-digitando {
+  0%,
+  60%,
+  100% {
+    transform:
+      translateY(0);
+
+    opacity: 0.25;
+  }
+
+  30% {
+    transform:
+      translateY(-3px);
+
+    opacity: 0.8;
+  }
+}
+
+
+/* =========================================================
+   RESPOSTAS RÁPIDAS
+   ========================================================= */
+
+.chat__respostas,
+.chat__confirmar-intencao {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 0.5rem;
+
+  margin-top: 1.25rem;
+}
+
+.chat__resposta {
+  width:
+    min(90%, 410px);
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding:
+    0.85rem
+    1rem;
+
+  border:
+    1px solid
+    #0a0a0a;
+
+  border-radius: 999px;
+
+  background: transparent;
+  color: #0a0a0a;
+
+  font: inherit;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.chat__resposta:hover,
+.chat__resposta:focus-visible {
+  background: #0a0a0a;
+  color: #fff;
+
+  transform:
+    translateX(-3px);
+}
+
+/*
+ * A confirmação principal recebe um pouco
+ * mais de peso visual.
+ */
+.chat__resposta--confirmar {
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.chat__resposta--confirmar:hover,
+.chat__resposta--confirmar:focus-visible {
+  opacity: 0.88;
+}
+
+/*
+ * A negativa continua visível, mas secundária.
+ */
+.chat__resposta--negar {
+  border-color:
+    rgba(0, 0, 0, 0.24);
+
+  font-size: 0.76rem;
+}
+
+
+/* =========================================================
+   REGIÕES
+   ========================================================= */
+
+.chat__regioes {
+  margin-top: 1.25rem;
+}
+
+.chat__regioes > p {
+  margin:
+    0
+    0
+    0.75rem;
+
+  font-size: 0.66rem;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  opacity: 0.55;
+}
+
+.chat__chips {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 0.45rem;
+}
+
+.chat__chip {
+  padding:
+    0.65rem
+    0.85rem;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.25);
+
+  border-radius: 999px;
+
+  background: #fff;
+  color: #0a0a0a;
+
+  font: inherit;
+
+  font-size: 0.76rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.chat__chip:hover,
+.chat__chip:focus-visible {
+  background: #0a0a0a;
+  color: #fff;
+
+  border-color: #0a0a0a;
+}
+
+
+/* =========================================================
+   CAMPO DE MENSAGEM
+   ========================================================= */
+
+.chat__form-mensagem {
+  margin-top: 1.35rem;
+
+  animation:
+    chat-mensagem-entrada
+    220ms
+    ease
+    both;
+}
+
+.chat__label-mensagem {
+  display: block;
+
+  margin-bottom: 0.55rem;
+
+  font-size: 0.65rem;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  opacity: 0.55;
+}
+
+.chat__campo-mensagem {
+  position: relative;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 0.6rem;
+
+  padding: 0.45rem;
+
+  background: #fff;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.22);
+
+  border-radius: 18px;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.chat__campo-mensagem:focus-within {
+  border-color: #0a0a0a;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(0, 0, 0, 0.06);
+}
+
+.chat__campo-mensagem textarea {
+  flex: 1;
+
+  min-height: 88px;
+  max-height: 170px;
+
+  padding:
+    0.7rem
+    0.65rem;
+
+  resize: vertical;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: #0a0a0a;
+
+  font: inherit;
+
+  font-size: 0.88rem;
+
+  line-height: 1.45;
+}
+
+.chat__campo-mensagem textarea::placeholder {
+  color:
+    rgba(0, 0, 0, 0.4);
+}
+
+.chat__enviar-mensagem {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 auto;
+
+  display: grid;
+
+  place-items: center;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: #0a0a0a;
+  color: #fff;
+
+  font: inherit;
+
+  font-size: 1.1rem;
+
+  cursor: pointer;
+
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease;
+}
+
+.chat__enviar-mensagem:hover {
+  transform:
+    translateY(-2px);
+}
+
+.chat__mensagem-meta {
+  min-height: 20px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin-top: 0.4rem;
+
+  padding:
+    0
+    0.2rem;
+}
+
+.chat__erro-mensagem {
+  font-size: 0.65rem;
+
+  color: #a11919;
+}
+
+.chat__contador {
+  margin-left: auto;
+
+  font-size: 0.62rem;
+
+  opacity: 0.45;
+}
+
+
+/* =========================================================
+   CONFIRMAÇÃO FINAL
+   ========================================================= */
+
+.chat__confirmacao,
+.chat__final {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 0.75rem;
+
+  margin-top: 1.25rem;
+
+  animation:
+    chat-mensagem-entrada
+    220ms
+    ease
+    both;
+}
+
+.chat__confirmacao > p:first-child {
+  margin: 0;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  opacity: 0.55;
+}
+
+.chat__editar {
+  padding:
+    0.6rem
+    0.85rem;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.3);
+
+  border-radius: 999px;
+
+  background: transparent;
+  color: #0a0a0a;
+
+  font: inherit;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.chat__editar:hover {
+  background: #0a0a0a;
+  color: #fff;
+}
+
+
+/* =========================================================
+   WHATSAPP
+   ========================================================= */
+
+.chat__whatsapp {
+  width:
+    min(100%, 410px);
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding:
+    1rem
+    1.1rem;
+
+  background: #0a0a0a;
+  color: #fff;
+
+  border-radius: 4px;
+
+  font-size: 0.86rem;
+  font-weight: 800;
+
+  text-decoration: none;
+  text-transform: uppercase;
+
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease;
+}
+
+.chat__whatsapp:hover {
+  transform:
+    translateY(-2px);
+}
+
+.chat__aviso-whatsapp {
+  max-width: 410px;
+
+  margin: 0;
+
+  font-size: 0.62rem;
+
+  line-height: 1.4;
+
+  text-align: right;
+
+  opacity: 0.5;
+}
+
+
+/* =========================================================
+   RECOMEÇAR
+   ========================================================= */
+
+.chat__reiniciar {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+  color: inherit;
+
+  font: inherit;
+
+  font-size: 0.66rem;
+  font-weight: 700;
+
+  text-decoration: underline;
+
+  cursor: pointer;
+
+  opacity: 0.55;
+
+  transition:
+    opacity 150ms ease;
+}
+
+.chat__reiniciar:hover {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE / FOCO
+   ========================================================= */
+
+.chat__resposta:focus-visible,
+.chat__chip:focus-visible,
+.chat__editar:focus-visible,
+.chat__whatsapp:focus-visible,
+.chat__reiniciar:focus-visible,
+.chat__enviar-mensagem:focus-visible {
+  outline:
+    2px solid
+    currentColor;
+
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 980px) {
   .contato {
-    padding-block: var(--espaco-7);
+    padding: 0;
   }
 
   .contato__conteudo {
     grid-template-columns: 1fr;
-
-    gap: var(--espaco-6);
   }
 
-  .contato__titulo {
-    max-width: 10ch;
+  .contato__foto {
+    min-height: 650px;
+  }
+
+  .contato__foto > img {
+    object-position: 50% 60%;
+  }
+
+  .contato__area-chat {
+    padding:
+      4rem
+      1.5rem;
+  }
+
+  .chat {
+    width:
+      min(100%, 680px);
   }
 }
 
 
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media (max-width: 600px) {
-  .contato__conteudo {
-    gap: var(--espaco-5);
+  .contato__foto {
+    min-height: 540px;
   }
 
-  .contato__titulo {
-    max-width: 100%;
-
-    font-size: clamp(2.8rem, 11vw, 4.6rem);
+  .contato__foto > img {
+    object-position: 50% 57%;
   }
 
-  .contato__texto {
-    font-size: 1rem;
+  .contato__foto-sombra {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.42) 0%,
+        rgba(0, 0, 0, 0.08) 25%,
+        transparent 44%
+      ),
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.12) 42%,
+        transparent 62%
+      );
   }
 
-  .contato__formulario {
-    gap: var(--espaco-3);
+  .contato__foto-legenda {
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1.25rem;
   }
 
-  .contato__campo input,
-  .contato__campo textarea {
-    font-size: 16px;
+  .contato__foto-legenda strong {
+    font-size:
+      clamp(
+        2.8rem,
+        13vw,
+        4.5rem
+      );
   }
 
-  .contato__botao {
+  .contato__area-chat {
+    padding: 0;
+  }
+
+  .chat {
     width: 100%;
 
-    justify-content: space-between;
+    height:
+      min(
+        780px,
+        92svh
+      );
+
+    border-left: 0;
+    border-right: 0;
+
+    box-shadow: none;
+  }
+
+  .chat__cabecalho {
+    min-height: 76px;
+
+    padding:
+      0.85rem
+      1rem;
+  }
+
+  .chat__avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .chat__conversa {
+    padding: 1rem;
+  }
+
+  .chat__balao {
+    max-width: 88%;
+  }
+
+  .chat__resposta {
+    width: 94%;
+  }
+
+  .chat__confirmar-intencao
+  .chat__resposta {
+    width: 100%;
+  }
+
+  .chat__chips {
+    gap: 0.4rem;
+  }
+
+  .chat__chip {
+    font-size: 0.72rem;
+  }
+
+  .chat__campo-mensagem textarea {
+    min-height: 100px;
+  }
+
+  .chat__whatsapp {
+    width: 100%;
+  }
+
+  .chat__aviso-whatsapp {
+    max-width: 100%;
+  }
+}
+
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .chat__linha,
+  .chat__form-mensagem,
+  .chat__confirmacao,
+  .chat__final,
+  .chat__balao--digitando span {
+    animation: none;
+  }
+
+  .chat__resposta,
+  .chat__chip,
+  .chat__editar,
+  .chat__whatsapp,
+  .chat__reiniciar,
+  .chat__enviar-mensagem {
+    transition: none;
   }
 }

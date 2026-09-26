@@ -79,20 +79,22 @@ function Manifesto() {
             id="manifesto-titulo"
           >
             <span className="manifesto__linha">
-              Missionários,
+              Missionários
             </span>
 
             <span className="manifesto__linha">
-              Marianos,
+              Eucarísticos
             </span>
-
-            <span className="manifesto__linha">
-              Eucarísticos,
-            </span>
-
-            <span className="manifesto__linha">
+             <span className="manifesto__linha">
               Pentecostais
             </span>
+    <span className="manifesto__linha">
+              Marianos
+            </span>
+                <span className="manifesto__linha">
+              Artísticos
+            </span>
+           
 
             <span className="manifesto__linha manifesto__destaque">
               <span className="manifesto__e">
@@ -100,7 +102,7 @@ function Manifesto() {
               </span>
 
               <span className="manifesto__criativos">
-                Criativos.
+                Criativos
               </span>
             </span>
           </h2>
