@@ -113,7 +113,7 @@ function Contato() {
 
 
   /* =======================================================
-     IDs DAS MENSAGENS
+     GERADOR DE IDs
      ======================================================= */
 
   function gerarId() {
@@ -124,7 +124,12 @@ function Contato() {
 
 
   /* =======================================================
-     SCROLL AUTOMÁTICO
+     SCROLL AUTOMÁTICO DO CHAT
+
+     Só acontece quando surgem novas mensagens.
+
+     O scroll é interno ao chat e não mexe no scroll
+     principal da página.
      ======================================================= */
 
   useEffect(() => {
@@ -132,10 +137,20 @@ function Contato() {
 
     if (!conversa) return;
 
-    conversa.scrollTo({
-      top: conversa.scrollHeight,
-      behavior: 'smooth',
+    /*
+     * requestAnimationFrame evita disputar o scroll
+     * da página durante a renderização.
+     */
+    const frame = window.requestAnimationFrame(() => {
+      conversa.scrollTo({
+        top: conversa.scrollHeight,
+        behavior: 'smooth',
+      });
     });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
   }, [
     mensagens,
     digitando,
@@ -144,15 +159,105 @@ function Contato() {
 
 
   /* =======================================================
-     FOCO NO CAMPO LIVRE
+     CORREÇÃO DO SCROLL PRESO
+
+     Quando o usuário chega ao início ou ao fim do chat,
+     o próximo movimento da roda continua rolando a página.
+
+     Isso evita aquela sensação de ficar "preso" dentro
+     do chatbot.
      ======================================================= */
 
   useEffect(() => {
-    if (etapa !== 'mensagem') return undefined;
+    const conversa = conversaRef.current;
+
+    if (!conversa) return undefined;
+
+
+    function controlarRoda(event) {
+      const {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+      } = conversa;
+
+
+      const estaNoTopo = (
+        scrollTop <= 0
+      );
+
+      const estaNoFinal = (
+        Math.ceil(
+          scrollTop + clientHeight,
+        ) >= scrollHeight
+      );
+
+
+      const rolandoParaCima = (
+        event.deltaY < 0
+      );
+
+      const rolandoParaBaixo = (
+        event.deltaY > 0
+      );
+
+
+      /*
+       * Se o chat já chegou no limite, deixamos a página
+       * assumir naturalmente a rolagem.
+       *
+       * Não usamos preventDefault().
+       */
+      if (
+        (estaNoTopo && rolandoParaCima)
+        || (
+          estaNoFinal
+          && rolandoParaBaixo
+        )
+      ) {
+        return;
+      }
+
+      /*
+       * Enquanto existe conteúdo interno para percorrer,
+       * o próprio overflow-y do chat cuida do movimento.
+       */
+    }
+
+
+    conversa.addEventListener(
+      'wheel',
+      controlarRoda,
+      {
+        passive: true,
+      },
+    );
+
+
+    return () => {
+      conversa.removeEventListener(
+        'wheel',
+        controlarRoda,
+      );
+    };
+  }, []);
+
+
+  /* =======================================================
+     FOCO NO CAMPO DE TEXTO
+     ======================================================= */
+
+  useEffect(() => {
+    if (etapa !== 'mensagem') {
+      return undefined;
+    }
 
     const timeout = window.setTimeout(() => {
-      textareaRef.current?.focus();
+      textareaRef.current?.focus({
+        preventScroll: true,
+      });
     }, 150);
+
 
     return () => {
       window.clearTimeout(timeout);
@@ -165,9 +270,12 @@ function Contato() {
      ======================================================= */
 
   useEffect(() => {
-    const interesseSalvo = sessionStorage.getItem(
-      'interesse-contato',
+    const interesseSalvo = (
+      sessionStorage.getItem(
+        'interesse-contato',
+      )
     );
+
 
     if (
       interesseSalvo !== 'celula'
@@ -176,9 +284,11 @@ function Contato() {
       return;
     }
 
+
     sessionStorage.removeItem(
       'interesse-contato',
     );
+
 
     const textoUsuario = (
       interesseSalvo === 'celula'
@@ -186,7 +296,11 @@ function Contato() {
         : 'Quero conhecer um cenáculo'
     );
 
-    setInteresse(interesseSalvo);
+
+    setInteresse(
+      interesseSalvo,
+    );
+
 
     setMensagens([
       {
@@ -194,12 +308,14 @@ function Contato() {
         autor: 'bot',
         texto: 'Oi! 👋 Que bom ter você por aqui.',
       },
+
       {
         id: 'entrada-2',
         autor: 'usuario',
         texto: textoUsuario,
       },
     ]);
+
 
     responderComRegiao(
       interesseSalvo,
@@ -208,7 +324,7 @@ function Contato() {
 
 
   /* =======================================================
-     AUXILIARES
+     ESPERA DO BOT
      ======================================================= */
 
   function esperar(ms) {
@@ -221,6 +337,10 @@ function Contato() {
   }
 
 
+  /* =======================================================
+     ADICIONAR MENSAGEM
+     ======================================================= */
+
   function adicionarMensagem(
     autor,
     texto,
@@ -228,6 +348,7 @@ function Contato() {
   ) {
     setMensagens((atuais) => [
       ...atuais,
+
       {
         id: id ?? gerarId(),
         autor,
@@ -247,9 +368,12 @@ function Contato() {
     setEtapa('aguardando');
     setDigitando(true);
 
+
     await esperar(500);
 
+
     setDigitando(false);
+
 
     if (tipoInteresse === 'celula') {
       adicionarMensagem(
@@ -263,6 +387,7 @@ function Contato() {
       );
     }
 
+
     setEtapa('regiao');
   }
 
@@ -271,19 +396,26 @@ function Contato() {
      PRIMEIRA ESCOLHA
      ======================================================= */
 
-  async function escolherInteresse(opcao) {
+  async function escolherInteresse(
+    opcao,
+  ) {
     if (digitando) return;
 
-    setInteresse(opcao.id);
+
+    setInteresse(
+      opcao.id,
+    );
+
 
     adicionarMensagem(
       'usuario',
       opcao.texto,
     );
 
+
     /*
-     * Célula e Cenáculo entram diretamente
-     * no fluxo guiado.
+     * Célula e Cenáculo entram direto
+     * no fluxo de região.
      */
     if (
       opcao.id === 'celula'
@@ -296,20 +428,26 @@ function Contato() {
       return;
     }
 
+
     /*
-     * Conversa com a Missão libera texto livre.
+     * Falar com alguém da Missão libera
+     * o campo de texto.
      */
     setEtapa('aguardando');
     setDigitando(true);
 
+
     await esperar(500);
 
+
     setDigitando(false);
+
 
     adicionarMensagem(
       'bot',
       'Claro! 💛 Pode contar pra gente. O que você gostaria de falar?',
     );
+
 
     setEtapa('mensagem');
   }
@@ -324,26 +462,36 @@ function Contato() {
   ) {
     if (digitando) return;
 
-    setRegiao(novaRegiao);
+
+    setRegiao(
+      novaRegiao,
+    );
+
 
     adicionarMensagem(
       'usuario',
       novaRegiao,
     );
 
+
     setEtapa('aguardando');
     setDigitando(true);
 
+
     await esperar(500);
+
 
     setDigitando(false);
 
+
     adicionarMensagem(
       'bot',
+
       interesse === 'celula'
         ? 'Perfeito! 💛 Já sabemos por onde começar. Vamos continuar pelo WhatsApp?'
         : 'Perfeito! 🙌 Já sabemos por onde começar. Vamos continuar pelo WhatsApp?',
     );
+
 
     setEtapa('final');
   }
@@ -353,26 +501,37 @@ function Contato() {
      ENVIO DA MENSAGEM LIVRE
      ======================================================= */
 
-  async function enviarMensagemLivre(event) {
+  async function enviarMensagemLivre(
+    event,
+  ) {
     event.preventDefault();
+
 
     if (digitando) return;
 
-    const mensagem = textoMensagem.trim();
+
+    const mensagem = (
+      textoMensagem.trim()
+    );
+
 
     if (!mensagem) {
       setErroMensagem(
         'Escreva uma mensagem antes de continuar.',
       );
 
-      textareaRef.current?.focus();
+      textareaRef.current?.focus({
+        preventScroll: true,
+      });
 
       return;
     }
 
+
     setErroMensagem('');
     setMensagemLivre(mensagem);
     setTextoMensagem('');
+
 
     adicionarMensagem(
       'usuario',
@@ -380,36 +539,47 @@ function Contato() {
       'mensagem-livre',
     );
 
+
     setEtapa('aguardando');
     setDigitando(true);
 
+
     await esperar(550);
 
+
     /*
-     * Aqui entra nosso motor de regras.
+     * Analisa a mensagem usando nosso detector local.
      */
     const resultado = detectarIntencao(
       mensagem,
     );
 
+
     setDigitando(false);
 
+
     /*
-     * Encontramos uma intenção conhecida.
+     * Encontrou Célula ou Cenáculo.
      *
-     * NÃO alteramos o fluxo automaticamente.
-     * Primeiro pedimos confirmação.
+     * Não assumimos automaticamente.
+     * O bot pede confirmação.
      */
     if (resultado.encontrada) {
-      setIntencaoDetectada(resultado);
+      setIntencaoDetectada(
+        resultado,
+      );
+
 
       adicionarMensagem(
         'bot',
+
         obterPerguntaConfirmacao(
           resultado.intencao,
         ),
+
         'detector-confirmacao',
       );
+
 
       setEtapa(
         'confirmacao-intencao',
@@ -418,9 +588,11 @@ function Contato() {
       return;
     }
 
+
     /*
-     * Nenhuma intenção confiável encontrada.
-     * Segue como conversa normal.
+     * Não conseguiu identificar com segurança.
+     *
+     * A mensagem continua normalmente para o WhatsApp.
      */
     adicionarMensagem(
       'bot',
@@ -428,12 +600,15 @@ function Contato() {
       'confirmacao-mensagem',
     );
 
-    setEtapa('confirmacao');
+
+    setEtapa(
+      'confirmacao',
+    );
   }
 
 
   /* =======================================================
-     CONFIRMOU A INTENÇÃO DETECTADA
+     CONFIRMAR INTENÇÃO DETECTADA
      ======================================================= */
 
   async function confirmarIntencao() {
@@ -444,11 +619,18 @@ function Contato() {
       return;
     }
 
-    const tipo = intencaoDetectada.intencao;
 
-    const opcoes = obterOpcoesConfirmacao(
-      tipo,
+    const tipo = (
+      intencaoDetectada.intencao
     );
+
+
+    const opcoes = (
+      obterOpcoesConfirmacao(
+        tipo,
+      )
+    );
+
 
     adicionarMensagem(
       'usuario',
@@ -456,18 +638,23 @@ function Contato() {
       'detector-resposta',
     );
 
-    /*
-     * A partir daqui o fluxo passa oficialmente
-     * a ser Célula ou Cenáculo.
-     */
-    setInteresse(tipo);
 
-    await responderComRegiao(tipo);
+    /*
+     * Agora a intenção foi confirmada pela pessoa.
+     */
+    setInteresse(
+      tipo,
+    );
+
+
+    await responderComRegiao(
+      tipo,
+    );
   }
 
 
   /* =======================================================
-     NEGOU A INTENÇÃO DETECTADA
+     NEGAR INTENÇÃO
      ======================================================= */
 
   async function negarIntencao() {
@@ -478,9 +665,13 @@ function Contato() {
       return;
     }
 
-    const opcoes = obterOpcoesConfirmacao(
-      intencaoDetectada.intencao,
+
+    const opcoes = (
+      obterOpcoesConfirmacao(
+        intencaoDetectada.intencao,
+      )
     );
+
 
     adicionarMensagem(
       'usuario',
@@ -488,19 +679,24 @@ function Contato() {
       'detector-resposta',
     );
 
+
     /*
-     * Continua sendo uma conversa comum
-     * com alguém da Missão.
+     * Mantemos como conversa comum.
      */
     setInteresse('missao');
+
     setIntencaoDetectada(null);
+
 
     setEtapa('aguardando');
     setDigitando(true);
 
+
     await esperar(500);
 
+
     setDigitando(false);
+
 
     adicionarMensagem(
       'bot',
@@ -508,7 +704,10 @@ function Contato() {
       'confirmacao-mensagem',
     );
 
-    setEtapa('confirmacao');
+
+    setEtapa(
+      'confirmacao',
+    );
   }
 
 
@@ -517,10 +716,6 @@ function Contato() {
      ======================================================= */
 
   function editarMensagemLivre() {
-    /*
-     * Voltamos ao ponto imediatamente anterior
-     * ao envio da mensagem livre.
-     */
     setMensagens((atuais) => (
       atuais.filter((mensagem) => (
         mensagem.id !== 'mensagem-livre'
@@ -530,15 +725,23 @@ function Contato() {
       ))
     ));
 
+
     setInteresse('missao');
+
     setIntencaoDetectada(null);
+
 
     setTextoMensagem(
       mensagemLivre,
     );
 
+
     setErroMensagem('');
-    setEtapa('mensagem');
+
+
+    setEtapa(
+      'mensagem',
+    );
   }
 
 
@@ -547,6 +750,9 @@ function Contato() {
      ======================================================= */
 
   function obterMensagemWhatsApp() {
+    /*
+     * CÉLULA
+     */
     if (interesse === 'celula') {
       const partes = [
         'Oi! Vim pelo site da Missão SP 👋',
@@ -555,9 +761,10 @@ function Contato() {
         `Minha região é: ${regiao}.`,
       ];
 
+
       /*
-       * Se a pessoa chegou aqui escrevendo livremente,
-       * preservamos a mensagem original.
+       * Se a intenção nasceu de uma mensagem livre,
+       * preservamos o texto original.
        */
       if (mensagemLivre) {
         partes.push(
@@ -567,9 +774,14 @@ function Contato() {
         );
       }
 
+
       return partes.join('\n');
     }
 
+
+    /*
+     * CENÁCULO
+     */
     if (interesse === 'cenaculo') {
       const partes = [
         'Oi! Vim pelo site da Missão SP 👋',
@@ -577,6 +789,7 @@ function Contato() {
         'Quero conhecer um cenáculo.',
         `Minha região é: ${regiao}.`,
       ];
+
 
       if (mensagemLivre) {
         partes.push(
@@ -586,9 +799,14 @@ function Contato() {
         );
       }
 
+
       return partes.join('\n');
     }
 
+
+    /*
+     * CONVERSA NORMAL
+     */
     return [
       'Oi! Vim pelo site da Missão SP 👋',
       '',
@@ -600,10 +818,15 @@ function Contato() {
   }
 
 
+  /* =======================================================
+     LINK DO WHATSAPP
+     ======================================================= */
+
   function obterLinkWhatsApp() {
     const mensagem = encodeURIComponent(
       obterMensagemWhatsApp(),
     );
+
 
     return (
       `https://wa.me/${WHATSAPP}`
@@ -613,7 +836,7 @@ function Contato() {
 
 
   /* =======================================================
-     RECOMEÇAR
+     REINICIAR CONVERSA
      ======================================================= */
 
   function reiniciarConversa() {
@@ -621,21 +844,38 @@ function Contato() {
       MENSAGENS_INICIAIS,
     );
 
+
     setEtapa('inicio');
+
     setInteresse('');
+
     setRegiao('');
+
     setDigitando(false);
 
     setTextoMensagem('');
+
     setMensagemLivre('');
+
     setErroMensagem('');
 
     setIntencaoDetectada(null);
+
+
+    /*
+     * Volta o chat para o início sem mover a página.
+     */
+    window.requestAnimationFrame(() => {
+      conversaRef.current?.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    });
   }
 
 
   /* =======================================================
-     RENDER
+     OPÇÕES DA INTENÇÃO DETECTADA
      ======================================================= */
 
   const opcoesIntencao = (
@@ -646,6 +886,10 @@ function Contato() {
       : null
   );
 
+
+  /* =======================================================
+     RENDER
+     ======================================================= */
 
   return (
     <section
@@ -686,10 +930,12 @@ function Contato() {
 
 
         {/* ===============================================
-            CHAT
+            ÁREA DO CHAT
             =============================================== */}
 
         <div className="contato__area-chat">
+
+          {/* Conteúdo semântico para SEO */}
 
           <div className="contato__seo">
             <h2 id="contato-titulo">
@@ -705,15 +951,19 @@ function Contato() {
 
           <div className="chat">
 
-            {/* CABEÇALHO */}
+            {/* ===========================================
+                CABEÇALHO
+                =========================================== */}
 
             <header className="chat__cabecalho">
+
               <div className="chat__avatar">
                 <img
                   src="/imagens/contato-atendimento.jpg"
                   alt=""
                 />
               </div>
+
 
               <div className="chat__identidade">
                 <strong>
@@ -724,20 +974,26 @@ function Contato() {
                   Atendimento pelo WhatsApp
                 </span>
               </div>
+
             </header>
 
 
-            {/* CONVERSA */}
+            {/* ===========================================
+                CONVERSA
+                =========================================== */}
 
             <div
               className="chat__conversa"
               ref={conversaRef}
               aria-live="polite"
             >
+
               <div className="chat__data">
                 Hoje
               </div>
 
+
+              {/* MENSAGENS */}
 
               {mensagens.map((mensagem) => (
                 <Mensagem
@@ -747,14 +1003,24 @@ function Contato() {
               ))}
 
 
-              {/* DIGITANDO */}
+              {/* =========================================
+                  BOT DIGITANDO
+                  ========================================= */}
 
               {digitando && (
                 <div
-                  className="chat__linha chat__linha--bot"
+                  className="
+                    chat__linha
+                    chat__linha--bot
+                  "
                   aria-label="Missão SP está respondendo"
                 >
-                  <div className="chat__balao chat__balao--digitando">
+                  <div
+                    className="
+                      chat__balao
+                      chat__balao--digitando
+                    "
+                  >
                     <span />
                     <span />
                     <span />
@@ -763,12 +1029,15 @@ function Contato() {
               )}
 
 
-              {/* OPÇÕES INICIAIS */}
+              {/* =========================================
+                  OPÇÕES INICIAIS
+                  ========================================= */}
 
               {!digitando
                 && etapa === 'inicio'
                 && (
                   <div className="chat__respostas">
+
                     {OPCOES_INICIAIS.map(
                       (opcao) => (
                         <button
@@ -791,39 +1060,51 @@ function Contato() {
                         </button>
                       ),
                     )}
+
                   </div>
                 )}
 
 
-              {/* REGIÕES */}
+              {/* =========================================
+                  REGIÕES
+                  ========================================= */}
 
               {!digitando
                 && etapa === 'regiao'
                 && (
                   <div className="chat__regioes">
+
                     <p>
                       Escolha uma região
                     </p>
 
+
                     <div className="chat__chips">
+
                       {REGIOES.map((item) => (
                         <button
                           type="button"
                           className="chat__chip"
                           key={item}
                           onClick={() => (
-                            escolherRegiao(item)
+                            escolherRegiao(
+                              item,
+                            )
                           )}
                         >
                           {item}
                         </button>
                       ))}
+
                     </div>
+
                   </div>
                 )}
 
 
-              {/* MENSAGEM LIVRE */}
+              {/* =========================================
+                  MENSAGEM LIVRE
+                  ========================================= */}
 
               {!digitando
                 && etapa === 'mensagem'
@@ -834,6 +1115,7 @@ function Contato() {
                       enviarMensagemLivre
                     }
                   >
+
                     <label
                       className="chat__label-mensagem"
                       htmlFor="mensagem-missao"
@@ -841,7 +1123,9 @@ function Contato() {
                       Sua mensagem
                     </label>
 
+
                     <div className="chat__campo-mensagem">
+
                       <textarea
                         ref={textareaRef}
                         id="mensagem-missao"
@@ -856,11 +1140,13 @@ function Contato() {
                             event.target.value,
                           );
 
+
                           if (erroMensagem) {
                             setErroMensagem('');
                           }
                         }}
                       />
+
 
                       <button
                         type="submit"
@@ -869,9 +1155,12 @@ function Contato() {
                       >
                         →
                       </button>
+
                     </div>
 
+
                     <div className="chat__mensagem-meta">
+
                       <span
                         className="chat__erro-mensagem"
                         role="alert"
@@ -879,18 +1168,21 @@ function Contato() {
                         {erroMensagem}
                       </span>
 
+
                       <span className="chat__contador">
                         {textoMensagem.length}
                         /
                         {LIMITE_MENSAGEM}
                       </span>
+
                     </div>
+
                   </form>
                 )}
 
 
               {/* =========================================
-                  CONFIRMAÇÃO DA INTENÇÃO DETECTADA
+                  CONFIRMAÇÃO DA INTENÇÃO
                   ========================================= */}
 
               {!digitando
@@ -901,7 +1193,10 @@ function Contato() {
 
                     <button
                       type="button"
-                      className="chat__resposta chat__resposta--confirmar"
+                      className="
+                        chat__resposta
+                        chat__resposta--confirmar
+                      "
                       onClick={
                         confirmarIntencao
                       }
@@ -915,9 +1210,13 @@ function Contato() {
                       </span>
                     </button>
 
+
                     <button
                       type="button"
-                      className="chat__resposta chat__resposta--negar"
+                      className="
+                        chat__resposta
+                        chat__resposta--negar
+                      "
                       onClick={
                         negarIntencao
                       }
@@ -932,16 +1231,18 @@ function Contato() {
 
 
               {/* =========================================
-                  CONFIRMAÇÃO DE CONVERSA NORMAL
+                  CONFIRMAÇÃO DA MENSAGEM NORMAL
                   ========================================= */}
 
               {!digitando
                 && etapa === 'confirmacao'
                 && (
                   <div className="chat__confirmacao">
+
                     <p>
                       Sua mensagem está pronta.
                     </p>
+
 
                     <button
                       type="button"
@@ -952,6 +1253,7 @@ function Contato() {
                     >
                       Editar mensagem
                     </button>
+
 
                     <a
                       className="chat__whatsapp"
@@ -970,11 +1272,13 @@ function Contato() {
                       </span>
                     </a>
 
+
                     <p className="chat__aviso-whatsapp">
                       A mensagem será aberta no
                       WhatsApp para você confirmar
                       o envio.
                     </p>
+
 
                     <button
                       className="chat__reiniciar"
@@ -985,16 +1289,20 @@ function Contato() {
                     >
                       Recomeçar conversa
                     </button>
+
                   </div>
                 )}
 
 
-              {/* FINAL CÉLULA / CENÁCULO */}
+              {/* =========================================
+                  FINAL — CÉLULA / CENÁCULO
+                  ========================================= */}
 
               {!digitando
                 && etapa === 'final'
                 && (
                   <div className="chat__final">
+
                     <a
                       className="chat__whatsapp"
                       href={
@@ -1012,6 +1320,7 @@ function Contato() {
                       </span>
                     </a>
 
+
                     <button
                       className="chat__reiniciar"
                       type="button"
@@ -1021,6 +1330,7 @@ function Contato() {
                     >
                       Recomeçar conversa
                     </button>
+
                   </div>
                 )}
 
@@ -1034,13 +1344,16 @@ function Contato() {
 
 
 /* =========================================================
-   MENSAGEM
+   COMPONENTE DE MENSAGEM
    ========================================================= */
 
-function Mensagem({ mensagem }) {
+function Mensagem({
+  mensagem,
+}) {
   const ehUsuario = (
     mensagem.autor === 'usuario'
   );
+
 
   return (
     <div

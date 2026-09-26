@@ -44,8 +44,7 @@
   object-fit: cover;
 
   /*
-   * Recorte baseado na referência enviada:
-   * gesto + rosto + placa + parte do corpo.
+   * Mantém rosto, gesto e placa bem enquadrados.
    */
   object-position: 50% 62%;
 }
@@ -141,6 +140,11 @@
   padding: clamp(2rem, 5vw, 5rem);
 }
 
+
+/* =========================================================
+   SEO / CONTEÚDO SEMÂNTICO
+   ========================================================= */
+
 .contato__seo {
   position: absolute;
 
@@ -162,7 +166,7 @@
 
 
 /* =========================================================
-   JANELA
+   JANELA DO CHAT
    ========================================================= */
 
 .chat {
@@ -189,7 +193,7 @@
 
 
 /* =========================================================
-   CABEÇALHO
+   CABEÇALHO DO CHAT
    ========================================================= */
 
 .chat__cabecalho {
@@ -267,7 +271,16 @@
 
   overflow-y: auto;
 
-  overscroll-behavior: contain;
+  /*
+   * Importante:
+   *
+   * Permite que, ao chegar no começo/fim do chat,
+   * o scroll continue naturalmente pela página.
+   *
+   * Não usar:
+   * overscroll-behavior: contain;
+   */
+  overscroll-behavior-y: auto;
 
   padding: 1.5rem;
 
@@ -337,7 +350,7 @@
 
 
 /* =========================================================
-   MENSAGENS
+   LINHAS / MENSAGENS
    ========================================================= */
 
 .chat__linha {
@@ -359,6 +372,11 @@
 .chat__linha--usuario {
   justify-content: flex-end;
 }
+
+
+/* =========================================================
+   BALÕES
+   ========================================================= */
 
 .chat__balao {
   max-width:
@@ -419,6 +437,11 @@
   opacity: 0.42;
 }
 
+
+/* =========================================================
+   ANIMAÇÃO DAS MENSAGENS
+   ========================================================= */
+
 @keyframes chat-mensagem-entrada {
   from {
     opacity: 0;
@@ -437,7 +460,7 @@
 
 
 /* =========================================================
-   DIGITANDO
+   BOT DIGITANDO
    ========================================================= */
 
 .chat__balao--digitando {
@@ -572,10 +595,11 @@
     translateX(-3px);
 }
 
-/*
- * A confirmação principal recebe um pouco
- * mais de peso visual.
- */
+
+/* =========================================================
+   CONFIRMAÇÃO DA INTENÇÃO
+   ========================================================= */
+
 .chat__resposta--confirmar {
   background: #0a0a0a;
   color: #fff;
@@ -586,9 +610,6 @@
   opacity: 0.88;
 }
 
-/*
- * A negativa continua visível, mas secundária.
- */
 .chat__resposta--negar {
   border-color:
     rgba(0, 0, 0, 0.24);
@@ -754,6 +775,11 @@
     rgba(0, 0, 0, 0.4);
 }
 
+
+/* =========================================================
+   BOTÃO ENVIAR
+   ========================================================= */
+
 .chat__enviar-mensagem {
   width: 42px;
   height: 42px;
@@ -787,6 +813,11 @@
     translateY(-2px);
 }
 
+
+/* =========================================================
+   META / ERRO / CONTADOR
+   ========================================================= */
+
 .chat__mensagem-meta {
   min-height: 20px;
 
@@ -819,7 +850,7 @@
 
 
 /* =========================================================
-   CONFIRMAÇÃO FINAL
+   CONFIRMAÇÃO / FINAL
    ========================================================= */
 
 .chat__confirmacao,
@@ -849,6 +880,11 @@
 
   opacity: 0.55;
 }
+
+
+/* =========================================================
+   EDITAR MENSAGEM
+   ========================================================= */
 
 .chat__editar {
   padding:
@@ -1026,6 +1062,22 @@
    ========================================================= */
 
 @media (max-width: 600px) {
+
+  /*
+   * Pequeno respiro antes da próxima seção.
+   *
+   * Como o tablet zerou o padding da seção,
+   * recuperamos apenas o padding inferior.
+   */
+  .contato {
+    padding-bottom: 3rem;
+  }
+
+
+  /* -------------------------------------------------------
+     FOTO
+     ------------------------------------------------------- */
+
   .contato__foto {
     min-height: 540px;
   }
@@ -1065,17 +1117,36 @@
       );
   }
 
+
+  /* -------------------------------------------------------
+     ÁREA DO CHAT
+     ------------------------------------------------------- */
+
   .contato__area-chat {
     padding: 0;
   }
+
+
+  /* -------------------------------------------------------
+     CHAT
+
+     Antes:
+     height: min(780px, 92svh);
+
+     Isso criava uma área vazia muito grande em algumas
+     telas.
+
+     Agora o chat fica mais compacto.
+     ------------------------------------------------------- */
 
   .chat {
     width: 100%;
 
     height:
-      min(
-        780px,
-        92svh
+      clamp(
+        560px,
+        78svh,
+        650px
       );
 
     border-left: 0;
@@ -1083,6 +1154,11 @@
 
     box-shadow: none;
   }
+
+
+  /* -------------------------------------------------------
+     CABEÇALHO
+     ------------------------------------------------------- */
 
   .chat__cabecalho {
     min-height: 76px;
@@ -1097,22 +1173,38 @@
     height: 46px;
   }
 
+
+  /* -------------------------------------------------------
+     CONVERSA
+     ------------------------------------------------------- */
+
   .chat__conversa {
     padding: 1rem;
+
+    overscroll-behavior-y: auto;
   }
 
   .chat__balao {
     max-width: 88%;
   }
 
+
+  /* -------------------------------------------------------
+     RESPOSTAS
+     ------------------------------------------------------- */
+
   .chat__resposta {
     width: 94%;
   }
 
-  .chat__confirmar-intencao
-  .chat__resposta {
+  .chat__confirmar-intencao .chat__resposta {
     width: 100%;
   }
+
+
+  /* -------------------------------------------------------
+     REGIÕES
+     ------------------------------------------------------- */
 
   .chat__chips {
     gap: 0.4rem;
@@ -1122,9 +1214,19 @@
     font-size: 0.72rem;
   }
 
+
+  /* -------------------------------------------------------
+     CAMPO DE MENSAGEM
+     ------------------------------------------------------- */
+
   .chat__campo-mensagem textarea {
     min-height: 100px;
   }
+
+
+  /* -------------------------------------------------------
+     WHATSAPP
+     ------------------------------------------------------- */
 
   .chat__whatsapp {
     width: 100%;
