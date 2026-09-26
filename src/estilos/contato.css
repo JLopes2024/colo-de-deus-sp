@@ -171,7 +171,20 @@
 
 .chat {
   width: min(100%, 620px);
-  height: 680px;
+
+  /*
+   * Desktop responsivo à altura da tela.
+   *
+   * Em monitores grandes pode chegar a 680px.
+   * Em notebooks/telas mais baixas diminui automaticamente.
+   *
+   * O conteúdo continua com scroll interno.
+   */
+  height: clamp(
+    430px,
+    76vh,
+    680px
+  );
 
   display: grid;
 
@@ -263,6 +276,35 @@
 
 
 /* =========================================================
+   STATUS DO BOT
+   ========================================================= */
+
+/*
+ * Essa regra fica fora dos media queries.
+ *
+ * Assim o ONLINE permanece verde em:
+ * desktop, tablet e mobile.
+ *
+ * A especificidade também garante que o opacity acima
+ * não deixe o verde apagado.
+ */
+
+.chat__identidade .chat__status {
+  color: #22c55e;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  line-height: 1;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  opacity: 1;
+}
+
+
+/* =========================================================
    CONVERSA
    ========================================================= */
 
@@ -272,8 +314,6 @@
   overflow-y: auto;
 
   /*
-   * Importante:
-   *
    * Permite que, ao chegar no começo/fim do chat,
    * o scroll continue naturalmente pela página.
    *
@@ -1126,25 +1166,11 @@
     padding: 0;
   }
 
-.chat__status {
-  color: #22c55e;
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
 
   /* -------------------------------------------------------
-     CHAT
+     CHAT MOBILE
 
-     Antes:
-     height: min(780px, 92svh);
-
-     Isso criava uma área vazia muito grande em algumas
-     telas.
-
-     Agora o chat fica mais compacto.
+     Mantemos a altura que já foi ajustada anteriormente.
      ------------------------------------------------------- */
 
   .chat {
