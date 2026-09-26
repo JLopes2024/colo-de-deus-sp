@@ -970,8 +970,8 @@ function Contato() {
                   Missão SP
                 </strong>
 
-                <span>
-                  Atendimento pelo WhatsApp
+                <span className="chat__status">
+                  Online
                 </span>
               </div>
 

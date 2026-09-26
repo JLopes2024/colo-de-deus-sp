@@ -1126,6 +1126,14 @@
     padding: 0;
   }
 
+.chat__status {
+  color: #22c55e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
   /* -------------------------------------------------------
      CHAT
