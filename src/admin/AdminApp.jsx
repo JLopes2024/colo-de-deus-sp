@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -21,6 +22,14 @@ import { auth, db } from '../servicos/firebase.js';
 
 import './admin.css';
 
+// =========================================================
+// CONFIGURAÇÃO DE SEGURANÇA
+// =========================================================
+
+// Identificador da conta autorizada a administrar a Agenda.
+// A segurança real das gravações continua nas regras do Firestore.
+const ADMIN_UID = 'IY48rYU8wDSceya8DsKTPDjRVKF3';
+
 const FORMULARIO_INICIAL = {
   nome_evento: '',
   data_evento: '',
@@ -29,17 +38,29 @@ const FORMULARIO_INICIAL = {
   link_ingresso: '',
 };
 
+// =========================================================
+// CONTROLE DE ACESSO
+// =========================================================
+
 function AdminApp() {
   const [usuario, setUsuario] = useState(null);
   const [carregandoSessao, setCarregandoSessao] = useState(true);
 
   useEffect(() => {
-    // Observa o estado de autenticação do Firebase.
-    // Também recupera automaticamente a sessão após um refresh.
-    const cancelarObservacao = onAuthStateChanged(auth, (usuarioAtual) => {
-      setUsuario(usuarioAtual);
-      setCarregandoSessao(false);
-    });
+    // Recupera a sessão após o refresh e observa mudanças
+    // no estado de autenticação.
+    const cancelarObservacao = onAuthStateChanged(
+      auth,
+      (usuarioAtual) => {
+        setUsuario(usuarioAtual);
+        setCarregandoSessao(false);
+      },
+      (error) => {
+        console.error('Erro ao verificar sessão:', error);
+        setUsuario(null);
+        setCarregandoSessao(false);
+      },
+    );
 
     return cancelarObservacao;
   }, []);
@@ -52,10 +73,86 @@ function AdminApp() {
     );
   }
 
-  return usuario
-    ? <PainelAdmin usuario={usuario} />
-    : <LoginAdmin />;
+  // Visitante não autenticado.
+  if (!usuario) {
+    return <LoginAdmin />;
+  }
+
+  // Usuário autenticado, mas sem autorização administrativa.
+  if (usuario.uid !== ADMIN_UID) {
+    return <AcessoNegado />;
+  }
+
+  // Somente a conta administrativa recebe o painel.
+  return <PainelAdmin usuario={usuario} />;
 }
+
+// =========================================================
+// ACESSO NEGADO
+// =========================================================
+
+function AcessoNegado() {
+  const [saindo, setSaindo] = useState(false);
+  const [erro, setErro] = useState('');
+
+  async function sair() {
+    setSaindo(true);
+    setErro('');
+
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Erro ao encerrar sessão:', error);
+      setErro('Não foi possível encerrar a sessão.');
+    } finally {
+      setSaindo(false);
+    }
+  }
+
+  return (
+    <main className="admin admin--centralizado">
+      <section
+        className="admin-login"
+        aria-labelledby="acesso-negado-titulo"
+      >
+        <p className="admin__indice">
+          ADMIN // MISSÃO SP
+        </p>
+
+        <h1 id="acesso-negado-titulo">
+          Acesso restrito
+        </h1>
+
+        <p className="admin-login__apoio">
+          Esta conta não possui autorização para
+          administrar a Agenda.
+        </p>
+
+        {erro && (
+          <p
+            className="admin__mensagem admin__mensagem--erro"
+            role="alert"
+          >
+            {erro}
+          </p>
+        )}
+
+        <button
+          className="admin-botao admin-botao--principal"
+          type="button"
+          onClick={sair}
+          disabled={saindo}
+        >
+          {saindo ? 'Saindo...' : 'Sair desta conta'}
+        </button>
+      </section>
+    </main>
+  );
+}
+
+// =========================================================
+// LOGIN
+// =========================================================
 
 function LoginAdmin() {
   const [email, setEmail] = useState('');
@@ -90,7 +187,9 @@ function LoginAdmin() {
         className="admin-login"
         aria-labelledby="admin-login-titulo"
       >
-        <p className="admin__indice">ADMIN // MISSÃO SP</p>
+        <p className="admin__indice">
+          ADMIN // MISSÃO SP
+        </p>
 
         <h1 id="admin-login-titulo">
           Agenda
@@ -150,6 +249,10 @@ function LoginAdmin() {
   );
 }
 
+// =========================================================
+// PAINEL ADMINISTRATIVO
+// =========================================================
+
 function PainelAdmin({ usuario }) {
   const [eventos, setEventos] = useState([]);
   const [formulario, setFormulario] = useState(FORMULARIO_INICIAL);
@@ -174,6 +277,10 @@ function PainelAdmin({ usuario }) {
   useEffect(() => {
     carregarEventos();
   }, []);
+
+  // =======================================================
+  // CARREGAR EVENTOS
+  // =======================================================
 
   async function carregarEventos() {
     setCarregando(true);
@@ -202,6 +309,10 @@ function PainelAdmin({ usuario }) {
       setCarregando(false);
     }
   }
+
+  // =======================================================
+  // FORMULÁRIO
+  // =======================================================
 
   function atualizarCampo(nome, valor) {
     setFormulario((atual) => ({
@@ -236,6 +347,10 @@ function PainelAdmin({ usuario }) {
     setMensagem('');
     setErro('');
   }
+
+  // =======================================================
+  // VALIDAÇÃO DO FORMULÁRIO
+  // =======================================================
 
   function validarFormulario() {
     const estado = formulario.estado_evento
@@ -272,6 +387,10 @@ function PainelAdmin({ usuario }) {
     return '';
   }
 
+  // =======================================================
+  // CRIAR / EDITAR EVENTO
+  // =======================================================
+
   async function salvarEvento(evento) {
     evento.preventDefault();
 
@@ -287,12 +406,10 @@ function PainelAdmin({ usuario }) {
     setErro('');
 
     /*
-     * Mantemos os mesmos cinco campos utilizados
-     * pela versão anterior da agenda.
+     * Mantemos os cinco campos da Agenda.
      *
      * O link vazio é salvo como string vazia.
-     * Assim o componente público pode continuar
-     * usando uma simples verificação de valor.
+     * As regras do Firestore validam novamente os dados.
      */
     const dadosEvento = {
       nome_evento: formulario.nome_evento.trim(),
@@ -340,6 +457,10 @@ function PainelAdmin({ usuario }) {
     }
   }
 
+  // =======================================================
+  // EXCLUIR EVENTO
+  // =======================================================
+
   async function excluirEvento(evento) {
     const confirmou = window.confirm(
       `Excluir definitivamente "${evento.nome_evento}"?`,
@@ -367,6 +488,10 @@ function PainelAdmin({ usuario }) {
     }
   }
 
+  // =======================================================
+  // ENCERRAR SESSÃO
+  // =======================================================
+
   async function sair() {
     try {
       await signOut(auth);
@@ -376,6 +501,10 @@ function PainelAdmin({ usuario }) {
       setErro('Não foi possível encerrar a sessão.');
     }
   }
+
+  // =======================================================
+  // INTERFACE DO PAINEL
+  // =======================================================
 
   return (
     <main className="admin">
@@ -490,7 +619,8 @@ function PainelAdmin({ usuario }) {
               />
 
               <small>
-                Opcional. O botão só aparece no site quando este campo estiver preenchido.
+                Opcional. O botão só aparece no site quando
+                este campo estiver preenchido.
               </small>
             </label>
 
@@ -627,6 +757,10 @@ function PainelAdmin({ usuario }) {
     </main>
   );
 }
+
+// =========================================================
+// FORMATAÇÃO DE DATA
+// =========================================================
 
 function formatarData(data) {
   return new Intl.DateTimeFormat('pt-BR', {
