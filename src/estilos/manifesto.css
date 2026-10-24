@@ -1,353 +1,579 @@
 
 /* =========================================================
-   MANIFESTO — LAYOUT EDITORIAL
+   MANIFESTO — TIPOGRAFIA EM CAMADAS
+   Paleta: preto, branco e azul do site
    ========================================================= */
 
 .manifesto {
-  background-color: var(--cor-branco);
+  width: 100%;
+  background: var(--cor-branco);
   color: var(--cor-preto);
-  padding-block: var(--espaco-8);
   overflow: hidden;
 }
 
-.manifesto__conteudo {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1.08fr)
-    minmax(320px, 0.92fr);
-  grid-template-areas:
-    "cabecalho imagem"
-    "texto texto";
-  gap:
-    clamp(3rem, 5vw, 5rem)
-    clamp(3rem, 6vw, 7rem);
-  align-items: end;
+/* =========================================================
+   FAIXA PRINCIPAL
+   ========================================================= */
+
+.manifesto__faixa {
+  position: relative;
+  isolation: isolate;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-height: clamp(440px, 48vw, 650px);
+
+  background: var(--cor-preto);
+  color: var(--cor-branco);
+
+  overflow: hidden;
 }
 
-/* Título */
+/* =========================================================
+   FOTO ORIGINAL
+   ========================================================= */
+
+.manifesto__imagem {
+  position: absolute;
+  z-index: -2;
+
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 78%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+.manifesto__imagem img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center 40%;
+
+  transform: scale(1.04);
+
+  transition:
+    transform 1200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.manifesto--visivel .manifesto__imagem img {
+  transform: scale(1);
+}
+
+/* =========================================================
+   DEGRADÊ DE LEITURA
+   Sem cores fora da paleta
+   ========================================================= */
+
+.manifesto__sobreposicao {
+  position: absolute;
+  z-index: -1;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--cor-preto) 0%,
+      rgba(0, 0, 0, 0.96) 15%,
+      rgba(0, 0, 0, 0.82) 35%,
+      rgba(0, 0, 0, 0.35) 62%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.32),
+      transparent 45%
+    );
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+.manifesto__conteudo {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+
+  padding-block: clamp(4rem, 7vw, 7rem);
+}
 
 .manifesto__texto {
-  grid-area: cabecalho;
-  min-width: 0;
+  position: relative;
+
+  width: fit-content;
+  max-width: 100%;
 }
 
 .manifesto__indice {
-  margin-bottom: var(--espaco-4);
-  color: var(--cor-preto);
-  font-size: var(--texto-xs);
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+
+  color: var(--cor-branco);
+
+  font-size: var(--texto-xs, 0.75rem);
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
   text-transform: uppercase;
+
+  opacity: 0.85;
 }
+
+/* =========================================================
+   TÍTULO PRINCIPAL
+   ========================================================= */
 
 .manifesto__titulo {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  font-size: clamp(2.15rem, 3.5vw, 5rem);
-  font-weight: 700;
-  line-height: 0.84;
+  align-items: flex-start;
+
+  width: fit-content;
+  max-width: 100%;
+
+  margin: 0;
+
+  color: var(--cor-branco);
+
+  font-size: clamp(1.95rem, 3.65vw, 4.6rem);
+  font-weight: 800;
+
+  line-height: 0.91;
   letter-spacing: -0.055em;
+
   text-transform: uppercase;
 }
 
+/* =========================================================
+   LINHAS E CAMADAS TIPOGRÁFICAS
+   ========================================================= */
+
 .manifesto__linha {
+  position: relative;
+  isolation: isolate;
+
   display: block;
   width: fit-content;
+  max-width: 100%;
+
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(22px);
+
   transition:
-    opacity 600ms ease,
-    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    opacity 650ms ease,
+    transform 750ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  transition-delay:
+    calc(var(--indice, 5) * 90ms);
 }
 
-/* Entrada animada */
+/*
+ * A camada fantasma repete visualmente cada palavra,
+ * mas não é adicionada ao conteúdo acessível.
+ */
+
+.manifesto__linha[data-eco]::before {
+  content: attr(data-eco);
+
+  position: absolute;
+  z-index: -1;
+
+  top: -0.18em;
+  left: 0.18em;
+
+  color: var(--cor-branco);
+
+  opacity: 0.2;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+}
+
+/* Deslocamentos diferentes dão aspecto editorial */
+
+.manifesto__linha:nth-child(2)::before {
+  left: 0.3em;
+  top: -0.12em;
+}
+
+.manifesto__linha:nth-child(3)::before {
+  left: 0.12em;
+  top: -0.2em;
+}
+
+.manifesto__linha:nth-child(4)::before {
+  left: 0.35em;
+  top: -0.13em;
+}
+
+.manifesto__linha:nth-child(5)::before {
+  left: 0.2em;
+  top: -0.18em;
+}
+
+/* Entrada */
 
 .manifesto--visivel .manifesto__linha {
   opacity: 1;
   transform: translateY(0);
 }
 
-.manifesto--visivel .manifesto__linha:nth-child(1) {
-  transition-delay: 80ms;
-}
-
-.manifesto--visivel .manifesto__linha:nth-child(2) {
-  transition-delay: 160ms;
-}
-
-.manifesto--visivel .manifesto__linha:nth-child(3) {
-  transition-delay: 240ms;
-}
-
-.manifesto--visivel .manifesto__linha:nth-child(4) {
-  transition-delay: 320ms;
-}
-
-.manifesto--visivel .manifesto__linha:nth-child(5) {
-  transition-delay: 400ms;
-}
-
-/* Destaque CRIATIVOS */
+/* =========================================================
+   DESTAQUE CRIATIVOS
+   ========================================================= */
 
 .manifesto__destaque {
   display: flex;
   align-items: baseline;
+
   gap: 0.12em;
-  margin-top: 0.08em;
+
+  margin-top: 0.12em;
 }
 
 .manifesto__e {
-  color: var(--cor-preto);
-  font-size: 0.5em;
-  font-weight: 500;
-  line-height: 1;
+  display: inline-block;
+
+  color: var(--cor-branco);
+
+  font-size: 0.8em;
+  font-weight: 800;
 }
 
 .manifesto__criativos {
   position: relative;
+
   display: inline-block;
-  padding: 0 0.10em 0.04em;
-  background-color: var(--cor-azul);
+
+  padding: 0.06em 0.14em 0.1em;
+
+  background: var(--cor-azul);
   color: var(--cor-branco);
+
   line-height: 0.9;
+
   transform-origin: left center;
 }
 
+/* Animação do destaque */
+
 .manifesto--visivel .manifesto__criativos {
   animation:
-    criativos-faixa 850ms
+    manifesto-destaque 800ms
     cubic-bezier(0.2, 0.8, 0.2, 1)
-    420ms both;
+    550ms both;
 }
 
-@keyframes criativos-faixa {
-  0% {
+@keyframes manifesto-destaque {
+  from {
     opacity: 0;
-    transform:
-      scaleX(0.65)
-      translateX(-0.18em)
-      rotate(-1.5deg);
+    transform: scaleX(0.8) translateX(-0.1em);
   }
 
-  60% {
+  to {
     opacity: 1;
-    transform:
-      scaleX(1.03)
-      translateX(0.03em)
-      rotate(0.5deg);
-  }
-
-  100% {
-    opacity: 1;
-    transform:
-      scaleX(1)
-      translateX(0)
-      rotate(0);
-  }
-}
-
-@media (hover: hover) {
-  .manifesto__criativos {
-    transition: transform 220ms ease;
-  }
-
-  .manifesto__criativos:hover {
-    transform:
-      translateX(0.04em)
-      rotate(-0.5deg);
-  }
-}
-
-/* Parágrafos abaixo do título e imagem */
-
-.manifesto__paragrafo {
-  grid-area: texto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(2rem, 4vw, 5rem);
-  width: 100%;
-  min-width: 0;
-}
-
-.manifesto__paragrafo p {
-  margin: 0;
-  color: var(--cor-preto);
-  font-size: clamp(0.9rem, 1vw, 1.05rem);
-  line-height: 1.7;
-  opacity: 0.82;
-}
-
-/* Imagem */
-
-.manifesto__imagem {
-  grid-area: imagem;
-  width: 100%;
-  min-height: 520px;
-  overflow: hidden;
-  background-color: var(--cor-preto-suave);
-  opacity: 0;
-  transform: translateX(28px);
-  transition:
-    opacity 750ms ease 300ms,
-    transform 850ms cubic-bezier(0.2, 0.7, 0.2, 1) 300ms;
-}
-
-.manifesto--visivel .manifesto__imagem {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.manifesto__imagem img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 520px;
-  object-fit: cover;
-  object-position: center;
-  transition: transform 500ms ease;
-}
-
-@media (hover: hover) {
-  .manifesto__imagem:hover img {
-    transform: scale(1.015);
-  }
-}
-
-/* Tablet */
-
-@media (max-width: 1000px) {
-  .manifesto__conteudo {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(280px, 0.8fr);
-    gap: var(--espaco-5);
-  }
-
-  .manifesto__titulo {
-    font-size: clamp(2.15rem, 3.5vw, 4.5rem);
-  }
-
-  .manifesto__imagem,
-  .manifesto__imagem img {
-    min-height: 440px;
-  }
-}
-
-/* Mobile: título, parágrafos e imagem */
-
-@media (max-width: 900px) {
-  .manifesto {
-    padding-block: var(--espaco-7);
-  }
-
-  .manifesto__conteudo {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "cabecalho"
-      "texto"
-      "imagem";
-    gap: var(--espaco-5);
-  }
-
-  .manifesto__paragrafo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--espaco-3);
-  }
-
-  .manifesto__titulo {
-    font-size: clamp(2rem, 8.5vw, 4.2rem);
-    line-height: 0.86;
-  }
-
-  .manifesto__imagem,
-  .manifesto__imagem img {
-    min-height: 360px;
-  }
-}
-
-/* Celular */
-
-@media (max-width: 520px) {
-  .manifesto {
-    padding-block: var(--espaco-6);
-  }
-
-  .manifesto__indice {
-    margin-bottom: var(--espaco-3);
-  }
-
-  .manifesto__titulo {
-    font-size: clamp(1.85rem, 8vw, 3rem);
-  }
-
-  .manifesto__destaque {
-    gap: 0.08em;
-  }
-
-  .manifesto__criativos {
-    padding: 0 0.08em 0.04em;
-  }
-
-  .manifesto__imagem,
-  .manifesto__imagem img {
-    min-height: 300px;
-  }
-
-  .manifesto__paragrafo p {
-    font-size: 0.96rem;
-    line-height: 1.65;
-  }
-}
-
-/* Acessibilidade */
-
-@media (prefers-reduced-motion: reduce) {
-  .manifesto__linha,
-  .manifesto__imagem {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  .manifesto__criativos {
-    animation: none;
-    transform: none;
-    transition: none;
-  }
-
-  .manifesto__imagem img {
-    transition: none;
-  }
-
-  .manifesto__imagem:hover img {
-    transform: none;
+    transform: scaleX(1) translateX(0);
   }
 }
 
 /* =========================================================
-   RESTAURAÇÃO DOS TAMANHOS ORIGINAIS DO MANIFESTO
+   TEXTO EXPLICATIVO
    ========================================================= */
 
-.manifesto__titulo {
-  font-size: clamp(3.5rem, 6vw, 7rem);
+.manifesto__rodape {
+  display: grid;
+
+  grid-template-columns:
+    minmax(180px, 0.75fr)
+    minmax(0, 1.5fr);
+
+  gap: clamp(2rem, 6vw, 7rem);
+
+  align-items: start;
+
+  padding-block:
+    clamp(3rem, 6vw, 6rem);
 }
+
+.manifesto__marcador {
+  display: flex;
+  align-items: center;
+
+  gap: 0.9rem;
+}
+
+.manifesto__marcador span {
+  display: block;
+
+  width: 28px;
+  height: 2px;
+
+  background: var(--cor-azul);
+
+  flex-shrink: 0;
+}
+
+.manifesto__marcador p {
+  margin: 0;
+
+  font-size: var(--texto-xs, 0.75rem);
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.manifesto__paragrafo {
+  max-width: 760px;
+}
+
+.manifesto__paragrafo p {
+  margin: 0;
+
+  color: var(--cor-preto);
+
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  line-height: 1.75;
+}
+
+/* =========================================================
+   TELAS MÉDIAS
+   ========================================================= */
 
 @media (max-width: 1000px) {
+  .manifesto__faixa {
+    min-height: 480px;
+  }
+
+  .manifesto__imagem {
+    width: 85%;
+  }
+
   .manifesto__titulo {
-    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    font-size: clamp(2rem, 4.4vw, 3.8rem);
+  }
+
+  .manifesto__sobreposicao {
+    background:
+      linear-gradient(
+        90deg,
+        var(--cor-preto) 0%,
+        rgba(0, 0, 0, 0.93) 25%,
+        rgba(0, 0, 0, 0.55) 65%,
+        rgba(0, 0, 0, 0.18) 100%
+      );
   }
 }
+
+/* =========================================================
+   TABLET E CELULAR
+   Foto em cima e tipografia na parte inferior
+   ========================================================= */
 
 @media (max-width: 760px) {
+  .manifesto__faixa {
+    align-items: flex-end;
+
+    min-height: 720px;
+  }
+
+  .manifesto__imagem {
+    top: 0;
+    right: 0;
+    bottom: auto;
+
+    width: 100%;
+    height: 68%;
+  }
+
+  .manifesto__imagem img {
+    object-position: center 35%;
+  }
+
+  .manifesto__sobreposicao {
+    background:
+      linear-gradient(
+        0deg,
+        var(--cor-preto) 0%,
+        var(--cor-preto) 20%,
+        rgba(0, 0, 0, 0.92) 38%,
+        rgba(0, 0, 0, 0.3) 72%,
+        rgba(0, 0, 0, 0.05) 100%
+      );
+  }
+
+  .manifesto__conteudo {
+    padding-block: 3rem;
+  }
+
   .manifesto__titulo {
-    font-size: clamp(2.8rem, 11vw, 5rem);
+    font-size: clamp(2rem, 6.5vw, 3.5rem);
+  }
+
+  .manifesto__linha[data-eco]::before {
+    opacity: 0.12;
+    left: 0.12em;
+  }
+
+  .manifesto__rodape {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    padding-block: 3rem;
   }
 }
 
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
+
 @media (max-width: 520px) {
+  .manifesto__faixa {
+    min-height: 660px;
+  }
+
+  .manifesto__imagem {
+    height: 60%;
+  }
+
+  .manifesto__conteudo {
+    padding-block: 2.5rem;
+  }
+
+  .manifesto__indice {
+    margin-bottom: 1.4rem;
+    font-size: 0.65rem;
+  }
+
   .manifesto__titulo {
-    font-size: clamp(2.5rem, 11vw, 4.2rem);
+    font-size: clamp(1.75rem, 7.2vw, 2.5rem);
+    line-height: 0.94;
+  }
+
+  /*
+   * No celular pequeno, menos camadas para
+   * preservar a legibilidade.
+   */
+
+  .manifesto__linha[data-eco]::before {
+    opacity: 0.08;
+    left: 0.08em;
+    top: -0.1em;
+  }
+
+  .manifesto__destaque {
+    margin-top: 0.2em;
+  }
+
+  .manifesto__paragrafo p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}
+
+/* =========================================================
+   ACESSIBILIDADE — MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .manifesto__linha {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .manifesto__imagem img {
+    transform: none;
+    transition: none;
+  }
+
+  .manifesto--visivel .manifesto__criativos {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   MANIFESTO — TEXTO INTEGRADO À ÁREA ESCURA
+   ========================================================= */
+
+.manifesto {
+  background-color: var(--cor-preto);
+  color: var(--cor-branco);
+}
+
+.manifesto__rodape {
+  padding-top: clamp(2rem, 4vw, 3.5rem);
+  padding-bottom: clamp(3rem, 6vw, 6rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.manifesto__marcador p {
+  color: var(--cor-branco);
+}
+
+.manifesto__paragrafo p {
+  color: var(--cor-branco);
+  opacity: 0.85;
+}
+
+/* =========================================================
+   MANIFESTO — TRANSIÇÃO SUAVE DA FOTO PARA O PRETO
+   ========================================================= */
+
+/* Usa o mesmo preto nos dois blocos */
+.manifesto,
+.manifesto__faixa {
+  background-color: var(--cor-preto);
+}
+
+/* Escurece progressivamente a parte inferior da foto */
+.manifesto__sobreposicao {
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 40%,
+      rgba(0, 0, 0, 0.35) 60%,
+      rgba(0, 0, 0, 0.75) 78%,
+      var(--cor-preto) 100%
+    ),
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.94) 0%,
+      rgba(0, 0, 0, 0.72) 35%,
+      rgba(0, 0, 0, 0.15) 75%,
+      transparent 100%
+    );
+}
+
+/* Remove a linha divisória do bloco de texto */
+.manifesto__rodape {
+  border-top: none;
+  padding-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+/* Mantém a transição também no celular */
+@media (max-width: 760px) {
+  .manifesto__sobreposicao {
+    background:
+      linear-gradient(
+        to bottom,
+        transparent 20%,
+        rgba(0, 0, 0, 0.35) 45%,
+        rgba(0, 0, 0, 0.85) 70%,
+        var(--cor-preto) 100%
+      );
   }
 }
