@@ -1,470 +1,234 @@
-/* =========================================================
-   COMUNIDADES
-   Células + Cenáculos
+/* Comunidades — Colo de Deus | Missão SP */
 
-   Princípios aplicados:
-   - Serial Position:
-     abertura forte + CTA claro no final de cada bloco.
-   - Fitts:
-     ações grandes e fáceis de clicar/tocar.
-
-   O layout continua editorial, sem aparência de cards.
-   ========================================================= */
-
-.comunidades {
-  width: 100%;
-
-  background-color: var(--cor-branco);
-  color: var(--cor-preto);
-}
-
-
-/* =========================================================
-   BLOCO
-   ========================================================= */
+.comunidades { width: 100%; }
 
 .comunidades__bloco {
+  position: relative;
   width: 100%;
-
   padding-block: clamp(5rem, 9vw, 9rem);
-
   overflow: hidden;
+  scroll-margin-top: 90px;
 }
-
-
-/* =========================================================
-   DIFERENCIAÇÃO ENTRE AS DUAS ÁREAS
-   ========================================================= */
-
 .comunidades__bloco--celulas {
-  background-color: var(--cor-branco);
+  background: var(--cor-branco);
   color: var(--cor-preto);
 }
-
-
 .comunidades__bloco--cenaculos {
-  background-color: var(--cor-preto);
+  background: var(--cor-preto);
   color: var(--cor-branco);
 }
 
-
-/* =========================================================
-   CONTEÚDO
-   ========================================================= */
-
 .comunidades__conteudo {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 0.9fr)
-    minmax(340px, 1.1fr);
-
-  gap: clamp(3rem, 7vw, 8rem);
-
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  grid-template-areas: "texto imagem";
   align-items: center;
+  gap: clamp(2.5rem, 6vw, 7rem);
 }
-
-
-/*
- * No segundo bloco, a imagem ocupa o primeiro lado.
- */
-.comunidades__conteudo--invertido {
-  grid-template-columns:
-    minmax(340px, 1.1fr)
-    minmax(0, 0.9fr);
+.comunidades__bloco--cenaculos .comunidades__conteudo {
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  grid-template-areas: "imagem texto";
 }
-
-
-.comunidades__conteudo--invertido .comunidades__texto {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-
-.comunidades__conteudo--invertido .comunidades__imagem {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-
-/* =========================================================
-   TEXTO
-   ========================================================= */
-
 .comunidades__texto {
+  grid-area: texto;
   display: flex;
   flex-direction: column;
-
   align-items: flex-start;
-
   min-width: 0;
 }
-
-
-/* =========================================================
-   ÍNDICE
-   ========================================================= */
-
 .comunidades__indice {
-  margin-bottom: var(--espaco-3);
-
-  color: var(--cor-texto-suave);
-
-  font-size: var(--texto-xs);
+  margin: 0 0 clamp(2rem, 4vw, 4rem);
+  color: inherit;
+  font-size: var(--texto-xs, .75rem);
   font-weight: 700;
-
-  letter-spacing: 0.12em;
-
+  letter-spacing: .18em;
   text-transform: uppercase;
+  opacity: .65;
 }
-
-
-/* =========================================================
-   TÍTULO
-   ========================================================= */
-
 .comunidades__titulo {
   display: flex;
   flex-direction: column;
-
-  max-width: 9ch;
-
+  align-items: flex-start;
+  gap: .12em;
+  width: 100%;
   margin: 0;
-
-  font-size: clamp(3.5rem, 6vw, 7rem);
-  font-weight: 700;
-
-  line-height: 0.84;
-
-  letter-spacing: -0.055em;
-
+  font-size: clamp(3rem, 5.2vw, 6.5rem);
+  font-weight: 800;
+  line-height: .9;
+  letter-spacing: -.06em;
   text-transform: uppercase;
 }
-
-
-.comunidades__titulo span {
-  margin-left: clamp(1rem, 4vw, 4rem);
+.comunidades__titulo-linha {
+  display: block;
+  max-width: 100%;
+  text-wrap: balance;
 }
-
-
-/* =========================================================
-   DESCRIÇÃO
-   ========================================================= */
-
-.comunidades__descricao {
-  max-width: 38ch;
-
-  margin-top: var(--espaco-4);
-
-  font-size: clamp(0.95rem, 1.2vw, 1.08rem);
-
-  line-height: 1.7;
-
-  opacity: 0.78;
+.comunidades__titulo-destaque {
+  display: inline-block;
+  max-width: 100%;
+  padding: .07em .14em .1em;
+  background: var(--cor-azul);
+  color: var(--cor-branco);
+  line-height: .9;
+  transform-origin: left center;
+  animation: comunidades-destaque 800ms cubic-bezier(.2,.8,.2,1) both;
 }
-
-
-/* =========================================================
-   CTA
-
-   A ação é propositalmente simples e grande.
-   Sem aparência de botão genérico.
-   ========================================================= */
-
+@keyframes comunidades-destaque {
+  from { opacity: 0; transform: scaleX(.85) translateX(-.08em); }
+  to { opacity: 1; transform: scaleX(1) translateX(0); }
+}
+.comunidades__descricoes {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 48ch;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+.comunidades__descricoes p {
+  margin: 0;
+  font-size: clamp(.96rem, 1.1vw, 1.1rem);
+  line-height: 1.75;
+  opacity: .82;
+}
+.comunidades__orientacao {
+  width: 100%;
+  max-width: 48ch;
+  margin-top: clamp(2rem, 3vw, 3rem);
+  padding: 1.25rem 1.5rem;
+  border-left: 3px solid var(--cor-azul);
+  background: rgba(0,0,0,.045);
+}
+.comunidades__bloco--cenaculos .comunidades__orientacao {
+  background: rgba(255,255,255,.06);
+}
+.comunidades__orientacao-indice {
+  margin: 0 0 .75rem;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: .65;
+}
+.comunidades__orientacao h3 {
+  margin: 0 0 .75rem;
+  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+}
+.comunidades__orientacao > p:last-child {
+  margin: 0;
+  font-size: .95rem;
+  line-height: 1.65;
+  opacity: .8;
+}
 .comunidades__acao {
   display: inline-flex;
   align-items: center;
-
   justify-content: space-between;
-
-  gap: var(--espaco-3);
-
-  min-height: 48px;
-
-  margin-top: var(--espaco-5);
-
-  padding:
-    0.8rem
-    0;
-
-  border-bottom:
-    1px
-    solid
-    currentColor;
-
+  gap: 2rem;
+  min-height: 52px;
+  max-width: 100%;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  padding: .8rem 0;
+  border-bottom: 1px solid currentColor;
   color: inherit;
-
-  font-size: 0.78rem;
-  font-weight: 700;
-
-  line-height: 1.2;
-
-  letter-spacing: 0.08em;
-
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: .07em;
   text-decoration: none;
-
   text-transform: uppercase;
-
-  transition:
-    opacity var(--transicao-rapida),
-    gap var(--transicao-rapida);
+  transition: opacity 250ms ease;
 }
-
-
-/* =========================================================
-   SETA
-   ========================================================= */
-
-.comunidades__acao span {
-  display: inline-block;
-
+.comunidades__seta {
   flex-shrink: 0;
-
-  font-size: 1rem;
-
-  transition:
-    transform var(--transicao-rapida);
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: transform 250ms ease;
 }
-
-
-/* =========================================================
-   HOVER
-   ========================================================= */
-
-@media (hover: hover) {
-
-  .comunidades__acao:hover {
-    opacity: 0.68;
-
-    gap: calc(var(--espaco-3) + 0.25rem);
-  }
-
-
-  .comunidades__acao:hover span {
-    transform: translateX(4px);
-  }
-}
-
-
-/* =========================================================
-   FOCO
-   ========================================================= */
-
 .comunidades__acao:focus-visible {
-  outline:
-    2px
-    solid
-    currentColor;
-
-  outline-offset: 5px;
+  outline: 2px solid var(--cor-azul);
+  outline-offset: 6px;
 }
-
-
-/* =========================================================
-   IMAGEM
-   ========================================================= */
-
-.comunidades__imagem {
-  position: relative;
-
-  width: 100%;
-
-  min-height: 520px;
-
-  overflow: hidden;
-
-  background-color: var(--cor-preto-suave);
-}
-
-
-/* =========================================================
-   FOTO
-   ========================================================= */
-
-.comunidades__imagem img {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-
-  min-height: 520px;
-
-  object-fit: cover;
-  object-position: center;
-
-  transition:
-    transform 500ms ease;
-}
-
-
-/* =========================================================
-   HOVER DA FOTO
-   ========================================================= */
-
 @media (hover: hover) {
-
-  .comunidades__imagem:hover img {
-    transform: scale(1.015);
-  }
+  .comunidades__acao:hover { opacity: .7; }
+  .comunidades__acao:hover .comunidades__seta { transform: translateX(6px); }
 }
 
-
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* IMAGENS: sem borda, fundo, moldura, números ou corte.
+   A largura se adapta à coluna; a altura respeita a proporção original. */
+.comunidades__imagem {
+  grid-area: imagem;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  aspect-ratio: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+.comunidades__imagem::before,
+.comunidades__imagem::after { content: none; }
+.comunidades__imagem img {
+  position: static;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  object-fit: contain;
+  object-position: center;
+  filter: none;
+}
 
 @media (max-width: 1000px) {
-
   .comunidades__conteudo,
-  .comunidades__conteudo--invertido {
-    grid-template-columns:
-      minmax(0, 0.95fr)
-      minmax(300px, 1.05fr);
-
-    gap: var(--espaco-5);
+  .comunidades__bloco--cenaculos .comunidades__conteudo {
+    gap: clamp(2rem, 4vw, 4rem);
   }
-
-
-  .comunidades__titulo {
-    font-size: clamp(3rem, 6.5vw, 5.5rem);
-  }
-
-
-  .comunidades__imagem,
-  .comunidades__imagem img {
-    min-height: 440px;
-  }
+  .comunidades__titulo { font-size: clamp(2.6rem, 5.3vw, 4.8rem); }
 }
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
 @media (max-width: 760px) {
-
-  .comunidades__bloco {
-    padding-block: var(--espaco-7);
-  }
-
-
+  .comunidades__bloco { padding-block: clamp(4rem, 10vw, 6rem); }
   .comunidades__conteudo,
-  .comunidades__conteudo--invertido {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: var(--espaco-5);
+  .comunidades__bloco--cenaculos .comunidades__conteudo {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "texto" "imagem";
+    gap: clamp(2.5rem, 7vw, 4rem);
   }
-
-
-  /*
-   * Mantém texto antes da imagem também no bloco invertido.
-   */
-  .comunidades__conteudo--invertido .comunidades__texto,
-  .comunidades__conteudo--invertido .comunidades__imagem {
-    grid-column: auto;
-    grid-row: auto;
-  }
-
-
-  .comunidades__texto {
-    width: 100%;
-  }
-
-
+  .comunidades__indice { margin-bottom: 2rem; }
   .comunidades__titulo {
-    max-width: 10ch;
-
-    font-size: clamp(3rem, 11vw, 5rem);
-
-    line-height: 0.86;
+    font-size: clamp(2.7rem, 9vw, 5rem);
+    line-height: .92;
   }
-
-
-  .comunidades__titulo span {
-    margin-left: 0;
-  }
-
-
-  .comunidades__descricao {
+  .comunidades__descricoes {
     max-width: 100%;
+    margin-top: 2rem;
   }
-
-
-  .comunidades__acao {
-    width: 100%;
-
-    min-height: 52px;
-
-    margin-top: var(--espaco-4);
-  }
-
-
-  .comunidades__imagem,
-  .comunidades__imagem img {
-    min-height: 360px;
-  }
+  .comunidades__orientacao { max-width: 100%; }
+  .comunidades__acao { width: 100%; margin-top: 2rem; }
 }
-
-
-/* =========================================================
-   CELULAR
-   ========================================================= */
-
 @media (max-width: 520px) {
-
-  .comunidades__bloco {
-    padding-block: var(--espaco-6);
-  }
-
-
-  .comunidades__titulo {
-    font-size:
-      clamp(
-        2.7rem,
-        12vw,
-        4.3rem
-      );
-  }
-
-
-  .comunidades__descricao {
-    font-size: 0.96rem;
-
-    line-height: 1.65;
-  }
-
-
-  .comunidades__acao {
-    font-size: 0.7rem;
-
-    letter-spacing: 0.07em;
-  }
-
-
-  .comunidades__imagem,
-  .comunidades__imagem img {
-    min-height: 280px;
-  }
+  .comunidades__titulo { font-size: clamp(2.45rem, 10.5vw, 3.5rem); }
+  .comunidades__descricoes p { font-size: .96rem; line-height: 1.7; }
+  .comunidades__orientacao { padding: 1.1rem 1.25rem; }
+  .comunidades__acao { gap: 1rem; font-size: .7rem; }
 }
-
-
-/* =========================================================
-   MOVIMENTO REDUZIDO
-   ========================================================= */
-
 @media (prefers-reduced-motion: reduce) {
-
+  .comunidades__titulo-destaque { animation: none; }
   .comunidades__acao,
-  .comunidades__acao span,
-  .comunidades__imagem img {
-    transition: none;
-  }
-
-
-  .comunidades__acao:hover span,
-  .comunidades__imagem:hover img {
-    transform: none;
-  }
+  .comunidades__seta { transition: none; }
+  .comunidades__acao:hover .comunidades__seta { transform: none; }
 }
