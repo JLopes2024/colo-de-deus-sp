@@ -1,3 +1,4 @@
+
 import {
   useEffect,
   useRef,
@@ -24,7 +25,6 @@ function Manifesto() {
 
     if (prefereMenosMovimento) {
       setAnimar(true);
-
       return undefined;
     }
 
@@ -35,11 +35,6 @@ function Manifesto() {
         }
 
         setAnimar(true);
-
-        /*
-         * A animação acontece apenas na primeira vez
-         * que a seção entra na viewport.
-         */
         observador.unobserve(secao);
       },
       {
@@ -59,9 +54,7 @@ function Manifesto() {
       ref={secaoRef}
       className={[
         'manifesto',
-        animar
-          ? 'manifesto--visivel'
-          : '',
+        animar ? 'manifesto--visivel' : '',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -85,16 +78,18 @@ function Manifesto() {
             <span className="manifesto__linha">
               Eucarísticos
             </span>
-             <span className="manifesto__linha">
+
+            <span className="manifesto__linha">
               Pentecostais
             </span>
-    <span className="manifesto__linha">
+
+            <span className="manifesto__linha">
               Marianos
             </span>
-                <span className="manifesto__linha">
+
+            <span className="manifesto__linha">
               Artísticos
             </span>
-           
 
             <span className="manifesto__linha manifesto__destaque">
               <span className="manifesto__e">
@@ -108,11 +103,22 @@ function Manifesto() {
           </h2>
         </div>
 
+     
+
         <div className="manifesto__imagem">
           <img
             src="/imagens/gerais/fotos-gerais.jpg"
             alt="Comunidade Colo de Deus"
           />
+        </div>
+           <div className="manifesto__paragrafo">
+          <p>
+            Evangelizamos com criatividade, arte e cultura
+            do encontro, apresentando o Cristo que
+            conhecemos e amamos a esta geração. Queremos
+            que cada pessoa seja alcançada, olhada e
+            resgatada em sua dignidade.
+          </p>
         </div>
 
       </div>

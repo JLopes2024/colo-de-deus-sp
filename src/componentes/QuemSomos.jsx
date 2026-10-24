@@ -170,22 +170,10 @@ function QuemSomos() {
             </p>
 
 
-            <p>
-              Evangelizamos com criatividade, arte e cultura
-              do encontro, apresentando o Cristo que
-              conhecemos e amamos a esta geração. Queremos
-              que cada pessoa seja alcançada, olhada e
-              resgatada em sua dignidade.
-            </p>
+         
 
 
-            <p>
-              Estamos presentes nas casas, nas famílias e
-              na vida de jovens, crianças e adultos.
-              Caminhamos por meio das células, dos cenáculos
-              e do cuidado de um a um, tratando cada pessoa
-              como única e preparando a volta de Cristo.
-            </p>
+         
 
           </div>
 

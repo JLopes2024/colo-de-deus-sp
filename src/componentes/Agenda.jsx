@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 
 import {
@@ -12,6 +13,7 @@ import { db } from '../servicos/firebase.js';
 
 import '../estilos/agenda.css';
 
+// Formata a data sem converter para outro fuso horário.
 function formatarData(data) {
   const dataEvento = new Date(`${data}T12:00:00`);
 
@@ -19,19 +21,18 @@ function formatarData(data) {
     dia: new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
     }).format(dataEvento),
-
     mes: new Intl.DateTimeFormat('pt-BR', {
       month: 'short',
     })
       .format(dataEvento)
       .replace('.', '')
       .toUpperCase(),
+    ano: data.slice(0, 4),
   };
 }
 
 function obterDataHoje() {
   const hoje = new Date();
-
   const ano = hoje.getFullYear();
   const mes = String(hoje.getMonth() + 1).padStart(2, '0');
   const dia = String(hoje.getDate()).padStart(2, '0');
@@ -53,33 +54,62 @@ function Agenda() {
 
       try {
         const hoje = obterDataHoje();
+        const referencia = collection(db, 'eventos');
 
-        /*
-         * Busca somente eventos de hoje em diante.
-         * Assim o evento continua visível durante
-         * todo o dia em que acontece.
-         */
-        const consulta = query(
-          collection(db, 'eventos'),
+        // Eventos futuros, inclusive os de apenas um dia.
+        const consultaFuturos = query(
+          referencia,
           where('data_evento', '>=', hoje),
           orderBy('data_evento', 'asc'),
         );
 
-        const resultado = await getDocs(consulta);
+        // Eventos que começaram antes de hoje,
+        // mas ainda não terminaram.
+        const consultaEmAndamento = query(
+          referencia,
+          where('data_fim_evento', '>=', hoje),
+          orderBy('data_fim_evento', 'asc'),
+        );
 
-        if (!componenteAtivo) return;
+        const [futuros, emAndamento] = await Promise.all([
+          getDocs(consultaFuturos),
+          getDocs(consultaEmAndamento),
+        ]);
 
-        const eventosCarregados = resultado.docs.map((documento) => ({
-          id: documento.id,
-          ...documento.data(),
-        }));
+        if (!componenteAtivo) {
+          return;
+        }
+
+        // Remove duplicatas das duas consultas.
+        const eventosPorId = new Map();
+
+        for (const documento of [
+          ...futuros.docs,
+          ...emAndamento.docs,
+        ]) {
+          eventosPorId.set(documento.id, {
+            id: documento.id,
+            ...documento.data(),
+          });
+        }
+
+        const eventosCarregados = Array.from(
+          eventosPorId.values(),
+        )
+          .filter((evento) => (
+            (evento.data_fim_evento || evento.data_evento) >= hoje
+          ))
+          .sort((a, b) => (
+            a.data_evento.localeCompare(b.data_evento)
+          ));
 
         setEventos(eventosCarregados);
       } catch (error) {
-        if (!componenteAtivo) return;
+        if (!componenteAtivo) {
+          return;
+        }
 
         console.error('Erro ao carregar agenda:', error);
-
         setErro('Não foi possível carregar a agenda agora.');
         setEventos([]);
       } finally {
@@ -115,10 +145,16 @@ function Agenda() {
             Próximos
             <span>encontros</span>
           </h2>
+
+          <p className="agenda__descricao">
+            Momentos para viver a fé,
+            encontrar pessoas e experimentar
+            a missão.
+          </p>
         </header>
 
         {carregando && (
-          <div className="agenda__vazia">
+          <div className="agenda__vazia" role="status">
             <p>Carregando agenda...</p>
           </div>
         )}
@@ -132,21 +168,44 @@ function Agenda() {
         {!carregando && !erro && eventos.length > 0 && (
           <div className="agenda__lista">
             {eventos.map((evento) => {
-              const data = formatarData(evento.data_evento);
+              const inicio = formatarData(evento.data_evento);
+
+              const temPeriodo = Boolean(
+                evento.data_fim_evento
+                && evento.data_fim_evento !== evento.data_evento,
+              );
+
+              const fim = temPeriodo
+                ? formatarData(evento.data_fim_evento)
+                : null;
 
               const conteudoEvento = (
                 <>
                   <time
                     className="agenda__data"
                     dateTime={evento.data_evento}
+                    aria-label={
+                      temPeriodo
+                        ? `De ${evento.data_evento} até ${evento.data_fim_evento}`
+                        : `Em ${evento.data_evento}`
+                    }
                   >
                     <span className="agenda__dia">
-                      {data.dia}
+                      {inicio.dia}
                     </span>
 
                     <span className="agenda__mes">
-                      {data.mes}
+                      {inicio.mes}
                     </span>
+
+                    {fim && (
+                      <span className="agenda__periodo">
+                        ATÉ {fim.dia} {fim.mes}
+                        {fim.ano !== inicio.ano
+                          ? ` ${fim.ano}`
+                          : ''}
+                      </span>
+                    )}
                   </time>
 
                   <div className="agenda__informacoes">
@@ -159,6 +218,13 @@ function Agenda() {
                       {' // '}
                       {evento.estado_evento}
                     </p>
+
+                    {evento.link_ingresso && (
+                      <span className="agenda__chamada">
+                        Ver detalhes
+                        <span aria-hidden="true">↗</span>
+                      </span>
+                    )}
                   </div>
 
                   {evento.link_ingresso && (
@@ -166,16 +232,12 @@ function Agenda() {
                       className="agenda__seta"
                       aria-hidden="true"
                     >
-                      →
+                      ↗
                     </span>
                   )}
                 </>
               );
 
-              /*
-               * Sem ingresso: mantém o evento como bloco normal.
-               * Com ingresso: o card inteiro vira link.
-               */
               if (!evento.link_ingresso) {
                 return (
                   <div
@@ -189,11 +251,12 @@ function Agenda() {
 
               return (
                 <a
-                  className="agenda__evento"
+                  className="agenda__evento agenda__evento--link"
                   href={evento.link_ingresso}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   key={evento.id}
+                  aria-label={`Ver informações ou ingressos de ${evento.nome_evento} (abre em nova aba)`}
                 >
                   {conteudoEvento}
                 </a>

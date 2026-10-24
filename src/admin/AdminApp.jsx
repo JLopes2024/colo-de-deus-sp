@@ -11,6 +11,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDocs,
   orderBy,
@@ -32,6 +33,7 @@ const ADMIN_UID = 'IY48rYU8wDSceya8DsKTPDjRVKF3';
 const FORMULARIO_INICIAL = {
   nome_evento: '',
   data_evento: '',
+  data_fim_evento: '',
   cidade_evento: '',
   estado_evento: '',
   link_ingresso: '',
@@ -49,7 +51,7 @@ const LIMITE_EVENTOS_BACKUP = 400;
 const TAMANHO_MAXIMO_BACKUP = 2 * 1024 * 1024;
 
 // =========================================================
-// FUNÇÕES AUXILIARES DO BACKUP
+// VALIDAÇÕES E BACKUP
 // =========================================================
 
 function validarData(data) {
@@ -79,13 +81,19 @@ function validarEventoBackup(evento, indice) {
     throw new Error(`Evento ${numero}: registro inválido.`);
   }
 
-  const camposEsperados = ['id', ...CAMPOS_EVENTO];
+  const camposObrigatorios = ['id', ...CAMPOS_EVENTO];
+  const camposPermitidos = [
+    ...camposObrigatorios,
+    'data_fim_evento',
+  ];
   const camposRecebidos = Object.keys(evento);
 
   if (
-    camposRecebidos.length !== camposEsperados.length
-    || !camposEsperados.every((campo) => (
+    !camposObrigatorios.every((campo) => (
       Object.prototype.hasOwnProperty.call(evento, campo)
+    ))
+    || !camposRecebidos.every((campo) => (
+      camposPermitidos.includes(campo)
     ))
   ) {
     throw new Error(
@@ -109,7 +117,20 @@ function validarEventoBackup(evento, indice) {
   }
 
   if (!validarData(evento.data_evento)) {
-    throw new Error(`Evento ${numero}: data inválida.`);
+    throw new Error(`Evento ${numero}: data inicial inválida.`);
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      evento,
+      'data_fim_evento',
+    )
+    && (
+      !validarData(evento.data_fim_evento)
+      || evento.data_fim_evento < evento.data_evento
+    )
+  ) {
+    throw new Error(`Evento ${numero}: data final inválida.`);
   }
 
   if (
@@ -156,6 +177,9 @@ function validarEventoBackup(evento, indice) {
     id: evento.id,
     nome_evento: evento.nome_evento,
     data_evento: evento.data_evento,
+    ...(evento.data_fim_evento
+      ? { data_fim_evento: evento.data_fim_evento }
+      : {}),
     cidade_evento: evento.cidade_evento,
     estado_evento: evento.estado_evento,
     link_ingresso: evento.link_ingresso,
@@ -175,7 +199,7 @@ function validarArquivoBackup(conteudo) {
     !backup
     || typeof backup !== 'object'
     || Array.isArray(backup)
-    || backup.versao !== 1
+    || ![1, 2].includes(backup.versao)
     || backup.colecao !== 'eventos'
     || !Array.isArray(backup.eventos)
   ) {
@@ -213,6 +237,9 @@ function obterDadosEvento(evento) {
   return {
     nome_evento: evento.nome_evento,
     data_evento: evento.data_evento,
+    ...(evento.data_fim_evento
+      ? { data_fim_evento: evento.data_fim_evento }
+      : {}),
     cidade_evento: evento.cidade_evento,
     estado_evento: evento.estado_evento,
     link_ingresso: evento.link_ingresso,
@@ -478,10 +505,12 @@ function PainelAdmin({ usuario }) {
 
       const resultado = await getDocs(consulta);
 
-      const eventosCarregados = resultado.docs.map((documento) => ({
-        id: documento.id,
-        ...documento.data(),
-      }));
+      const eventosCarregados = resultado.docs.map(
+        (documento) => ({
+          id: documento.id,
+          ...documento.data(),
+        }),
+      );
 
       setEventos(eventosCarregados);
     } catch (error) {
@@ -515,7 +544,7 @@ function PainelAdmin({ usuario }) {
       const resultado = await getDocs(consulta);
 
       const backup = {
-        versao: 1,
+        versao: 2,
         colecao: 'eventos',
         exportado_em: new Date().toISOString(),
         eventos: resultado.docs.map((documento) => ({
@@ -596,16 +625,16 @@ function PainelAdmin({ usuario }) {
       }
 
       if (arquivo.size > TAMANHO_MAXIMO_BACKUP) {
-        throw new Error(
-          'O arquivo excede o limite de 2 MB.',
-        );
+        throw new Error('O arquivo excede o limite de 2 MB.');
       }
 
       const conteudo = await arquivo.text();
       const eventosBackup = validarArquivoBackup(conteudo);
 
       // Verifica quais IDs já existem no Firestore.
-      const resultado = await getDocs(collection(db, 'eventos'));
+      const resultado = await getDocs(
+        collection(db, 'eventos'),
+      );
 
       const idsExistentes = new Set(
         resultado.docs.map((documento) => documento.id),
@@ -618,7 +647,8 @@ function PainelAdmin({ usuario }) {
       setPreviaBackup({
         nomeArquivo: arquivo.name,
         eventos: eventosBackup,
-        quantidadeCriar: eventosBackup.length - quantidadeSubstituir,
+        quantidadeCriar:
+          eventosBackup.length - quantidadeSubstituir,
         quantidadeSubstituir,
       });
 
@@ -687,7 +717,6 @@ function PainelAdmin({ usuario }) {
 
     try {
       // Confere novamente o banco antes da gravação.
-      // Se a composição de IDs mudou, exige nova análise.
       const resultadoAtual = await getDocs(
         collection(db, 'eventos'),
       );
@@ -707,16 +736,18 @@ function PainelAdmin({ usuario }) {
         );
       }
 
-      // Uma única operação atômica: ou todos os eventos
-      // são gravados, ou nenhum é gravado.
+      // Uma operação atômica para todos os registros.
       const lote = writeBatch(db);
 
       for (const item of eventosBackup) {
         const referencia = doc(db, 'eventos', item.id);
 
-        // set() substitui os cinco campos do documento.
-        // Não inclui o ID como campo armazenado.
-        lote.set(referencia, obterDadosEvento(item));
+        // O ID permanece como ID do documento,
+        // não como campo armazenado.
+        lote.set(
+          referencia,
+          obterDadosEvento(item),
+        );
       }
 
       await lote.commit();
@@ -759,6 +790,7 @@ function PainelAdmin({ usuario }) {
     setFormulario({
       nome_evento: evento.nome_evento ?? '',
       data_evento: evento.data_evento ?? '',
+      data_fim_evento: evento.data_fim_evento ?? '',
       cidade_evento: evento.cidade_evento ?? '',
       estado_evento: evento.estado_evento ?? '',
       link_ingresso: evento.link_ingresso ?? '',
@@ -800,7 +832,21 @@ function PainelAdmin({ usuario }) {
       return 'Preencha todos os campos obrigatórios.';
     }
 
-    if (estado.length !== 2) {
+    if (!validarData(formulario.data_evento)) {
+      return 'Informe uma data inicial válida.';
+    }
+
+    if (
+      formulario.data_fim_evento
+      && (
+        !validarData(formulario.data_fim_evento)
+        || formulario.data_fim_evento < formulario.data_evento
+      )
+    ) {
+      return 'A data final deve ser válida e não pode ser anterior à inicial.';
+    }
+
+    if (!/^[A-Z]{2}$/.test(estado)) {
       return 'O estado deve usar a sigla com 2 letras.';
     }
 
@@ -808,8 +854,12 @@ function PainelAdmin({ usuario }) {
       try {
         const url = new URL(link);
 
-        if (!['http:', 'https:'].includes(url.protocol)) {
-          return 'O link deve começar com http:// ou https://.';
+        if (
+          !['http:', 'https:'].includes(url.protocol)
+          || /\s/.test(link)
+          || !url.hostname
+        ) {
+          return 'Informe um link de ingresso válido.';
         }
       } catch {
         return 'Informe um link de ingresso válido.';
@@ -840,6 +890,9 @@ function PainelAdmin({ usuario }) {
     const dadosEvento = {
       nome_evento: formulario.nome_evento.trim(),
       data_evento: formulario.data_evento,
+      ...(formulario.data_fim_evento
+        ? { data_fim_evento: formulario.data_fim_evento }
+        : {}),
       cidade_evento: formulario.cidade_evento.trim(),
       estado_evento: formulario.estado_evento
         .trim()
@@ -857,7 +910,12 @@ function PainelAdmin({ usuario }) {
 
         await updateDoc(
           referenciaEvento,
-          dadosEvento,
+          {
+            ...dadosEvento,
+            ...(!formulario.data_fim_evento
+              ? { data_fim_evento: deleteField() }
+              : {}),
+          },
         );
 
         setMensagem('Evento atualizado.');
@@ -954,6 +1012,10 @@ function PainelAdmin({ usuario }) {
       </header>
 
       <div className="admin-grid">
+        {/* ===============================================
+            FORMULÁRIO DE EVENTOS
+            =============================================== */}
+
         <section className="admin-card">
           <div className="admin-card__cabecalho">
             <p className="admin__indice">
@@ -983,18 +1045,41 @@ function PainelAdmin({ usuario }) {
               />
             </label>
 
-            <label className="admin-campo">
-              <span>Data *</span>
+            <div className="admin-form__linha">
+              <label className="admin-campo">
+                <span>Data inicial *</span>
 
-              <input
-                type="date"
-                value={formulario.data_evento}
-                onChange={(e) => (
-                  atualizarCampo('data_evento', e.target.value)
-                )}
-                required
-              />
-            </label>
+                <input
+                  type="date"
+                  value={formulario.data_evento}
+                  onChange={(e) => (
+                    atualizarCampo('data_evento', e.target.value)
+                  )}
+                  required
+                />
+              </label>
+
+              <label className="admin-campo">
+                <span>Data final (opcional)</span>
+
+                <input
+                  type="date"
+                  min={formulario.data_evento || undefined}
+                  value={formulario.data_fim_evento}
+                  onChange={(e) => (
+                    atualizarCampo(
+                      'data_fim_evento',
+                      e.target.value,
+                    )
+                  )}
+                />
+
+                <small>
+                  Preencha apenas se o evento durar
+                  mais de um dia.
+                </small>
+              </label>
+            </div>
 
             <div className="admin-form__linha">
               <label className="admin-campo">
@@ -1005,7 +1090,10 @@ function PainelAdmin({ usuario }) {
                   maxLength="100"
                   value={formulario.cidade_evento}
                   onChange={(e) => (
-                    atualizarCampo('cidade_evento', e.target.value)
+                    atualizarCampo(
+                      'cidade_evento',
+                      e.target.value,
+                    )
                   )}
                   required
                 />
@@ -1037,13 +1125,16 @@ function PainelAdmin({ usuario }) {
                 placeholder="https://..."
                 value={formulario.link_ingresso}
                 onChange={(e) => (
-                  atualizarCampo('link_ingresso', e.target.value)
+                  atualizarCampo(
+                    'link_ingresso',
+                    e.target.value,
+                  )
                 )}
               />
 
               <small>
-                Opcional. O botão só aparece no site quando
-                este campo estiver preenchido.
+                Opcional. O link só aparece no site
+                quando este campo estiver preenchido.
               </small>
             </label>
 
@@ -1092,6 +1183,10 @@ function PainelAdmin({ usuario }) {
           </form>
         </section>
 
+        {/* ===============================================
+            LISTAGEM E BACKUP
+            =============================================== */}
+
         <section className="admin-card">
           <div className="admin-card__cabecalho">
             <p className="admin__indice">
@@ -1102,6 +1197,7 @@ function PainelAdmin({ usuario }) {
           </div>
 
           {/* EXPORTAÇÃO */}
+
           <div className="admin-form__acoes">
             <button
               className="admin-botao admin-botao--secundario"
@@ -1116,6 +1212,7 @@ function PainelAdmin({ usuario }) {
           </div>
 
           {/* IMPORTAÇÃO */}
+
           <div className="admin-form">
             <label className="admin-campo">
               <span>Importar backup da Agenda</span>
@@ -1124,7 +1221,9 @@ function PainelAdmin({ usuario }) {
                 type="file"
                 accept=".json,application/json"
                 onChange={selecionarBackup}
-                disabled={analisandoBackup || importandoBackup}
+                disabled={
+                  analisandoBackup || importandoBackup
+                }
               />
 
               <small>
@@ -1135,7 +1234,9 @@ function PainelAdmin({ usuario }) {
           </div>
 
           {analisandoBackup && (
-            <p role="status">Analisando arquivo de backup...</p>
+            <p role="status">
+              Analisando arquivo de backup...
+            </p>
           )}
 
           {erroBackup && (
@@ -1156,7 +1257,8 @@ function PainelAdmin({ usuario }) {
             </p>
           )}
 
-          {/* PRÉ-VISUALIZAÇÃO */}
+          {/* PRÉ-VISUALIZAÇÃO DO BACKUP */}
+
           {previaBackup && (
             <section aria-labelledby="backup-previa-titulo">
               <div className="admin-card__cabecalho">
@@ -1195,24 +1297,26 @@ function PainelAdmin({ usuario }) {
               </p>
 
               <div className="admin-eventos">
-                {previaBackup.eventos.slice(0, 10).map((item) => (
-                  <article
-                    className="admin-evento"
-                    key={item.id}
-                  >
-                    <div>
-                      <h3>{item.nome_evento}</h3>
+                {previaBackup.eventos.slice(0, 10).map(
+                  (item) => (
+                    <article
+                      className="admin-evento"
+                      key={item.id}
+                    >
+                      <div>
+                        <h3>{item.nome_evento}</h3>
 
-                      <p>
-                        {formatarData(item.data_evento)}
-                        {' // '}
-                        {item.cidade_evento}
-                        {' // '}
-                        {item.estado_evento}
-                      </p>
-                    </div>
-                  </article>
-                ))}
+                        <p>
+                          {formatarPeriodo(item)}
+                          {' // '}
+                          {item.cidade_evento}
+                          {' // '}
+                          {item.estado_evento}
+                        </p>
+                      </div>
+                    </article>
+                  ),
+                )}
               </div>
 
               {previaBackup.eventos.length > 10 && (
@@ -1247,6 +1351,7 @@ function PainelAdmin({ usuario }) {
           )}
 
           {/* LISTAGEM ATUAL */}
+
           {carregando && (
             <p role="status">
               Carregando eventos...
@@ -1260,7 +1365,10 @@ function PainelAdmin({ usuario }) {
           {!carregando && eventos.length > 0 && (
             <div className="admin-eventos">
               {eventos.map((evento) => {
-                const encerrado = evento.data_evento < hoje;
+                const encerrado = (
+                  evento.data_fim_evento
+                  || evento.data_evento
+                ) < hoje;
 
                 return (
                   <article
@@ -1274,7 +1382,7 @@ function PainelAdmin({ usuario }) {
                     <div>
                       <div className="admin-evento__meta">
                         <time dateTime={evento.data_evento}>
-                          {formatarData(evento.data_evento)}
+                          {formatarPeriodo(evento)}
                         </time>
 
                         {encerrado && (
@@ -1342,6 +1450,17 @@ function formatarData(data) {
     .format(new Date(`${data}T12:00:00`))
     .replace('.', '')
     .toUpperCase();
+}
+
+function formatarPeriodo(evento) {
+  const inicio = formatarData(evento.data_evento);
+  const fim = evento.data_fim_evento;
+
+  if (!fim || fim === evento.data_evento) {
+    return inicio;
+  }
+
+  return `${inicio} — ${formatarData(fim)}`;
 }
 
 export default AdminApp;

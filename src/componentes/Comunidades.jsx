@@ -29,7 +29,11 @@ function Comunidades() {
             </h2>
 
             <p className="comunidades__descricao">
-              Estamos presentes nas casas, nas famílias e na vida de jovens, crianças e adultos. Caminhamos por meio das células, cenáculos e do cuidado no um a um, tratando cada pessoa como única e preparando a volta de Cristo.
+              Estamos presentes nas casas, nas famílias e
+              na vida de jovens, crianças e adultos.
+              Caminhamos por meio das células, dos cenáculos
+              e do cuidado de um a um, tratando cada pessoa
+              como única e preparando a volta de Cristo.
             </p>
             <p className="comunidades__descricao">
             As células são pequenos grupos que se reúnem nas casas para viver a fé, criar vínculos, partilhar a Palavra e caminhar juntos, mas ela foi pensada para você: Jovem comum, com chamado extaordinário!

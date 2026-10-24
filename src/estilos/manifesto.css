@@ -1,115 +1,70 @@
-/* =========================================================
-   MANIFESTO
-   Nossa essência em cinco características.
 
-   Princípio aplicado:
-   Von Restorff — "Criativos" rompe o padrão visual das
-   palavras anteriores por meio de fundo sólido + texto branco.
+/* =========================================================
+   MANIFESTO — LAYOUT EDITORIAL
    ========================================================= */
 
 .manifesto {
   background-color: var(--cor-branco);
   color: var(--cor-preto);
-
   padding-block: var(--espaco-8);
-
   overflow: hidden;
 }
 
-
-/* =========================================================
-   CONTEÚDO
-   ========================================================= */
-
 .manifesto__conteudo {
   display: grid;
-
   grid-template-columns:
-    minmax(0, 1.05fr)
-    minmax(320px, 0.95fr);
-
-  gap: clamp(3rem, 6vw, 7rem);
-
-  align-items: center;
+    minmax(0, 1.08fr)
+    minmax(320px, 0.92fr);
+  grid-template-areas:
+    "cabecalho imagem"
+    "texto texto";
+  gap:
+    clamp(3rem, 5vw, 5rem)
+    clamp(3rem, 6vw, 7rem);
+  align-items: end;
 }
 
-
-/* =========================================================
-   TEXTO
-   ========================================================= */
+/* Título */
 
 .manifesto__texto {
+  grid-area: cabecalho;
   min-width: 0;
 }
 
-
-/* =========================================================
-   ÍNDICE
-   ========================================================= */
-
 .manifesto__indice {
   margin-bottom: var(--espaco-4);
-
   color: var(--cor-preto);
-
   font-size: var(--texto-xs);
   font-weight: 700;
-
   letter-spacing: 0.14em;
-
   text-transform: uppercase;
 }
-
-
-/* =========================================================
-   TÍTULO
-   ========================================================= */
 
 .manifesto__titulo {
   display: flex;
   flex-direction: column;
-
   width: 100%;
-
-  font-size: clamp(3.5rem, 6vw, 7rem);
+  font-size: clamp(2.15rem, 3.5vw, 5rem);
   font-weight: 700;
-
   line-height: 0.84;
-
   letter-spacing: -0.055em;
-
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   LINHAS
-   ========================================================= */
-
 .manifesto__linha {
   display: block;
-
   width: fit-content;
-
   opacity: 0;
-
   transform: translateY(24px);
-
   transition:
     opacity 600ms ease,
     transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-
-/* =========================================================
-   ENTRADA DAS LINHAS
-
-   Cada característica entra em sequência.
-   ========================================================= */
+/* Entrada animada */
 
 .manifesto--visivel .manifesto__linha {
   opacity: 1;
-
   transform: translateY(0);
 }
 
@@ -133,105 +88,58 @@
   transition-delay: 400ms;
 }
 
-
-/* =========================================================
-   LINHA DE DESTAQUE
-   ========================================================= */
+/* Destaque CRIATIVOS */
 
 .manifesto__destaque {
   display: flex;
   align-items: baseline;
-
   gap: 0.12em;
-
   margin-top: 0.08em;
 }
 
-
-/* =========================================================
-   "&"
-   Mantém o símbolo fora do bloco de destaque.
-   ========================================================= */
-
 .manifesto__e {
   color: var(--cor-preto);
-
   font-size: 0.5em;
   font-weight: 500;
-
   line-height: 1;
 }
 
-
-/* =========================================================
-   VON RESTORFF — CRIATIVOS
-   ========================================================= */
-
 .manifesto__criativos {
   position: relative;
-
   display: inline-block;
-
-  padding:
-    0
-    0.10em
-    0.04em;
-
+  padding: 0 0.10em 0.04em;
   background-color: var(--cor-azul);
-
   color: var(--cor-branco);
-
   line-height: 0.9;
-
   transform-origin: left center;
 }
-
-
-/* =========================================================
-   ANIMAÇÃO AUTOMÁTICA
-
-   Executada apenas quando o Manifesto entra na viewport
-   pela primeira vez.
-   ========================================================= */
 
 .manifesto--visivel .manifesto__criativos {
   animation:
     criativos-faixa 850ms
     cubic-bezier(0.2, 0.8, 0.2, 1)
-    420ms
-    both;
+    420ms both;
 }
 
-
-/* =========================================================
-   KEYFRAMES — CRIATIVOS
-   ========================================================= */
-
 @keyframes criativos-faixa {
-
   0% {
     opacity: 0;
-
     transform:
       scaleX(0.65)
       translateX(-0.18em)
       rotate(-1.5deg);
   }
 
-
   60% {
     opacity: 1;
-
     transform:
       scaleX(1.03)
       translateX(0.03em)
       rotate(0.5deg);
   }
 
-
   100% {
     opacity: 1;
-
     transform:
       scaleX(1)
       translateX(0)
@@ -239,18 +147,10 @@
   }
 }
 
-
-/* =========================================================
-   HOVER DO DESTAQUE
-   ========================================================= */
-
 @media (hover: hover) {
-
   .manifesto__criativos {
-    transition:
-      transform 220ms ease;
+    transition: transform 220ms ease;
   }
-
 
   .manifesto__criativos:hover {
     transform:
@@ -259,92 +159,74 @@
   }
 }
 
+/* Parágrafos abaixo do título e imagem */
 
-/* =========================================================
-   IMAGEM
-   ========================================================= */
+.manifesto__paragrafo {
+  grid-area: texto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 5rem);
+  width: 100%;
+  min-width: 0;
+}
+
+.manifesto__paragrafo p {
+  margin: 0;
+  color: var(--cor-preto);
+  font-size: clamp(0.9rem, 1vw, 1.05rem);
+  line-height: 1.7;
+  opacity: 0.82;
+}
+
+/* Imagem */
 
 .manifesto__imagem {
+  grid-area: imagem;
   width: 100%;
-
   min-height: 520px;
-
   overflow: hidden;
-
   background-color: var(--cor-preto-suave);
-
   opacity: 0;
-
   transform: translateX(28px);
-
   transition:
     opacity 750ms ease 300ms,
     transform 850ms cubic-bezier(0.2, 0.7, 0.2, 1) 300ms;
 }
 
-
-/* =========================================================
-   IMAGEM VISÍVEL
-   ========================================================= */
-
 .manifesto--visivel .manifesto__imagem {
   opacity: 1;
-
   transform: translateX(0);
 }
 
-
-/* =========================================================
-   FOTO
-   ========================================================= */
-
 .manifesto__imagem img {
   display: block;
-
   width: 100%;
   height: 100%;
-
   min-height: 520px;
-
   object-fit: cover;
   object-position: center;
-
-  transition:
-    transform 500ms ease;
+  transition: transform 500ms ease;
 }
 
-
-/* =========================================================
-   HOVER DA FOTO
-   ========================================================= */
-
 @media (hover: hover) {
-
   .manifesto__imagem:hover img {
     transform: scale(1.015);
   }
 }
 
-
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* Tablet */
 
 @media (max-width: 1000px) {
-
   .manifesto__conteudo {
     grid-template-columns:
       minmax(0, 1fr)
       minmax(280px, 0.8fr);
-
     gap: var(--espaco-5);
   }
 
-
   .manifesto__titulo {
-    font-size: clamp(3rem, 6.5vw, 5.5rem);
+    font-size: clamp(2.15rem, 3.5vw, 4.5rem);
   }
-
 
   .manifesto__imagem,
   .manifesto__imagem img {
@@ -352,31 +234,32 @@
   }
 }
 
+/* Mobile: título, parágrafos e imagem */
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 760px) {
-
+@media (max-width: 900px) {
   .manifesto {
     padding-block: var(--espaco-7);
   }
 
-
   .manifesto__conteudo {
     grid-template-columns: 1fr;
-
+    grid-template-areas:
+      "cabecalho"
+      "texto"
+      "imagem";
     gap: var(--espaco-5);
   }
 
-
-  .manifesto__titulo {
-    font-size: clamp(2.8rem, 11vw, 5rem);
-
-    line-height: 0.86;
+  .manifesto__paragrafo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
   }
 
+  .manifesto__titulo {
+    font-size: clamp(2rem, 8.5vw, 4.2rem);
+    line-height: 0.86;
+  }
 
   .manifesto__imagem,
   .manifesto__imagem img {
@@ -384,85 +267,87 @@
   }
 }
 
-
-/* =========================================================
-   CELULAR
-   ========================================================= */
+/* Celular */
 
 @media (max-width: 520px) {
-
   .manifesto {
     padding-block: var(--espaco-6);
   }
-
 
   .manifesto__indice {
     margin-bottom: var(--espaco-3);
   }
 
-
   .manifesto__titulo {
-    font-size: clamp(2.5rem, 11vw, 4.2rem);
+    font-size: clamp(1.85rem, 8vw, 3rem);
   }
-
 
   .manifesto__destaque {
     gap: 0.08em;
   }
 
-
   .manifesto__criativos {
-    padding:
-      0
-      0.08em
-      0.04em;
+    padding: 0 0.08em 0.04em;
   }
-
 
   .manifesto__imagem,
   .manifesto__imagem img {
     min-height: 300px;
   }
+
+  .manifesto__paragrafo p {
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
 }
 
-
-/* =========================================================
-   MOVIMENTO REDUZIDO
-
-   Remove:
-   - entrada das linhas;
-   - entrada da imagem;
-   - animação do destaque;
-   - zoom da foto.
-   ========================================================= */
+/* Acessibilidade */
 
 @media (prefers-reduced-motion: reduce) {
-
   .manifesto__linha,
   .manifesto__imagem {
     opacity: 1;
-
     transform: none;
-
     transition: none;
   }
-
 
   .manifesto__criativos {
     animation: none;
-
     transform: none;
-
     transition: none;
   }
-
 
   .manifesto__imagem img {
     transition: none;
   }
 
-
   .manifesto__imagem:hover img {
     transform: none;
+  }
+}
+
+/* =========================================================
+   RESTAURAÇÃO DOS TAMANHOS ORIGINAIS DO MANIFESTO
+   ========================================================= */
+
+.manifesto__titulo {
+  font-size: clamp(3.5rem, 6vw, 7rem);
+}
+
+@media (max-width: 1000px) {
+  .manifesto__titulo {
+    font-size: clamp(3rem, 6.5vw, 5.5rem);
+  }
+}
+
+@media (max-width: 760px) {
+  .manifesto__titulo {
+    font-size: clamp(2.8rem, 11vw, 5rem);
+  }
+}
+
+@media (max-width: 520px) {
+  .manifesto__titulo {
+    font-size: clamp(2.5rem, 11vw, 4.2rem);
   }
 }
