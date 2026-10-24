@@ -113,12 +113,7 @@ function Manifesto() {
       {/* TEXTO ORIGINAL DO MANIFESTO */}
 
       <div className="manifesto__rodape container">
-        <div className="manifesto__marcador">
-          <span aria-hidden="true" />
-          <p>Nosso jeito de evangelizar</p>
-        </div>
-
-        <div className="manifesto__paragrafo">
+                <div className="manifesto__paragrafo">
           <p>
             Evangelizamos com criatividade, arte e cultura
             do encontro, apresentando o Cristo que

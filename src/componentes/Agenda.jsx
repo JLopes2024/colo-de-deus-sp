@@ -145,12 +145,6 @@ function Agenda() {
             Próximos
             <span>encontros</span>
           </h2>
-
-          <p className="agenda__descricao">
-            Momentos para viver a fé,
-            encontrar pessoas e experimentar
-            a missão.
-          </p>
         </header>
 
         {carregando && (
