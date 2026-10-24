@@ -1,3 +1,4 @@
+
 import {
   useEffect,
   useState,
@@ -5,14 +6,8 @@ import {
 
 import '../estilos/hero.css';
 
-
 /* =========================================================
    IMAGENS DO HERO
-
-   Cada imagem possui seu próprio enquadramento.
-
-   Isso evita depender de um único "center center"
-   para fotografias com composições diferentes.
    ========================================================= */
 
 const fotosHero = [
@@ -34,20 +29,126 @@ const fotosHero = [
   },
 ];
 
+/* =========================================================
+   REDES SOCIAIS
+   ========================================================= */
+
+const redesSociais = [
+  {
+    nome: 'Instagram',
+    tipo: 'instagram',
+    url: 'https://www.instagram.com/colodedeus/?hl=pt-br',
+  },
+  {
+    nome: 'YouTube',
+    tipo: 'youtube',
+    url: 'https://www.youtube.com/channel/UCw7SCTLZq2byYiirHtc25-Q',
+  },
+  {
+    nome: 'Spotify',
+    tipo: 'spotify',
+    url: 'https://open.spotify.com/intl-pt/artist/1AY6YtpuVujP4Pa3ibD1M1',
+  },
+];
+
+/* =========================================================
+   ÍCONES SVG
+   Sem dependências adicionais
+   ========================================================= */
+
+function IconeRede({ tipo }) {
+  if (tipo === 'instagram') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <rect
+          x="2"
+          y="2"
+          width="20"
+          height="20"
+          rx="5"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="4.2"
+        />
+        <circle
+          cx="17.5"
+          cy="6.5"
+          r="1"
+          fill="currentColor"
+          stroke="none"
+        />
+      </svg>
+    );
+  }
+
+  if (tipo === 'youtube') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <rect
+          x="2"
+          y="5"
+          width="20"
+          height="14"
+          rx="4"
+        />
+        <path
+          d="M10 9 L16 12 L10 15 Z"
+          fill="currentColor"
+          stroke="none"
+        />
+      </svg>
+    );
+  }
+
+  if (tipo === 'spotify') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        aria-hidden="true"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="10"
+        />
+        <path d="M5.5 9.2 C10 7.7 15.5 8.3 19 10.5" />
+        <path d="M6.5 12.5 C10 11.3 14.5 11.7 17.5 13.5" />
+        <path d="M7.5 15.7 C10.5 14.8 13.5 15.2 16 16.5" />
+      </svg>
+    );
+  }
+
+  return null;
+}
+
+/* =========================================================
+   COMPONENTE HERO
+   ========================================================= */
 
 function Hero() {
   const [fotoAtual, setFotoAtual] = useState(0);
-
-
-  /* =======================================================
-     CARROSSEL AUTOMÁTICO
-
-     Para usuários com "reduzir movimento" ativado,
-     mantemos apenas a primeira fotografia.
-
-     Dessa forma não basta esconder a transição no CSS:
-     evitamos também a troca automática no React.
-     ======================================================= */
 
   useEffect(() => {
     const prefereMenosMovimento =
@@ -60,11 +161,9 @@ function Hero() {
     }
 
     const intervalo = window.setInterval(() => {
-      setFotoAtual((indiceAtual) => {
-        return (
-          indiceAtual + 1
-        ) % fotosHero.length;
-      });
+      setFotoAtual((indiceAtual) => (
+        (indiceAtual + 1) % fotosHero.length
+      ));
     }, 6000);
 
     return () => {
@@ -72,17 +171,13 @@ function Hero() {
     };
   }, []);
 
-
   return (
     <section
       className="hero"
       id="inicio"
       aria-labelledby="hero-titulo"
     >
-
-      {/* ===================================================
-          CARROSSEL FOTOGRÁFICO
-          =================================================== */}
+      {/* CARROSSEL FOTOGRÁFICO */}
 
       <div
         className="hero__carrossel"
@@ -90,6 +185,7 @@ function Hero() {
       >
         {fotosHero.map((foto, indice) => (
           <img
+            key={foto.src}
             className={[
               'hero__imagem',
               indice === fotoAtual
@@ -100,95 +196,82 @@ function Hero() {
               .join(' ')}
             src={foto.src}
             style={{
-              objectPosition:
-                foto.posicao,
+              objectPosition: foto.posicao,
             }}
             alt=""
-            key={foto.src}
+            loading={indice === 0 ? 'eager' : 'lazy'}
+            fetchPriority={
+              indice === 0 ? 'high' : 'auto'
+            }
           />
         ))}
       </div>
 
-
-      {/* ===================================================
-          CAMADA PARA GARANTIR CONTRASTE DO TEXTO
-          =================================================== */}
+      {/* CAMADA DE CONTRASTE */}
 
       <div
         className="hero__camada"
         aria-hidden="true"
       />
 
-
-      {/* ===================================================
-          CONTEÚDO
-          =================================================== */}
+      {/* CONTEÚDO */}
 
       <div className="hero__conteudo container">
 
-        {/* ---------------------------------------------------
-            TOPO
-            --------------------------------------------------- */}
+        {/* IDENTIFICAÇÃO */}
 
         <div className="hero__topo">
-
           <p className="hero__identificacao">
             Colo de Deus // Missão SP
           </p>
-
-          <a
-            className="hero__atalho"
-            href="#quem-somos"
-          >
-            Conheça a missão
-
-            <span aria-hidden="true">
-              ↘
-            </span>
-          </a>
         </div>
 
-
-        {/* ---------------------------------------------------
-            MENSAGEM PRINCIPAL
-            --------------------------------------------------- */}
+        {/* TÍTULO PRINCIPAL */}
 
         <div className="hero__principal">
-
           <h1
             className="hero__titulo"
             id="hero-titulo"
           >
             <span>Gente</span>
-
             <span>imperfeita</span>
-
             <span>cuidando de</span>
-
             <span>gente</span>
-
             <span>imperfeita</span>
           </h1>
         </div>
 
-
-        {/* ---------------------------------------------------
-            CTA PRINCIPAL
-
-            A ação deixa de repetir "Quem somos"
-            e passa a levar para uma próxima ação concreta.
-            --------------------------------------------------- */}
+        {/* RODAPÉ E REDES SOCIAIS */}
 
         <div className="hero__rodape">
 
-          <a
-            href="#celulas"
-            className="hero__acao"
+          <nav
+            className="hero__sociais"
+            aria-label="Redes sociais da Colo de Deus"
           >
-            Encontre uma célula
+            {redesSociais.map((rede) => (
+              <a
+                key={rede.tipo}
+                className="hero__social"
+                href={rede.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visitar ${rede.nome} da Colo de Deus`}
+                title={rede.nome}
+              >
+                <IconeRede tipo={rede.tipo} />
+              </a>
+            ))}
+          </nav>
+
+          <a
+            href="#quem-somos"
+            className="hero__explorar"
+          >
+            Explore a missão
 
             <span aria-hidden="true">
-              →
+              ↓
             </span>
           </a>
 

@@ -1,14 +1,8 @@
+
 /* =========================================================
-   HERO
-
-   Direção:
-   editorial + fotográfico + ação clara
-
-   A fotografia cria atmosfera.
-   O título continua sendo o protagonista.
-   O CTA leva para uma ação concreta.
+   HERO — EDITORIAL CLARO
+   Colo de Deus | Missão SP
    ========================================================= */
-
 
 /* =========================================================
    SEÇÃO
@@ -17,18 +11,13 @@
 .hero {
   position: relative;
 
-  min-height:
-    calc(100svh - 88px);
+  min-height: calc(100svh - 88px);
 
   overflow: hidden;
 
-  background-color:
-    var(--cor-branco);
-
-  color:
-    var(--cor-preto);
+  background-color: var(--cor-branco);
+  color: var(--cor-preto);
 }
-
 
 /* =========================================================
    CARROSSEL
@@ -38,24 +27,23 @@
   position: absolute;
 
   inset: 0;
-
   z-index: 0;
 
   overflow: hidden;
 
-  background-color:
-    var(--cor-branco);
+  background-color: var(--cor-branco);
 }
 
-
 /* =========================================================
-   IMAGEM
+   FOTOGRAFIAS
    ========================================================= */
 
 .hero__imagem {
   position: absolute;
 
   inset: 0;
+
+  display: block;
 
   width: 100%;
   height: 100%;
@@ -64,55 +52,34 @@
 
   opacity: 0;
 
-  /*
-   * Mantemos a fotografia suavizada,
-   * mas menos "lavada" do que antes.
-   */
   filter:
-    grayscale(8%)
-    saturate(0.86)
-    contrast(0.96)
-    brightness(1.03);
+    grayscale(5%)
+    saturate(0.94)
+    contrast(0.98)
+    brightness(1.01);
 
-  /*
-   * Movimento muito discreto.
-   *
-   * O Hero deve parecer fotográfico,
-   * não um slideshow chamativo.
-   */
-  transform:
-    scale(1.01);
+  transform: scale(1.01);
 
   transition:
     opacity 1.2s ease,
     transform 7s ease;
 }
 
-
-/* =========================================================
-   FOTO ATIVA
-   ========================================================= */
-
 .hero__imagem--ativa {
   opacity: 1;
 
-  transform:
-    scale(1.04);
+  transform: scale(1.04);
 }
-
 
 /* =========================================================
    CAMADA DE CONTRASTE
-
-   Reduzimos a opacidade em comparação à versão anterior,
-   deixando mais presença para a fotografia.
+   Mais transparente para valorizar a fotografia
    ========================================================= */
 
 .hero__camada {
   position: absolute;
 
   inset: 0;
-
   z-index: 1;
 
   pointer-events: none;
@@ -120,18 +87,17 @@
   background:
     linear-gradient(
       90deg,
-      rgba(242, 241, 237, 0.82) 0%,
-      rgba(242, 241, 237, 0.72) 38%,
-      rgba(242, 241, 237, 0.52) 68%,
-      rgba(242, 241, 237, 0.38) 100%
+      rgba(242, 241, 237, 0.76) 0%,
+      rgba(242, 241, 237, 0.66) 38%,
+      rgba(242, 241, 237, 0.38) 68%,
+      rgba(242, 241, 237, 0.18) 100%
     ),
     linear-gradient(
       0deg,
-      rgba(242, 241, 237, 0.68) 0%,
-      rgba(242, 241, 237, 0.12) 62%
+      rgba(242, 241, 237, 0.40) 0%,
+      rgba(242, 241, 237, 0) 55%
     );
 }
-
 
 /* =========================================================
    CONTEÚDO
@@ -145,16 +111,11 @@
   display: flex;
   flex-direction: column;
 
-  min-height:
-    calc(100svh - 88px);
+  min-height: calc(100svh - 88px);
 
-  padding-top:
-    var(--espaco-4);
-
-  padding-bottom:
-    var(--espaco-4);
+  padding-top: var(--espaco-4);
+  padding-bottom: var(--espaco-4);
 }
-
 
 /* =========================================================
    TOPO
@@ -166,71 +127,25 @@
   align-items: flex-start;
   justify-content: space-between;
 
-  gap:
-    var(--espaco-3);
+  gap: var(--espaco-3);
 }
 
+.hero__identificacao {
+  margin: 0;
 
-/* =========================================================
-   IDENTIFICAÇÃO + LINK SECUNDÁRIO
-   ========================================================= */
+  color: var(--cor-preto);
 
-.hero__identificacao,
-.hero__atalho {
-  color:
-    var(--cor-preto);
-
-  font-size:
-    var(--texto-xs);
-
+  font-size: var(--texto-xs);
   font-weight: 700;
 
-  letter-spacing:
-    0.08em;
+  letter-spacing: 0.08em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 }
-
-
-/* =========================================================
-   LINK SECUNDÁRIO
-   ========================================================= */
-
-.hero__atalho {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap:
-    var(--espaco-1);
-
-  opacity: 0.78;
-
-  transition:
-    gap var(--transicao-rapida),
-    opacity var(--transicao-rapida);
-}
-
-
-.hero__atalho:hover {
-  gap:
-    var(--espaco-2);
-
-  opacity: 1;
-}
-
-
-.hero__atalho:focus-visible {
-  outline:
-    2px solid var(--cor-preto);
-
-  outline-offset: 5px;
-}
-
 
 /* =========================================================
    ÁREA PRINCIPAL
+   Reserva espaço para os ícones laterais
    ========================================================= */
 
 .hero__principal {
@@ -240,358 +155,360 @@
 
   flex: 1;
 
-  padding-block:
-    clamp(2rem, 6vh, 5rem);
-}
+  min-width: 0;
 
+  padding-block: clamp(2rem, 6vh, 5rem);
+
+  padding-left: clamp(3.5rem, 6vw, 6.5rem);
+}
 
 /* =========================================================
    TÍTULO
+   Escala reduzida e composição assimétrica
    ========================================================= */
 
 .hero__titulo {
   display: flex;
-
   flex-direction: column;
 
   width: 100%;
+  min-width: 0;
 
-  color:
-    var(--cor-preto);
+  margin: 0;
 
-  font-size:
-    clamp(
-      4rem,
-      9.5vw,
-      10rem
-    );
+  color: var(--cor-preto);
 
+  font-size: clamp(3rem, 6.3vw, 7rem);
   font-weight: 500;
 
-  line-height: 0.82;
+  line-height: 0.88;
 
-  letter-spacing:
-    -0.055em;
+  letter-spacing: -0.055em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 
   word-break: normal;
   overflow-wrap: normal;
   hyphens: none;
 }
 
-
-/* =========================================================
-   LINHAS
-   ========================================================= */
-
 .hero__titulo span {
   display: block;
+  width: fit-content;
+  max-width: 100%;
 }
 
-
-/*
- * A assimetria continua sendo uma das principais
- * características visuais do Hero.
- */
+/* Assimetria mais discreta */
 
 .hero__titulo span:nth-child(2) {
-  margin-left: 4vw;
-}
-
-
-.hero__titulo span:nth-child(3) {
-  margin-left: 12vw;
-}
-
-
-.hero__titulo span:nth-child(4) {
   margin-left: 2vw;
 }
 
-
-.hero__titulo span:nth-child(5) {
-  margin-left: 8vw;
+.hero__titulo span:nth-child(3) {
+  margin-left: 5vw;
 }
 
+.hero__titulo span:nth-child(4) {
+  margin-left: 1vw;
+}
+
+.hero__titulo span:nth-child(5) {
+  margin-left: 3vw;
+}
 
 /* =========================================================
-   RODAPÉ DO HERO
+   RODAPÉ
    ========================================================= */
 
 .hero__rodape {
   display: flex;
 
-  align-items: flex-end;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: flex-end;
 
-  gap:
-    var(--espaco-4);
+  gap: var(--espaco-4);
+
+  min-height: 48px;
 }
 
-
 /* =========================================================
-   CTA PRINCIPAL
-
-   Continua editorial.
-   Não transformamos em um botão pesado.
-
-   A linha inferior cria um alvo claro,
-   mantendo o estilo do restante do site.
+   REDES SOCIAIS
+   Posicionamento vertical no desktop
    ========================================================= */
 
-.hero__acao {
-  display: inline-flex;
+.hero__sociais {
+  position: absolute;
+
+  top: 50%;
+  left: 0;
+
+  display: flex;
+  flex-direction: column;
 
   align-items: center;
 
-  gap:
-    var(--espaco-2);
+  gap: 0.75rem;
+
+  transform: translateY(-50%);
+}
+
+.hero__social {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+
+  background-color: rgba(242, 241, 237, 0.16);
+
+  color: var(--cor-preto);
+
+  text-decoration: none;
+
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    transform 220ms ease;
+}
+
+.hero__social svg {
+  display: block;
+
+  width: 20px;
+  height: 20px;
+}
+
+.hero__social:hover {
+  background-color: var(--cor-azul);
+
+  border-color: var(--cor-azul);
+
+  color: var(--cor-branco);
+
+  transform: translateY(-2px);
+}
+
+.hero__social:focus-visible {
+  outline: 2px solid var(--cor-azul);
+
+  outline-offset: 4px;
+}
+
+/* =========================================================
+   EXPLORE A MISSÃO
+   ========================================================= */
+
+.hero__explorar {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.8rem;
 
   min-height: 44px;
 
-  padding:
-    0.45rem 0;
+  padding: 0.45rem 0;
 
-  border-bottom:
-    1px solid var(--cor-preto);
+  border-bottom: 1px solid var(--cor-preto);
 
-  color:
-    var(--cor-preto);
+  color: var(--cor-preto);
 
-  font-size:
-    var(--texto-sm);
-
+  font-size: var(--texto-xs);
   font-weight: 700;
 
-  letter-spacing:
-    0.04em;
+  letter-spacing: 0.10em;
 
-  text-transform:
-    uppercase;
+  text-decoration: none;
+  text-transform: uppercase;
 
   transition:
-    gap var(--transicao-rapida),
-    opacity var(--transicao-rapida);
+    gap 220ms ease,
+    opacity 220ms ease;
 }
 
+.hero__explorar span {
+  font-size: 1.2rem;
 
-.hero__acao:hover {
-  gap:
-    var(--espaco-3);
-
-  opacity: 0.68;
+  line-height: 1;
 }
 
+.hero__explorar:hover {
+  gap: 1.15rem;
 
-.hero__acao:focus-visible {
-  outline:
-    2px solid var(--cor-preto);
+  opacity: 0.72;
+}
+
+.hero__explorar:focus-visible {
+  outline: 2px solid var(--cor-preto);
 
   outline-offset: 5px;
 }
-
 
 /* =========================================================
    TABLET
    ========================================================= */
 
 @media (max-width: 900px) {
-
-  .hero {
-    min-height:
-      calc(100svh - 72px);
-  }
-
-
+  .hero,
   .hero__conteudo {
-    min-height:
-      calc(100svh - 72px);
+    min-height: calc(100svh - 72px);
   }
 
-
-  /*
-   * No tablet a leitura passa a ser mais vertical.
-   * A camada fica um pouco mais presente.
-   */
   .hero__camada {
     background:
       linear-gradient(
         0deg,
-        rgba(242, 241, 237, 0.91) 0%,
-        rgba(242, 241, 237, 0.76) 52%,
-        rgba(242, 241, 237, 0.44) 100%
+        rgba(242, 241, 237, 0.78) 0%,
+        rgba(242, 241, 237, 0.60) 50%,
+        rgba(242, 241, 237, 0.30) 100%
       );
   }
 
+  .hero__principal {
+    padding-left: 4rem;
+  }
 
   .hero__titulo {
-    font-size:
-      clamp(
-        3.4rem,
-        14vw,
-        7rem
-      );
+    font-size: clamp(3rem, 8vw, 5.5rem);
   }
 
-
-  /*
-   * Retiramos os deslocamentos grandes em telas menores.
-   *
-   * Em telas estreitas eles passam a desperdiçar espaço
-   * em vez de criar assimetria interessante.
-   */
   .hero__titulo span:nth-child(2),
   .hero__titulo span:nth-child(3),
   .hero__titulo span:nth-child(4),
   .hero__titulo span:nth-child(5) {
     margin-left: 0;
   }
-}
 
+  .hero__social {
+    width: 40px;
+    height: 40px;
+  }
+}
 
 /* =========================================================
    MOBILE
+   Redes horizontais no rodapé
    ========================================================= */
 
 @media (max-width: 600px) {
-
-  .hero {
-    min-height:
-      calc(100svh - 72px);
+  .hero,
+  .hero__conteudo {
+    min-height: calc(100svh - 72px);
   }
-
 
   .hero__conteudo {
-    min-height:
-      calc(100svh - 72px);
-
-    padding-top:
-      var(--espaco-3);
-
-    padding-bottom:
-      var(--espaco-3);
+    padding-top: var(--espaco-3);
+    padding-bottom: var(--espaco-3);
   }
-
-
-  /* -------------------------------------------------------
-     TOPO
-     ------------------------------------------------------- */
-
-  .hero__topo {
-    align-items: center;
-  }
-
-
-  /*
-   * Mantemos somente a identificação.
-   *
-   * O link secundário some para reduzir competição
-   * com a mensagem principal.
-   */
-  .hero__atalho {
-    display: none;
-  }
-
-
-  /* -------------------------------------------------------
-     TÍTULO
-     ------------------------------------------------------- */
 
   .hero__principal {
-    padding-block:
-      var(--espaco-4);
-  }
+    padding-block: var(--espaco-4);
 
+    padding-left: 0;
+  }
 
   .hero__titulo {
-    max-width: 100%;
+    font-size: clamp(2.35rem, 10.3vw, 4.5rem);
 
-    font-size:
-      clamp(
-        2.9rem,
-        14.5vw,
-        5rem
-      );
+    line-height: 0.91;
 
-    line-height: 0.85;
-
-    letter-spacing:
-      -0.045em;
+    letter-spacing: -0.045em;
   }
-
-
-  /* -------------------------------------------------------
-     CTA
-     ------------------------------------------------------- */
 
   .hero__rodape {
-    flex-direction: column;
+    justify-content: space-between;
 
-    align-items: flex-start;
+    flex-wrap: wrap;
+
+    gap: 1rem;
   }
 
+  .hero__sociais {
+    position: static;
 
-  .hero__acao {
-    min-height: 48px;
+    flex-direction: row;
 
-    font-size:
-      0.8rem;
+    gap: 0.5rem;
+
+    transform: none;
+  }
+
+  .hero__social {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hero__social svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .hero__explorar {
+    min-height: 40px;
+
+    font-size: 0.68rem;
+
+    letter-spacing: 0.06em;
   }
 }
-
 
 /* =========================================================
    CELULARES PEQUENOS
    ========================================================= */
 
 @media (max-width: 420px) {
-
   .hero__titulo {
-    font-size:
-      clamp(
-        2.7rem,
-        14vw,
-        4.4rem
-      );
+    font-size: clamp(2.1rem, 10vw, 3.2rem);
   }
 
-
   .hero__identificacao {
-    font-size:
-      0.68rem;
+    font-size: 0.68rem;
 
-    letter-spacing:
-      0.06em;
+    letter-spacing: 0.06em;
+  }
+
+  .hero__social {
+    width: 38px;
+    height: 38px;
+  }
+
+  .hero__explorar {
+    font-size: 0.62rem;
+
+    gap: 0.4rem;
   }
 }
 
-
 /* =========================================================
    MOVIMENTO REDUZIDO
-
-   A troca automática já é interrompida no React.
-
-   Aqui também removemos transições e zoom.
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   .hero__imagem {
     transition: none;
 
     transform: none;
   }
 
-
   .hero__imagem--ativa {
     transform: none;
   }
 
-
-  .hero__atalho,
-  .hero__acao {
+  .hero__social,
+  .hero__explorar {
     transition: none;
+  }
+
+  .hero__social:hover {
+    transform: none;
   }
 }
