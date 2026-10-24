@@ -23,11 +23,9 @@ import { auth, db } from '../servicos/firebase.js';
 import './admin.css';
 
 // =========================================================
-// CONFIGURAÇÃO DE SEGURANÇA
+// CONFIGURAÇÃO
 // =========================================================
 
-// Identificador da conta autorizada a administrar a Agenda.
-// A segurança real das gravações continua nas regras do Firestore.
 const ADMIN_UID = 'IY48rYU8wDSceya8DsKTPDjRVKF3';
 
 const FORMULARIO_INICIAL = {
@@ -47,8 +45,6 @@ function AdminApp() {
   const [carregandoSessao, setCarregandoSessao] = useState(true);
 
   useEffect(() => {
-    // Recupera a sessão após o refresh e observa mudanças
-    // no estado de autenticação.
     const cancelarObservacao = onAuthStateChanged(
       auth,
       (usuarioAtual) => {
@@ -73,17 +69,14 @@ function AdminApp() {
     );
   }
 
-  // Visitante não autenticado.
   if (!usuario) {
     return <LoginAdmin />;
   }
 
-  // Usuário autenticado, mas sem autorização administrativa.
   if (usuario.uid !== ADMIN_UID) {
     return <AcessoNegado />;
   }
 
-  // Somente a conta administrativa recebe o painel.
   return <PainelAdmin usuario={usuario} />;
 }
 
@@ -174,7 +167,6 @@ function LoginAdmin() {
       );
     } catch (error) {
       console.error('Erro no login do admin:', error);
-
       setErro('Não foi possível entrar. Confira e-mail e senha.');
     } finally {
       setEnviando(false);
@@ -260,9 +252,13 @@ function PainelAdmin({ usuario }) {
 
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
+  const [exportandoBackup, setExportandoBackup] = useState(false);
 
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
+
+  const [mensagemBackup, setMensagemBackup] = useState('');
+  const [erroBackup, setErroBackup] = useState('');
 
   const hoje = useMemo(() => {
     const agora = new Date();
@@ -302,11 +298,97 @@ function PainelAdmin({ usuario }) {
       setEventos(eventosCarregados);
     } catch (error) {
       console.error('Erro ao carregar eventos:', error);
-
       setErro('Não foi possível carregar os eventos.');
       setEventos([]);
     } finally {
       setCarregando(false);
+    }
+  }
+
+  // =======================================================
+  // EXPORTAR BACKUP
+  // =======================================================
+
+  async function exportarBackup() {
+    if (exportandoBackup) {
+      return;
+    }
+
+    setExportandoBackup(true);
+    setMensagemBackup('');
+    setErroBackup('');
+
+    try {
+      // Consulta novamente o Firestore para obter
+      // os dados atuais, inclusive eventos encerrados.
+      const consulta = query(
+        collection(db, 'eventos'),
+        orderBy('data_evento', 'asc'),
+      );
+
+      const resultado = await getDocs(consulta);
+
+      const backup = {
+        versao: 1,
+        colecao: 'eventos',
+        exportado_em: new Date().toISOString(),
+        eventos: resultado.docs.map((documento) => {
+          const dados = documento.data();
+
+          return {
+            id: documento.id,
+            nome_evento: dados.nome_evento,
+            data_evento: dados.data_evento,
+            cidade_evento: dados.cidade_evento,
+            estado_evento: dados.estado_evento,
+            link_ingresso: dados.link_ingresso,
+          };
+        }),
+      };
+
+      const arquivo = new Blob(
+        [JSON.stringify(backup, null, 2)],
+        {
+          type: 'application/json;charset=utf-8',
+        },
+      );
+
+      const agora = new Date();
+
+      const dataArquivo = [
+        agora.getFullYear(),
+        String(agora.getMonth() + 1).padStart(2, '0'),
+        String(agora.getDate()).padStart(2, '0'),
+      ].join('-');
+
+      const urlArquivo = URL.createObjectURL(arquivo);
+
+      const linkDownload = document.createElement('a');
+
+      linkDownload.href = urlArquivo;
+      linkDownload.download = `backup-agenda-${dataArquivo}.json`;
+
+      document.body.appendChild(linkDownload);
+      linkDownload.click();
+      linkDownload.remove();
+
+      // Libera o endereço temporário após iniciar o download.
+      window.setTimeout(() => {
+        URL.revokeObjectURL(urlArquivo);
+      }, 1000);
+
+      setMensagemBackup(
+        `Backup gerado com ${backup.eventos.length} evento(s). `
+        + 'Confira o arquivo na pasta de downloads.',
+      );
+    } catch (error) {
+      console.error('Erro ao exportar backup:', error);
+
+      setErroBackup(
+        'Não foi possível exportar o backup. Tente novamente.',
+      );
+    } finally {
+      setExportandoBackup(false);
     }
   }
 
@@ -405,12 +487,6 @@ function PainelAdmin({ usuario }) {
     setMensagem('');
     setErro('');
 
-    /*
-     * Mantemos os cinco campos da Agenda.
-     *
-     * O link vazio é salvo como string vazia.
-     * As regras do Firestore validam novamente os dados.
-     */
     const dadosEvento = {
       nome_evento: formulario.nome_evento.trim(),
       data_evento: formulario.data_evento,
@@ -450,7 +526,6 @@ function PainelAdmin({ usuario }) {
       await carregarEventos();
     } catch (error) {
       console.error('Erro ao salvar evento:', error);
-
       setErro('Não foi possível salvar o evento.');
     } finally {
       setSalvando(false);
@@ -483,7 +558,6 @@ function PainelAdmin({ usuario }) {
       await carregarEventos();
     } catch (error) {
       console.error('Erro ao excluir evento:', error);
-
       setErro('Não foi possível excluir o evento.');
     }
   }
@@ -497,7 +571,6 @@ function PainelAdmin({ usuario }) {
       await signOut(auth);
     } catch (error) {
       console.error('Erro ao sair do admin:', error);
-
       setErro('Não foi possível encerrar a sessão.');
     }
   }
@@ -677,6 +750,38 @@ function PainelAdmin({ usuario }) {
 
             <h2>Agenda</h2>
           </div>
+
+          {/* BACKUP DA AGENDA */}
+          <div className="admin-form__acoes">
+            <button
+              className="admin-botao admin-botao--secundario"
+              type="button"
+              onClick={exportarBackup}
+              disabled={exportandoBackup}
+            >
+              {exportandoBackup
+                ? 'Exportando...'
+                : 'Exportar backup'}
+            </button>
+          </div>
+
+          {erroBackup && (
+            <p
+              className="admin__mensagem admin__mensagem--erro"
+              role="alert"
+            >
+              {erroBackup}
+            </p>
+          )}
+
+          {mensagemBackup && (
+            <p
+              className="admin__mensagem admin__mensagem--sucesso"
+              role="status"
+            >
+              {mensagemBackup}
+            </p>
+          )}
 
           {carregando && (
             <p role="status">
