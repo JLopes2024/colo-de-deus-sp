@@ -16,6 +16,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
 
 import { auth, db } from '../servicos/firebase.js';
@@ -35,6 +36,188 @@ const FORMULARIO_INICIAL = {
   estado_evento: '',
   link_ingresso: '',
 };
+
+const CAMPOS_EVENTO = [
+  'nome_evento',
+  'data_evento',
+  'cidade_evento',
+  'estado_evento',
+  'link_ingresso',
+];
+
+const LIMITE_EVENTOS_BACKUP = 400;
+const TAMANHO_MAXIMO_BACKUP = 2 * 1024 * 1024;
+
+// =========================================================
+// FUNÇÕES AUXILIARES DO BACKUP
+// =========================================================
+
+function validarData(data) {
+  if (
+    typeof data !== 'string'
+    || !/^\d{4}-\d{2}-\d{2}$/.test(data)
+  ) {
+    return false;
+  }
+
+  const dataConvertida = new Date(`${data}T12:00:00Z`);
+
+  return (
+    !Number.isNaN(dataConvertida.getTime())
+    && dataConvertida.toISOString().slice(0, 10) === data
+  );
+}
+
+function validarEventoBackup(evento, indice) {
+  const numero = indice + 1;
+
+  if (
+    !evento
+    || typeof evento !== 'object'
+    || Array.isArray(evento)
+  ) {
+    throw new Error(`Evento ${numero}: registro inválido.`);
+  }
+
+  const camposEsperados = ['id', ...CAMPOS_EVENTO];
+  const camposRecebidos = Object.keys(evento);
+
+  if (
+    camposRecebidos.length !== camposEsperados.length
+    || !camposEsperados.every((campo) => (
+      Object.prototype.hasOwnProperty.call(evento, campo)
+    ))
+  ) {
+    throw new Error(
+      `Evento ${numero}: os campos não correspondem ao formato do backup.`,
+    );
+  }
+
+  if (
+    typeof evento.id !== 'string'
+    || !/^[A-Za-z0-9_-]{1,128}$/.test(evento.id)
+  ) {
+    throw new Error(`Evento ${numero}: ID inválido.`);
+  }
+
+  if (
+    typeof evento.nome_evento !== 'string'
+    || !evento.nome_evento.trim()
+    || evento.nome_evento.length > 120
+  ) {
+    throw new Error(`Evento ${numero}: nome inválido.`);
+  }
+
+  if (!validarData(evento.data_evento)) {
+    throw new Error(`Evento ${numero}: data inválida.`);
+  }
+
+  if (
+    typeof evento.cidade_evento !== 'string'
+    || !evento.cidade_evento.trim()
+    || evento.cidade_evento.length > 100
+  ) {
+    throw new Error(`Evento ${numero}: cidade inválida.`);
+  }
+
+  if (
+    typeof evento.estado_evento !== 'string'
+    || !/^[A-Z]{2}$/.test(evento.estado_evento)
+  ) {
+    throw new Error(`Evento ${numero}: UF inválida.`);
+  }
+
+  if (
+    typeof evento.link_ingresso !== 'string'
+    || evento.link_ingresso.length > 2048
+  ) {
+    throw new Error(`Evento ${numero}: link inválido.`);
+  }
+
+  if (evento.link_ingresso) {
+    try {
+      const url = new URL(evento.link_ingresso);
+
+      if (
+        !['http:', 'https:'].includes(url.protocol)
+        || /\s/.test(evento.link_ingresso)
+        || !url.hostname
+      ) {
+        throw new Error('Link inválido');
+      }
+    } catch {
+      throw new Error(
+        `Evento ${numero}: link de ingresso inválido.`,
+      );
+    }
+  }
+
+  return {
+    id: evento.id,
+    nome_evento: evento.nome_evento,
+    data_evento: evento.data_evento,
+    cidade_evento: evento.cidade_evento,
+    estado_evento: evento.estado_evento,
+    link_ingresso: evento.link_ingresso,
+  };
+}
+
+function validarArquivoBackup(conteudo) {
+  let backup;
+
+  try {
+    backup = JSON.parse(conteudo);
+  } catch {
+    throw new Error('O arquivo não contém um JSON válido.');
+  }
+
+  if (
+    !backup
+    || typeof backup !== 'object'
+    || Array.isArray(backup)
+    || backup.versao !== 1
+    || backup.colecao !== 'eventos'
+    || !Array.isArray(backup.eventos)
+  ) {
+    throw new Error(
+      'Formato de backup incompatível. Selecione um JSON exportado pela Agenda.',
+    );
+  }
+
+  if (backup.eventos.length === 0) {
+    throw new Error('O backup não contém eventos.');
+  }
+
+  if (backup.eventos.length > LIMITE_EVENTOS_BACKUP) {
+    throw new Error(
+      `O limite desta importação é de ${LIMITE_EVENTOS_BACKUP} eventos.`,
+    );
+  }
+
+  const eventosValidados = backup.eventos.map(
+    validarEventoBackup,
+  );
+
+  const ids = eventosValidados.map((evento) => evento.id);
+
+  if (new Set(ids).size !== ids.length) {
+    throw new Error(
+      'O backup contém IDs duplicados. Nenhum evento foi importado.',
+    );
+  }
+
+  return eventosValidados;
+}
+
+function obterDadosEvento(evento) {
+  return {
+    nome_evento: evento.nome_evento,
+    data_evento: evento.data_evento,
+    cidade_evento: evento.cidade_evento,
+    estado_evento: evento.estado_evento,
+    link_ingresso: evento.link_ingresso,
+  };
+}
 
 // =========================================================
 // CONTROLE DE ACESSO
@@ -252,7 +435,12 @@ function PainelAdmin({ usuario }) {
 
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
+
   const [exportandoBackup, setExportandoBackup] = useState(false);
+  const [analisandoBackup, setAnalisandoBackup] = useState(false);
+  const [importandoBackup, setImportandoBackup] = useState(false);
+
+  const [previaBackup, setPreviaBackup] = useState(null);
 
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -310,7 +498,7 @@ function PainelAdmin({ usuario }) {
   // =======================================================
 
   async function exportarBackup() {
-    if (exportandoBackup) {
+    if (exportandoBackup || importandoBackup) {
       return;
     }
 
@@ -319,8 +507,6 @@ function PainelAdmin({ usuario }) {
     setErroBackup('');
 
     try {
-      // Consulta novamente o Firestore para obter
-      // os dados atuais, inclusive eventos encerrados.
       const consulta = query(
         collection(db, 'eventos'),
         orderBy('data_evento', 'asc'),
@@ -332,18 +518,10 @@ function PainelAdmin({ usuario }) {
         versao: 1,
         colecao: 'eventos',
         exportado_em: new Date().toISOString(),
-        eventos: resultado.docs.map((documento) => {
-          const dados = documento.data();
-
-          return {
-            id: documento.id,
-            nome_evento: dados.nome_evento,
-            data_evento: dados.data_evento,
-            cidade_evento: dados.cidade_evento,
-            estado_evento: dados.estado_evento,
-            link_ingresso: dados.link_ingresso,
-          };
-        }),
+        eventos: resultado.docs.map((documento) => ({
+          id: documento.id,
+          ...obterDadosEvento(documento.data()),
+        })),
       };
 
       const arquivo = new Blob(
@@ -372,7 +550,6 @@ function PainelAdmin({ usuario }) {
       linkDownload.click();
       linkDownload.remove();
 
-      // Libera o endereço temporário após iniciar o download.
       window.setTimeout(() => {
         URL.revokeObjectURL(urlArquivo);
       }, 1000);
@@ -383,12 +560,185 @@ function PainelAdmin({ usuario }) {
       );
     } catch (error) {
       console.error('Erro ao exportar backup:', error);
-
-      setErroBackup(
-        'Não foi possível exportar o backup. Tente novamente.',
-      );
+      setErroBackup('Não foi possível exportar o backup.');
     } finally {
       setExportandoBackup(false);
+    }
+  }
+
+  // =======================================================
+  // SELECIONAR E VALIDAR BACKUP
+  // =======================================================
+
+  async function selecionarBackup(evento) {
+    const arquivo = evento.target.files?.[0];
+
+    // Permite selecionar novamente o mesmo arquivo.
+    evento.target.value = '';
+
+    setPreviaBackup(null);
+    setMensagemBackup('');
+    setErroBackup('');
+
+    if (!arquivo) {
+      return;
+    }
+
+    if (importandoBackup || analisandoBackup) {
+      return;
+    }
+
+    setAnalisandoBackup(true);
+
+    try {
+      if (!arquivo.name.toLowerCase().endsWith('.json')) {
+        throw new Error('Selecione um arquivo com extensão .json.');
+      }
+
+      if (arquivo.size > TAMANHO_MAXIMO_BACKUP) {
+        throw new Error(
+          'O arquivo excede o limite de 2 MB.',
+        );
+      }
+
+      const conteudo = await arquivo.text();
+      const eventosBackup = validarArquivoBackup(conteudo);
+
+      // Verifica quais IDs já existem no Firestore.
+      const resultado = await getDocs(collection(db, 'eventos'));
+
+      const idsExistentes = new Set(
+        resultado.docs.map((documento) => documento.id),
+      );
+
+      const quantidadeSubstituir = eventosBackup.filter(
+        (item) => idsExistentes.has(item.id),
+      ).length;
+
+      setPreviaBackup({
+        nomeArquivo: arquivo.name,
+        eventos: eventosBackup,
+        quantidadeCriar: eventosBackup.length - quantidadeSubstituir,
+        quantidadeSubstituir,
+      });
+
+      setMensagemBackup(
+        'Arquivo validado. Confira a pré-visualização antes de importar.',
+      );
+    } catch (error) {
+      console.error('Erro ao analisar backup:', error);
+
+      setErroBackup(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível analisar o arquivo.',
+      );
+    } finally {
+      setAnalisandoBackup(false);
+    }
+  }
+
+  function cancelarImportacao() {
+    if (importandoBackup) {
+      return;
+    }
+
+    setPreviaBackup(null);
+    setMensagemBackup('');
+    setErroBackup('');
+  }
+
+  // =======================================================
+  // IMPORTAR BACKUP
+  // =======================================================
+
+  async function importarBackup() {
+    if (
+      !previaBackup
+      || importandoBackup
+      || analisandoBackup
+    ) {
+      return;
+    }
+
+    const {
+      eventos: eventosBackup,
+      quantidadeCriar,
+      quantidadeSubstituir,
+    } = previaBackup;
+
+    const confirmou = window.confirm(
+      'CONFIRMAR RESTAURAÇÃO DA AGENDA\n\n'
+      + `${quantidadeCriar} evento(s) serão criados.\n`
+      + `${quantidadeSubstituir} evento(s) serão substituídos.\n\n`
+      + 'Os eventos existentes com o mesmo ID terão '
+      + 'seus dados sobrescritos pelos valores do backup.\n\n'
+      + 'Eventos fora do backup NÃO serão excluídos.\n\n'
+      + 'Deseja continuar?',
+    );
+
+    if (!confirmou) {
+      return;
+    }
+
+    setImportandoBackup(true);
+    setMensagemBackup('');
+    setErroBackup('');
+
+    try {
+      // Confere novamente o banco antes da gravação.
+      // Se a composição de IDs mudou, exige nova análise.
+      const resultadoAtual = await getDocs(
+        collection(db, 'eventos'),
+      );
+
+      const idsAtuais = new Set(
+        resultadoAtual.docs.map((documento) => documento.id),
+      );
+
+      const substituirAgora = eventosBackup.filter(
+        (item) => idsAtuais.has(item.id),
+      ).length;
+
+      if (substituirAgora !== quantidadeSubstituir) {
+        throw new Error(
+          'A Agenda mudou desde a pré-visualização. '
+          + 'Selecione o backup novamente antes de importar.',
+        );
+      }
+
+      // Uma única operação atômica: ou todos os eventos
+      // são gravados, ou nenhum é gravado.
+      const lote = writeBatch(db);
+
+      for (const item of eventosBackup) {
+        const referencia = doc(db, 'eventos', item.id);
+
+        // set() substitui os cinco campos do documento.
+        // Não inclui o ID como campo armazenado.
+        lote.set(referencia, obterDadosEvento(item));
+      }
+
+      await lote.commit();
+
+      setPreviaBackup(null);
+
+      setMensagemBackup(
+        `Restauração concluída: ${quantidadeCriar} criado(s) `
+        + `e ${quantidadeSubstituir} substituído(s).`,
+      );
+
+      await carregarEventos();
+    } catch (error) {
+      console.error('Erro ao importar backup:', error);
+
+      setErroBackup(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível importar o backup.',
+      );
+    } finally {
+      setImportandoBackup(false);
     }
   }
 
@@ -576,7 +926,7 @@ function PainelAdmin({ usuario }) {
   }
 
   // =======================================================
-  // INTERFACE DO PAINEL
+  // INTERFACE
   // =======================================================
 
   return (
@@ -719,7 +1069,7 @@ function PainelAdmin({ usuario }) {
               <button
                 className="admin-botao admin-botao--principal"
                 type="submit"
-                disabled={salvando}
+                disabled={salvando || importandoBackup}
               >
                 {salvando
                   ? 'Salvando...'
@@ -733,7 +1083,7 @@ function PainelAdmin({ usuario }) {
                   className="admin-botao admin-botao--secundario"
                   type="button"
                   onClick={cancelarEdicao}
-                  disabled={salvando}
+                  disabled={salvando || importandoBackup}
                 >
                   Cancelar
                 </button>
@@ -751,19 +1101,42 @@ function PainelAdmin({ usuario }) {
             <h2>Agenda</h2>
           </div>
 
-          {/* BACKUP DA AGENDA */}
+          {/* EXPORTAÇÃO */}
           <div className="admin-form__acoes">
             <button
               className="admin-botao admin-botao--secundario"
               type="button"
               onClick={exportarBackup}
-              disabled={exportandoBackup}
+              disabled={exportandoBackup || importandoBackup}
             >
               {exportandoBackup
                 ? 'Exportando...'
                 : 'Exportar backup'}
             </button>
           </div>
+
+          {/* IMPORTAÇÃO */}
+          <div className="admin-form">
+            <label className="admin-campo">
+              <span>Importar backup da Agenda</span>
+
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={selecionarBackup}
+                disabled={analisandoBackup || importandoBackup}
+              />
+
+              <small>
+                Selecione um JSON exportado pelo painel.
+                Nenhum evento será alterado antes da confirmação.
+              </small>
+            </label>
+          </div>
+
+          {analisandoBackup && (
+            <p role="status">Analisando arquivo de backup...</p>
+          )}
 
           {erroBackup && (
             <p
@@ -783,6 +1156,97 @@ function PainelAdmin({ usuario }) {
             </p>
           )}
 
+          {/* PRÉ-VISUALIZAÇÃO */}
+          {previaBackup && (
+            <section aria-labelledby="backup-previa-titulo">
+              <div className="admin-card__cabecalho">
+                <p className="admin__indice">
+                  BACKUP // PRÉ-VISUALIZAÇÃO
+                </p>
+
+                <h3 id="backup-previa-titulo">
+                  Conferir restauração
+                </h3>
+              </div>
+
+              <p>
+                <strong>Arquivo:</strong>{' '}
+                {previaBackup.nomeArquivo}
+              </p>
+
+              <p>
+                <strong>Total:</strong>{' '}
+                {previaBackup.eventos.length} evento(s)
+              </p>
+
+              <p>
+                <strong>Serão criados:</strong>{' '}
+                {previaBackup.quantidadeCriar}
+              </p>
+
+              <p>
+                <strong>Serão substituídos:</strong>{' '}
+                {previaBackup.quantidadeSubstituir}
+              </p>
+
+              <p>
+                Eventos que não estiverem no backup
+                permanecerão no Firestore.
+              </p>
+
+              <div className="admin-eventos">
+                {previaBackup.eventos.slice(0, 10).map((item) => (
+                  <article
+                    className="admin-evento"
+                    key={item.id}
+                  >
+                    <div>
+                      <h3>{item.nome_evento}</h3>
+
+                      <p>
+                        {formatarData(item.data_evento)}
+                        {' // '}
+                        {item.cidade_evento}
+                        {' // '}
+                        {item.estado_evento}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {previaBackup.eventos.length > 10 && (
+                <p>
+                  Exibindo os primeiros 10 de{' '}
+                  {previaBackup.eventos.length} eventos.
+                </p>
+              )}
+
+              <div className="admin-form__acoes">
+                <button
+                  className="admin-botao admin-botao--principal"
+                  type="button"
+                  onClick={importarBackup}
+                  disabled={importandoBackup}
+                >
+                  {importandoBackup
+                    ? 'Restaurando...'
+                    : 'Confirmar restauração'}
+                </button>
+
+                <button
+                  className="admin-botao admin-botao--secundario"
+                  type="button"
+                  onClick={cancelarImportacao}
+                  disabled={importandoBackup}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </section>
+          )}
+
+          {/* LISTAGEM ATUAL */}
           {carregando && (
             <p role="status">
               Carregando eventos...
@@ -840,6 +1304,7 @@ function PainelAdmin({ usuario }) {
                         className="admin-botao admin-botao--secundario"
                         type="button"
                         onClick={() => iniciarEdicao(evento)}
+                        disabled={importandoBackup}
                       >
                         Editar
                       </button>
@@ -848,6 +1313,7 @@ function PainelAdmin({ usuario }) {
                         className="admin-botao admin-botao--perigo"
                         type="button"
                         onClick={() => excluirEvento(evento)}
+                        disabled={importandoBackup}
                       >
                         Excluir
                       </button>
