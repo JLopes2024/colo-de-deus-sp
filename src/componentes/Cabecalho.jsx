@@ -199,7 +199,7 @@ function Cabecalho() {
 
           <div className="menu-mobile__social">
             <a
-              href="#"
+              href="https://www.instagram.com/colodedeus/?hl=pt-br"
               target="_blank"
               rel="noreferrer"
             >
@@ -207,7 +207,7 @@ function Cabecalho() {
             </a>
 
             <a
-              href="#"
+              href="https://www.youtube.com/channel/UCw7SCTLZq2byYiirHtc25-Q"
               target="_blank"
               rel="noreferrer"
             >
