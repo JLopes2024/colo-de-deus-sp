@@ -1,34 +1,42 @@
-/* Comunidades — Colo de Deus | Missão SP */
 
-.comunidades { width: 100%; }
+/* Comunidades */
+
+.comunidades {
+  width: 100%;
+}
 
 .comunidades__bloco {
   position: relative;
   width: 100%;
   padding-block: clamp(5rem, 9vw, 9rem);
   overflow: hidden;
-  scroll-margin-top: 90px;
 }
+
 .comunidades__bloco--celulas {
   background: var(--cor-branco);
   color: var(--cor-preto);
 }
+
 .comunidades__bloco--cenaculos {
   background: var(--cor-preto);
   color: var(--cor-branco);
 }
 
+/* Layout */
+
 .comunidades__conteudo {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   grid-template-areas: "texto imagem";
   align-items: center;
   gap: clamp(2.5rem, 6vw, 7rem);
 }
+
 .comunidades__bloco--cenaculos .comunidades__conteudo {
-  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   grid-template-areas: "imagem texto";
 }
+
 .comunidades__texto {
   grid-area: texto;
   display: flex;
@@ -36,47 +44,64 @@
   align-items: flex-start;
   min-width: 0;
 }
+
+/* Tipografia */
+
 .comunidades__indice {
-  margin: 0 0 clamp(2rem, 4vw, 4rem);
+  margin-bottom: clamp(2rem, 4vw, 4rem);
   color: inherit;
-  font-size: var(--texto-xs, .75rem);
+  font-size: var(--texto-xs, 0.75rem);
   font-weight: 700;
-  letter-spacing: .18em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  opacity: .65;
+  opacity: 0.65;
 }
+
 .comunidades__titulo {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: .12em;
+  gap: 0.12em;
   width: 100%;
-  margin: 0;
   font-size: clamp(3rem, 5.2vw, 6.5rem);
   font-weight: 800;
-  line-height: .9;
-  letter-spacing: -.06em;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
   text-transform: uppercase;
 }
+
 .comunidades__titulo-linha {
   display: block;
   max-width: 100%;
   text-wrap: balance;
 }
+
 .comunidades__titulo-destaque {
   display: inline-block;
   max-width: 100%;
-  padding: .07em .14em .1em;
+  padding: 0.07em 0.14em 0.1em;
   background: var(--cor-azul);
   color: var(--cor-branco);
-  line-height: .9;
+  line-height: 0.9;
   transform-origin: left center;
-  animation: comunidades-destaque 800ms cubic-bezier(.2,.8,.2,1) both;
+  animation: comunidades-destaque 800ms
+    cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+
 @keyframes comunidades-destaque {
-  from { opacity: 0; transform: scaleX(.85) translateX(-.08em); }
-  to { opacity: 1; transform: scaleX(1) translateX(0); }
+  from {
+    opacity: 0;
+    transform: scaleX(0.85) translateX(-0.08em);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1) translateX(0);
+  }
 }
+
+/* Descrições */
+
 .comunidades__descricoes {
   display: flex;
   flex-direction: column;
@@ -85,44 +110,53 @@
   max-width: 48ch;
   margin-top: clamp(2rem, 4vw, 3.5rem);
 }
+
 .comunidades__descricoes p {
-  margin: 0;
-  font-size: clamp(.96rem, 1.1vw, 1.1rem);
+  font-size: clamp(0.96rem, 1.1vw, 1.1rem);
   line-height: 1.75;
-  opacity: .82;
+  opacity: 0.82;
 }
+
+/* Orientação */
+
 .comunidades__orientacao {
   width: 100%;
   max-width: 48ch;
   margin-top: clamp(2rem, 3vw, 3rem);
   padding: 1.25rem 1.5rem;
   border-left: 3px solid var(--cor-azul);
-  background: rgba(0,0,0,.045);
+  background: rgba(0, 0, 0, 0.045);
 }
+
 .comunidades__bloco--cenaculos .comunidades__orientacao {
-  background: rgba(255,255,255,.06);
+  background: rgba(255, 255, 255, 0.06);
 }
+
 .comunidades__orientacao-indice {
-  margin: 0 0 .75rem;
-  font-size: .68rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: .14em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  opacity: .65;
+  opacity: 0.65;
 }
+
 .comunidades__orientacao h3 {
-  margin: 0 0 .75rem;
+  margin-bottom: 0.75rem;
   font-size: clamp(1.15rem, 1.6vw, 1.5rem);
   font-weight: 800;
   line-height: 1.2;
-  letter-spacing: -.03em;
+  letter-spacing: -0.03em;
 }
+
 .comunidades__orientacao > p:last-child {
-  margin: 0;
-  font-size: .95rem;
+  font-size: 0.95rem;
   line-height: 1.65;
-  opacity: .8;
+  opacity: 0.8;
 }
+
+/* Ação */
+
 .comunidades__acao {
   display: inline-flex;
   align-items: center;
@@ -131,104 +165,156 @@
   min-height: 52px;
   max-width: 100%;
   margin-top: clamp(2rem, 4vw, 3.5rem);
-  padding: .8rem 0;
+  padding: 0.8rem 0;
   border-bottom: 1px solid currentColor;
+
   color: inherit;
-  font-size: .78rem;
+  font-size: 0.78rem;
   font-weight: 800;
   line-height: 1.4;
-  letter-spacing: .07em;
-  text-decoration: none;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
+
   transition: opacity 250ms ease;
 }
+
 .comunidades__seta {
   flex-shrink: 0;
   font-size: 1.4rem;
   line-height: 1;
   transition: transform 250ms ease;
 }
+
 .comunidades__acao:focus-visible {
   outline: 2px solid var(--cor-azul);
   outline-offset: 6px;
 }
+
 @media (hover: hover) {
-  .comunidades__acao:hover { opacity: .7; }
-  .comunidades__acao:hover .comunidades__seta { transform: translateX(6px); }
+  .comunidades__acao:hover {
+    opacity: 0.7;
+  }
+
+  .comunidades__acao:hover .comunidades__seta {
+    transform: translateX(6px);
+  }
 }
 
-/* IMAGENS: sem borda, fundo, moldura, números ou corte.
-   A largura se adapta à coluna; a altura respeita a proporção original. */
+/* Imagens em proporção original */
+
 .comunidades__imagem {
   grid-area: imagem;
-  position: relative;
   width: 100%;
   min-width: 0;
-  min-height: 0;
-  height: auto;
-  aspect-ratio: auto;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  overflow: visible;
 }
+
 .comunidades__imagem::before,
-.comunidades__imagem::after { content: none; }
+.comunidades__imagem::after {
+  content: none;
+}
+
 .comunidades__imagem img {
   position: static;
   display: block;
   width: 100%;
-  max-width: 100%;
   height: auto;
-  min-height: 0;
-  aspect-ratio: auto;
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   object-fit: contain;
-  object-position: center;
   filter: none;
 }
+
+/* Tablet */
 
 @media (max-width: 1000px) {
   .comunidades__conteudo,
   .comunidades__bloco--cenaculos .comunidades__conteudo {
     gap: clamp(2rem, 4vw, 4rem);
   }
-  .comunidades__titulo { font-size: clamp(2.6rem, 5.3vw, 4.8rem); }
+
+  .comunidades__titulo {
+    font-size: clamp(2.6rem, 5.3vw, 4.8rem);
+  }
 }
+
+/* Mobile */
+
 @media (max-width: 760px) {
-  .comunidades__bloco { padding-block: clamp(4rem, 10vw, 6rem); }
+  .comunidades__bloco {
+    padding-block: clamp(4rem, 10vw, 6rem);
+  }
+
   .comunidades__conteudo,
   .comunidades__bloco--cenaculos .comunidades__conteudo {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "texto" "imagem";
+    grid-template-areas:
+      "texto"
+      "imagem";
     gap: clamp(2.5rem, 7vw, 4rem);
   }
-  .comunidades__indice { margin-bottom: 2rem; }
+
+  .comunidades__indice {
+    margin-bottom: 2rem;
+  }
+
   .comunidades__titulo {
     font-size: clamp(2.7rem, 9vw, 5rem);
-    line-height: .92;
+    line-height: 0.92;
   }
+
   .comunidades__descricoes {
     max-width: 100%;
     margin-top: 2rem;
   }
-  .comunidades__orientacao { max-width: 100%; }
-  .comunidades__acao { width: 100%; margin-top: 2rem; }
+
+  .comunidades__orientacao {
+    max-width: 100%;
+  }
+
+  .comunidades__acao {
+    width: 100%;
+    margin-top: 2rem;
+  }
 }
+
+/* Celular pequeno */
+
 @media (max-width: 520px) {
-  .comunidades__titulo { font-size: clamp(2.45rem, 10.5vw, 3.5rem); }
-  .comunidades__descricoes p { font-size: .96rem; line-height: 1.7; }
-  .comunidades__orientacao { padding: 1.1rem 1.25rem; }
-  .comunidades__acao { gap: 1rem; font-size: .7rem; }
+  .comunidades__titulo {
+    font-size: clamp(2.45rem, 10.5vw, 3.5rem);
+  }
+
+  .comunidades__descricoes p {
+    font-size: 0.96rem;
+    line-height: 1.7;
+  }
+
+  .comunidades__orientacao {
+    padding: 1.1rem 1.25rem;
+  }
+
+  .comunidades__acao {
+    gap: 1rem;
+    font-size: 0.7rem;
+  }
 }
+
+/* Movimento reduzido */
+
 @media (prefers-reduced-motion: reduce) {
-  .comunidades__titulo-destaque { animation: none; }
+  .comunidades__titulo-destaque {
+    animation: none;
+  }
+
   .comunidades__acao,
-  .comunidades__seta { transition: none; }
-  .comunidades__acao:hover .comunidades__seta { transform: none; }
+  .comunidades__seta {
+    transition: none;
+  }
+
+  .comunidades__acao:hover .comunidades__seta {
+    transform: none;
+  }
 }

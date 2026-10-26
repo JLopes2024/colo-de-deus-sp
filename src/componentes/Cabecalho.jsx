@@ -1,10 +1,14 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
 
+import { useEffect, useRef, useState } from 'react';
 import '../estilos/cabecalho.css';
+
+const LINKS = [
+  { href: '#quem-somos', texto: 'Quem somos' },
+  { href: '#celulas', texto: 'Células' },
+  { href: '#cenaculos', texto: 'Cenáculos' },
+  { href: '#agenda', texto: 'Agenda' },
+  { href: '#contato', texto: 'Contato' },
+];
 
 function Cabecalho() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -14,18 +18,18 @@ function Cabecalho() {
   const botaoMenuRef = useRef(null);
   const menuRef = useRef(null);
 
-  function alternarMenu() {
-    setMenuAberto((estadoAtual) => !estadoAtual);
-  }
-
   function fecharMenu() {
+    document.body.style.overflow = '';
     setMenuAberto(false);
   }
 
-
-  /* =======================================================
-     DETECTA ROLAGEM DA PÁGINA
-     ======================================================= */
+  function alternarMenu() {
+    if (menuAberto) {
+      fecharMenu();
+    } else {
+      setMenuAberto(true);
+    }
+  }
 
   useEffect(() => {
     function verificarRolagem() {
@@ -43,145 +47,88 @@ function Cabecalho() {
     };
   }, []);
 
-
-  /* =======================================================
-     CONTROLES DO MENU MOBILE
-     ======================================================= */
-
   useEffect(() => {
-    if (!menuAberto) {
-      document.body.style.overflow = '';
+    if (!menuAberto) return undefined;
 
-      return;
-    }
+    const overflowAnterior = document.body.style.overflow;
 
-    /* Impede a página de rolar atrás do menu */
     document.body.style.overflow = 'hidden';
 
-
-    /* Move o foco para o primeiro link do menu */
-    const primeiroLink = menuRef.current?.querySelector('a');
-
-    primeiroLink?.focus();
-
+    menuRef.current
+      ?.querySelector('a')
+      ?.focus({ preventScroll: true });
 
     function lidarComTeclado(evento) {
-      /* Fecha o menu com ESC */
       if (evento.key === 'Escape') {
-        setMenuAberto(false);
+        fecharMenu();
 
         requestAnimationFrame(() => {
-          botaoMenuRef.current?.focus();
+          botaoMenuRef.current?.focus({
+            preventScroll: true,
+          });
         });
 
         return;
       }
 
-      /* Mantém o foco dentro da navegação mobile */
-      if (evento.key !== 'Tab') {
-        return;
-      }
+      if (evento.key !== 'Tab') return;
 
-      const elementosFocaveis = cabecalhoRef.current?.querySelectorAll(
-        [
-          'a[href]',
-          'button:not([disabled])',
-          'input:not([disabled])',
-          'select:not([disabled])',
-          'textarea:not([disabled])',
-          '[tabindex]:not([tabindex="-1"])',
-        ].join(','),
-      );
+      const elementos = cabecalhoRef.current
+        ?.querySelectorAll('a[href], button:not([disabled])');
 
-      if (!elementosFocaveis?.length) {
-        return;
-      }
+      if (!elementos?.length) return;
 
-      const elementosVisiveis = Array.from(elementosFocaveis).filter(
+      const visiveis = Array.from(elementos).filter(
         (elemento) => {
-          const estilos = window.getComputedStyle(elemento);
+          const estilo = window.getComputedStyle(elemento);
 
           return (
-            estilos.display !== 'none' &&
-            estilos.visibility !== 'hidden'
+            estilo.display !== 'none' &&
+            estilo.visibility !== 'hidden'
           );
         },
       );
 
-      if (!elementosVisiveis.length) {
-        return;
-      }
+      if (!visiveis.length) return;
 
-      const primeiroElemento = elementosVisiveis[0];
-      const ultimoElemento =
-        elementosVisiveis[elementosVisiveis.length - 1];
+      const primeiro = visiveis[0];
+      const ultimo = visiveis[visiveis.length - 1];
 
-      if (
-        evento.shiftKey &&
-        document.activeElement === primeiroElemento
-      ) {
+      if (evento.shiftKey && document.activeElement === primeiro) {
         evento.preventDefault();
-
-        ultimoElemento.focus();
-      }
-
-      if (
+        ultimo.focus();
+      } else if (
         !evento.shiftKey &&
-        document.activeElement === ultimoElemento
+        document.activeElement === ultimo
       ) {
         evento.preventDefault();
-
-        primeiroElemento.focus();
+        primeiro.focus();
       }
     }
 
-
-    /* Se a tela voltar para desktop, fecha o menu */
-    function verificarTamanhoDaTela() {
+    function verificarLargura() {
       if (window.innerWidth > 900) {
-        setMenuAberto(false);
+        fecharMenu();
       }
     }
 
     document.addEventListener('keydown', lidarComTeclado);
-    window.addEventListener('resize', verificarTamanhoDaTela);
+    window.addEventListener('resize', verificarLargura);
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = overflowAnterior;
 
-      document.removeEventListener(
-        'keydown',
-        lidarComTeclado,
-      );
-
-      window.removeEventListener(
-        'resize',
-        verificarTamanhoDaTela,
-      );
+      document.removeEventListener('keydown', lidarComTeclado);
+      window.removeEventListener('resize', verificarLargura);
     };
   }, [menuAberto]);
-
-
-  /* =======================================================
-     RETORNA O FOCO AO BOTÃO APÓS FECHAR PELO MENU
-     ======================================================= */
-
-  function fecharMenuPeloLink() {
-    setMenuAberto(false);
-  }
-
 
   return (
     <header
       ref={cabecalhoRef}
-      className={[
-        'cabecalho',
-        cabecalhoRolado
-          ? 'cabecalho--rolado'
-          : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={`cabecalho${
+        cabecalhoRolado ? ' cabecalho--rolado' : ''
+      }`}
     >
       <div className="cabecalho__conteudo container">
         <a
@@ -200,50 +147,24 @@ function Cabecalho() {
           className="cabecalho__navegacao"
           aria-label="Navegação principal"
         >
-          <a href="#quem-somos">
-            Quem somos
-          </a>
-
-          <a href="#celulas">
-            Células
-          </a>
-
-          <a href="#cenaculos">
-            Cenáculos
-          </a>
-
-          <a href="#agenda">
-            Agenda
-          </a>
-
-          <a href="#contato">
-            Contato
-          </a>
+          {LINKS.map(({ href, texto }) => (
+            <a key={href} href={href}>
+              {texto}
+            </a>
+          ))}
         </nav>
 
-        <a
-          className="cabecalho__acao"
-          href="#celulas"
-        >
+        <a className="cabecalho__acao" href="#celulas">
           Encontre-nos
         </a>
 
         <button
           ref={botaoMenuRef}
-          className={[
-            'cabecalho__menu',
-            menuAberto
-              ? 'cabecalho__menu--aberto'
-              : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={`cabecalho__menu${
+            menuAberto ? ' cabecalho__menu--aberto' : ''
+          }`}
           type="button"
-          aria-label={
-            menuAberto
-              ? 'Fechar menu'
-              : 'Abrir menu'
-          }
+          aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
           aria-expanded={menuAberto}
           aria-controls="menu-mobile"
           onClick={alternarMenu}
@@ -256,55 +177,25 @@ function Cabecalho() {
 
       <div
         ref={menuRef}
-        className={[
-          'menu-mobile',
-          menuAberto
-            ? 'menu-mobile--aberto'
-            : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
         id="menu-mobile"
+        className={`menu-mobile${
+          menuAberto ? ' menu-mobile--aberto' : ''
+        }`}
         aria-hidden={!menuAberto}
       >
         <nav
           className="menu-mobile__navegacao container"
           aria-label="Navegação mobile"
         >
-          <a
-            href="#quem-somos"
-            onClick={fecharMenuPeloLink}
-          >
-            Quem somos
-          </a>
-
-          <a
-            href="#celulas"
-            onClick={fecharMenuPeloLink}
-          >
-            Células
-          </a>
-
-          <a
-            href="#cenaculos"
-            onClick={fecharMenuPeloLink}
-          >
-            Cenáculos
-          </a>
-
-          <a
-            href="#agenda"
-            onClick={fecharMenuPeloLink}
-          >
-            Agenda
-          </a>
-
-          <a
-            href="#contato"
-            onClick={fecharMenuPeloLink}
-          >
-            Contato
-          </a>
+          {LINKS.map(({ href, texto }) => (
+            <a
+              key={href}
+              href={href}
+              onClick={fecharMenu}
+            >
+              {texto}
+            </a>
+          ))}
 
           <div className="menu-mobile__social">
             <a
