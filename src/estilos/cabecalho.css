@@ -379,6 +379,45 @@
 
 
 /* =========================================================
+   FOCO DO TECLADO
+   ========================================================= */
+
+.cabecalho__logo:focus-visible,
+.cabecalho__navegacao a:focus-visible,
+.cabecalho__acao:focus-visible,
+.cabecalho__menu:focus-visible,
+.menu-mobile__navegacao a:focus-visible {
+  outline: 2px solid var(--cor-branco);
+  outline-offset: 5px;
+}
+
+
+/* =========================================================
+   TELAS BAIXAS / CELULAR NA HORIZONTAL
+   ========================================================= */
+
+@media (max-width: 900px) and (max-height: 600px) {
+  .menu-mobile__navegacao {
+    padding-top: 1.25rem;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  }
+
+  .menu-mobile__navegacao > a {
+    font-size: clamp(2rem, 7vh, 3rem);
+    line-height: 1;
+  }
+
+  .menu-mobile__navegacao > a + a {
+    margin-top: 0.65rem;
+  }
+
+  .menu-mobile__social {
+    padding-top: 1.5rem;
+  }
+}
+
+
+/* =========================================================
    MOVIMENTO REDUZIDO
    Respeita a preferência de acessibilidade do sistema.
    ========================================================= */

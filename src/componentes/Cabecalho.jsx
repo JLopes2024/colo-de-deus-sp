@@ -154,10 +154,10 @@ function Cabecalho() {
           ))}
         </nav>
 
-        <a className="cabecalho__acao" href="#celulas">
+         <a className="cabecalho__acao" href="#contato">
           Encontre-nos
         </a>
-
+  
         <button
           ref={botaoMenuRef}
           className={`cabecalho__menu${
