@@ -8,7 +8,7 @@
 .comunidades__bloco {
   position: relative;
   width: 100%;
-  padding-block: clamp(5rem, 9vw, 9rem);
+  padding-block: clamp(4.5rem, 8vw, 8rem);
   overflow: hidden;
 }
 
@@ -48,7 +48,7 @@
 /* Tipografia */
 
 .comunidades__indice {
-  margin-bottom: clamp(2rem, 4vw, 4rem);
+  margin-bottom: clamp(1.75rem, 3vw, 3rem);
   color: inherit;
   font-size: var(--texto-xs, 0.75rem);
   font-weight: 700;
@@ -100,21 +100,22 @@
   }
 }
 
-/* Descrições */
+/* Descrições — classes utilizadas no Comunidades.jsx */
 
-.comunidades__descricoes {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+.comunidades__descricao {
   width: 100%;
   max-width: 48ch;
-  margin-top: clamp(2rem, 4vw, 3.5rem);
-}
+  margin-top: clamp(1.75rem, 3vw, 2.75rem);
 
-.comunidades__descricoes p {
-  font-size: clamp(0.96rem, 1.1vw, 1.1rem);
+  color: inherit;
+  font-size: clamp(1rem, 1.1vw, 1.1rem);
   line-height: 1.75;
   opacity: 0.82;
+  overflow-wrap: break-word;
+}
+
+.comunidades__descricao + .comunidades__descricao {
+  margin-top: 1rem;
 }
 
 /* Orientação */
@@ -244,7 +245,7 @@
 
 @media (max-width: 760px) {
   .comunidades__bloco {
-    padding-block: clamp(4rem, 10vw, 6rem);
+    padding-block: clamp(3.75rem, 9vw, 5.5rem);
   }
 
   .comunidades__conteudo,
@@ -257,7 +258,7 @@
   }
 
   .comunidades__indice {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .comunidades__titulo {
@@ -265,9 +266,13 @@
     line-height: 0.92;
   }
 
-  .comunidades__descricoes {
+  .comunidades__descricao {
     max-width: 100%;
-    margin-top: 2rem;
+    margin-top: 1.75rem;
+  }
+
+  .comunidades__descricao + .comunidades__descricao {
+    margin-top: 0.9rem;
   }
 
   .comunidades__orientacao {
@@ -276,7 +281,7 @@
 
   .comunidades__acao {
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1.75rem;
   }
 }
 
@@ -287,8 +292,8 @@
     font-size: clamp(2.45rem, 10.5vw, 3.5rem);
   }
 
-  .comunidades__descricoes p {
-    font-size: 0.96rem;
+  .comunidades__descricao {
+    font-size: 1rem;
     line-height: 1.7;
   }
 
@@ -298,7 +303,14 @@
 
   .comunidades__acao {
     gap: 1rem;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (max-width: 360px) {
+  .comunidades__titulo {
+    font-size: clamp(2.15rem, 10vw, 2.45rem);
   }
 }
 
