@@ -1,3 +1,4 @@
+
 /* =========================================================
    RODAPÉ
    ========================================================= */
@@ -8,22 +9,27 @@
 
   border-top: 1px solid rgba(242, 241, 237, 0.12);
 
-  padding-top: var(--espaco-6);
-  padding-bottom: var(--espaco-4);
+  padding-top: clamp(40px, 5vw, 64px);
+  padding-bottom: 20px;
 }
 
-
 /* =========================================================
-   CONTEÚDO
+   ESTRUTURA
    ========================================================= */
 
 .rodape__conteudo {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
 
-  gap: var(--espaco-5);
+  grid-template-columns:
+    minmax(180px, 1.25fr)
+    minmax(260px, 1fr)
+    minmax(180px, 0.5fr);
+
+  column-gap: clamp(24px, 4vw, 64px);
+  row-gap: 48px;
+
+  align-items: start;
 }
-
 
 /* =========================================================
    MARCA
@@ -34,52 +40,139 @@
   flex-direction: column;
   align-items: flex-start;
 
-  gap: var(--espaco-3);
+  gap: 18px;
 }
 
-.rodape__marca img {
+.rodape__logo {
+  display: inline-flex;
+  align-items: center;
+
+  max-width: 100%;
+
+  transition: opacity var(--transicao-rapida);
+}
+
+.rodape__logo:hover {
+  opacity: 0.75;
+}
+
+.rodape__logo img {
+  display: block;
+
   width: min(220px, 100%);
+  height: auto;
 }
 
 .rodape__marca p {
   color: var(--cor-texto-suave);
 
   font-size: var(--texto-sm);
+  line-height: 1.5;
 }
-
 
 /* =========================================================
-   LINKS
+   NAVEGAÇÃO
    ========================================================= */
 
-.rodape__links,
-.rodape__social {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.rodape__links {
+  display: grid;
 
-  gap: var(--espaco-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  column-gap: 28px;
+  row-gap: 18px;
+
+  align-content: start;
 }
 
-.rodape__links a,
-.rodape__social a {
+.rodape__links a {
+  width: fit-content;
+
+  color: var(--cor-branco);
+
   font-size: var(--texto-sm);
   font-weight: 700;
+  line-height: 1.4;
 
   text-transform: uppercase;
+  text-decoration: none;
 
-  transition:
-    opacity var(--transicao-rapida);
+  transition: opacity var(--transicao-rapida);
 }
 
-.rodape__links a:hover,
-.rodape__social a:hover {
+.rodape__links a:hover {
   opacity: 0.6;
 }
 
+/* =========================================================
+   REDES SOCIAIS
+   ========================================================= */
+
+.rodape__social {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rodape__icone-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  color: var(--cor-branco);
+  background-color: transparent;
+
+  border: 1px solid rgba(242, 241, 237, 0.3);
+  border-radius: 50%;
+
+  text-decoration: none;
+
+  transition:
+    color var(--transicao-rapida),
+    background-color var(--transicao-rapida),
+    border-color var(--transicao-rapida),
+    transform var(--transicao-rapida);
+}
+
+.rodape__icone-social svg {
+  display: block;
+
+  width: 21px;
+  height: 21px;
+}
+
+.rodape__icone-social:hover {
+  color: var(--cor-preto-suave);
+  background-color: var(--cor-branco);
+  border-color: var(--cor-branco);
+
+  transform: translateY(-3px);
+}
 
 /* =========================================================
-   BASE
+   ACESSIBILIDADE
+   ========================================================= */
+
+.rodape a:focus-visible {
+  outline: 2px solid var(--cor-branco);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+
+.rodape__icone-social:focus-visible {
+  border-radius: 50%;
+}
+
+/* =========================================================
+   BASE INFERIOR
    ========================================================= */
 
 .rodape__base {
@@ -87,11 +180,11 @@
 
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
-  gap: var(--espaco-3);
+  gap: 16px;
 
-  margin-top: var(--espaco-5);
-  padding-top: var(--espaco-3);
+  padding-top: 20px;
 
   border-top: 1px solid rgba(242, 241, 237, 0.12);
 }
@@ -100,38 +193,87 @@
   color: var(--cor-texto-suave);
 
   font-size: var(--texto-xs);
+  line-height: 1.5;
 
   text-transform: uppercase;
-
   letter-spacing: 0.08em;
 }
 
-
 /* =========================================================
-   RESPONSIVIDADE
+   TABLETS
    ========================================================= */
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .rodape__conteudo {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 32px;
+    row-gap: 36px;
   }
 
   .rodape__marca {
     grid-column: 1 / -1;
   }
+
+  .rodape__social {
+    justify-content: flex-end;
+  }
 }
 
+/* =========================================================
+   CELULARES
+   ========================================================= */
 
 @media (max-width: 520px) {
+  .rodape {
+    padding-top: 40px;
+    padding-bottom: 24px;
+  }
+
   .rodape__conteudo {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+
+    row-gap: 32px;
   }
 
   .rodape__marca {
     grid-column: 1;
   }
 
+  .rodape__logo img {
+    width: min(200px, 100%);
+  }
+
+  .rodape__links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 20px;
+    row-gap: 16px;
+  }
+
+  .rodape__social {
+    justify-content: flex-start;
+  }
+
   .rodape__base {
     flex-direction: column;
+    align-items: flex-start;
+
+    gap: 8px;
+    padding-top: 20px;
+  }
+}
+
+/* =========================================================
+   MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .rodape a {
+    transition: none;
+  }
+
+  .rodape__icone-social:hover {
+    transform: none;
   }
 }
