@@ -4,6 +4,7 @@ import '../estilos/comunidades.css';
 function definirInteresse(interesse) {
   try {
     sessionStorage.setItem('interesse-contato', interesse);
+    window.dispatchEvent(new Event('interesse-contato'));
   } catch {
     // O link para o contato continua funcionando.
   }
@@ -98,6 +99,7 @@ function Comunidades() {
               src="/imagens/comunidades/logo-celulas.jpg"
               alt="Imagem de apresentação das Células da Colo de Deus"
               loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
@@ -185,6 +187,7 @@ function Comunidades() {
               src="/imagens/comunidades/logo-cenaculos.jpg"
               alt="Imagem de apresentação dos Cenáculos da Colo de Deus"
               loading="lazy"
+              decoding="async"
             />
           </div>
         </div>

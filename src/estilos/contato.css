@@ -1,51 +1,37 @@
+
 /* =========================================================
-   CONTATO
+   CONTATO — COLO DE DEUS | MISSÃO SP
    ========================================================= */
 
 .contato {
   padding: clamp(5rem, 7vw, 7rem) 0;
-
   background: #efede8;
   color: #0a0a0a;
 }
 
 .contato__conteudo {
   display: grid;
-
   grid-template-columns:
     minmax(0, 0.92fr)
     minmax(480px, 1.08fr);
-
   min-height: 760px;
 }
 
-
-/* =========================================================
-   FOTO PRINCIPAL
-   ========================================================= */
+/* Fotografia */
 
 .contato__foto {
   position: relative;
-
   min-height: 760px;
-
   overflow: hidden;
-
   background: #111;
 }
 
 .contato__foto > img {
   position: absolute;
   inset: 0;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
-  /*
-   * Mantém rosto, gesto e placa bem enquadrados.
-   */
   object-position: 50% 62%;
 }
 
@@ -53,7 +39,7 @@
   position: absolute;
   z-index: 1;
   inset: 0;
-
+  pointer-events: none;
   background:
     linear-gradient(
       to bottom,
@@ -69,278 +55,149 @@
     ),
     linear-gradient(
       to right,
-      rgba(0, 0, 0, 0.24) 0%,
-      transparent 18%,
-      transparent 82%,
-      rgba(0, 0, 0, 0.24) 100%
+      rgba(0, 0, 0, 0.24),
+      transparent 18% 82%,
+      rgba(0, 0, 0, 0.24)
     );
-
-  pointer-events: none;
 }
 
 .contato__foto::after {
   content: '';
-
   position: absolute;
   z-index: 1;
   inset: 0;
-
-  box-shadow:
-    inset 0 0 100px rgba(0, 0, 0, 0.28);
-
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.28);
   pointer-events: none;
 }
 
 .contato__foto-legenda {
   position: absolute;
   z-index: 2;
-
   left: clamp(1.5rem, 4vw, 3rem);
   right: 2rem;
   bottom: clamp(1.5rem, 4vw, 3rem);
-
   color: #fff;
 }
 
 .contato__foto-legenda span {
   display: block;
-
   margin-bottom: 1rem;
-
   font-size: 0.68rem;
   font-weight: 700;
-
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
 .contato__foto-legenda strong {
   display: block;
-
   font-size: clamp(2.7rem, 5vw, 5.5rem);
   font-weight: 800;
-
   line-height: 0.86;
   letter-spacing: -0.06em;
-
   text-transform: uppercase;
 }
 
-
-/* =========================================================
-   ÁREA DO CHAT
-   ========================================================= */
+/* Área do chat */
 
 .contato__area-chat {
   display: flex;
-
   align-items: center;
   justify-content: center;
-
+  min-width: 0;
   padding: clamp(2rem, 5vw, 5rem);
 }
 
-
-/* =========================================================
-   SEO / CONTEÚDO SEMÂNTICO
-   ========================================================= */
-
 .contato__seo {
   position: absolute;
-
   width: 1px;
   height: 1px;
-
   padding: 0;
   margin: -1px;
-
   overflow: hidden;
-
   clip: rect(0, 0, 0, 0);
   clip-path: inset(50%);
-
   white-space: nowrap;
-
   border: 0;
 }
 
-
-/* =========================================================
-   JANELA DO CHAT
-   ========================================================= */
-
 .chat {
-  width: min(100%, 620px);
-
-  /*
-   * Desktop responsivo à altura da tela.
-   *
-   * Em monitores grandes pode chegar a 680px.
-   * Em notebooks/telas mais baixas diminui automaticamente.
-   *
-   * O conteúdo continua com scroll interno.
-   */
-  height: clamp(
-    430px,
-    76vh,
-    680px
-  );
-
   display: grid;
-
-  grid-template-rows:
-    auto
-    1fr;
-
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(100%, 620px);
+  height: clamp(430px, 76vh, 680px);
   overflow: hidden;
-
   background: #f8f7f3;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.16);
-
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.13);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.13);
 }
 
-
-/* =========================================================
-   CABEÇALHO DO CHAT
-   ========================================================= */
+/* Cabeçalho */
 
 .chat__cabecalho {
-  min-height: 84px;
-
   display: flex;
-
   align-items: center;
-
   gap: 0.9rem;
-
-  padding:
-    1rem
-    1.25rem;
-
+  min-height: 84px;
+  padding: 1rem 1.25rem;
   background: #0a0a0a;
   color: #fff;
 }
 
 .chat__avatar {
+  flex: 0 0 auto;
   width: 50px;
   height: 50px;
-
-  flex: 0 0 auto;
-
   overflow: hidden;
-
+  border: 2px solid rgba(255, 255, 255, 0.85);
   border-radius: 50%;
-
-  border:
-    2px solid
-    rgba(255, 255, 255, 0.85);
 }
 
 .chat__avatar img {
+  display: block;
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
   object-position: 50% 24%;
 }
 
 .chat__identidade {
-  min-width: 0;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 0.2rem;
+  min-width: 0;
 }
 
 .chat__identidade strong {
   font-size: 1rem;
-
   line-height: 1.2;
 }
 
-.chat__identidade span {
-  font-size: 0.7rem;
-
-  line-height: 1.3;
-
-  opacity: 0.68;
-}
-
-
-/* =========================================================
-   STATUS DO BOT
-   ========================================================= */
-
-/*
- * Essa regra fica fora dos media queries.
- *
- * Assim o ONLINE permanece verde em:
- * desktop, tablet e mobile.
- *
- * A especificidade também garante que o opacity acima
- * não deixe o verde apagado.
- */
-
 .chat__identidade .chat__status {
-  color: #22c55e;
-
-  font-size: 0.7rem;
-  font-weight: 700;
-
-  line-height: 1;
-
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-
-  opacity: 1;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
-
-/* =========================================================
-   CONVERSA
-   ========================================================= */
+/* Conversa */
 
 .chat__conversa {
   min-height: 0;
-
   overflow-y: auto;
-
-  /*
-   * Permite que, ao chegar no começo/fim do chat,
-   * o scroll continue naturalmente pela página.
-   *
-   * Não usar:
-   * overscroll-behavior: contain;
-   */
   overscroll-behavior-y: auto;
   -webkit-overflow-scrolling: touch;
-
   padding: 1.5rem;
-
   background:
     radial-gradient(
       circle at 20% 20%,
       rgba(0, 0, 0, 0.025) 0 1px,
       transparent 1px
     );
-
-  background-size:
-    18px
-    18px;
-
+  background-size: 18px 18px;
   scrollbar-width: thin;
-
-  scrollbar-color:
-    rgba(0, 0, 0, 0.25)
-    transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
 }
 
 .chat__conversa::-webkit-scrollbar {
@@ -352,58 +209,29 @@
 }
 
 .chat__conversa::-webkit-scrollbar-thumb {
-  background:
-    rgba(0, 0, 0, 0.22);
-
+  background: rgba(0, 0, 0, 0.22);
   border-radius: 999px;
 }
-
-
-/* =========================================================
-   DATA
-   ========================================================= */
 
 .chat__data {
   width: max-content;
-
-  margin:
-    0
-    auto
-    1.5rem;
-
-  padding:
-    0.35rem
-    0.65rem;
-
-  background:
-    rgba(0, 0, 0, 0.06);
-
+  margin: 0 auto 1.5rem;
+  padding: 0.35rem 0.65rem;
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 999px;
-
   font-size: 0.62rem;
   font-weight: 700;
-
   letter-spacing: 0.06em;
   text-transform: uppercase;
-
   opacity: 0.6;
 }
 
-
-/* =========================================================
-   LINHAS / MENSAGENS
-   ========================================================= */
+/* Mensagens */
 
 .chat__linha {
   display: flex;
-
   margin-bottom: 0.65rem;
-
-  animation:
-    chat-mensagem-entrada
-    220ms
-    ease
-    both;
+  animation: chat-mensagem-entrada 220ms ease both;
 }
 
 .chat__linha--bot {
@@ -414,134 +242,70 @@
   justify-content: flex-end;
 }
 
-
-/* =========================================================
-   BALÕES
-   ========================================================= */
-
 .chat__balao {
-  max-width:
-    min(82%, 390px);
-
-  padding:
-    0.85rem
-    1rem
-    0.55rem;
-
+  max-width: min(82%, 390px);
+  padding: 0.85rem 1rem 0.55rem;
   font-size: 0.94rem;
-
   line-height: 1.45;
 }
 
 .chat__balao p {
   margin: 0;
-
   white-space: pre-wrap;
-
   overflow-wrap: anywhere;
 }
 
 .chat__balao--bot {
   background: #fff;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.1);
-
-  border-radius:
-    4px
-    16px
-    16px
-    16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px 16px 16px 16px;
 }
 
 .chat__balao--usuario {
   background: #0a0a0a;
   color: #fff;
-
-  border-radius:
-    16px
-    4px
-    16px
-    16px;
+  border-radius: 16px 4px 16px 16px;
 }
 
 .chat__horario {
   display: block;
-
   margin-top: 0.35rem;
-
   font-size: 0.56rem;
-
   text-align: right;
-
   opacity: 0.42;
 }
-
-
-/* =========================================================
-   ANIMAÇÃO DAS MENSAGENS
-   ========================================================= */
 
 @keyframes chat-mensagem-entrada {
   from {
     opacity: 0;
-
-    transform:
-      translateY(7px);
+    transform: translateY(7px);
   }
 
   to {
     opacity: 1;
-
-    transform:
-      translateY(0);
+    transform: translateY(0);
   }
 }
 
-
-/* =========================================================
-   BOT DIGITANDO
-   ========================================================= */
+/* Indicador de resposta */
 
 .chat__balao--digitando {
   display: flex;
-
   align-items: center;
-
   gap: 0.3rem;
-
-  padding:
-    0.9rem
-    1.1rem;
-
+  padding: 0.9rem 1.1rem;
   background: #fff;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.1);
-
-  border-radius:
-    4px
-    16px
-    16px
-    16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px 16px 16px 16px;
 }
 
 .chat__balao--digitando span {
   width: 6px;
   height: 6px;
-
   border-radius: 50%;
-
   background: #0a0a0a;
-
   opacity: 0.3;
-
-  animation:
-    chat-digitando
-    900ms
-    infinite;
+  animation: chat-digitando 900ms infinite;
 }
 
 .chat__balao--digitando span:nth-child(2) {
@@ -553,74 +317,44 @@
 }
 
 @keyframes chat-digitando {
-  0%,
-  60%,
-  100% {
-    transform:
-      translateY(0);
-
+  0%, 60%, 100% {
+    transform: translateY(0);
     opacity: 0.25;
   }
 
   30% {
-    transform:
-      translateY(-3px);
-
+    transform: translateY(-3px);
     opacity: 0.8;
   }
 }
 
-
-/* =========================================================
-   RESPOSTAS RÁPIDAS
-   ========================================================= */
+/* Respostas rápidas */
 
 .chat__respostas,
 .chat__confirmar-intencao {
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-end;
-
   gap: 0.5rem;
-
   margin-top: 1.25rem;
 }
 
 .chat__resposta {
-  width:
-    min(90%, 410px);
-
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
   gap: 1rem;
-
-  padding:
-    0.85rem
-    1rem;
-
-  border:
-    1px solid
-    #0a0a0a;
-
+  width: min(90%, 410px);
+  padding: 0.85rem 1rem;
+  border: 1px solid #0a0a0a;
   border-radius: 999px;
-
   background: transparent;
   color: #0a0a0a;
-
   font: inherit;
-
   font-size: 0.85rem;
   font-weight: 700;
-
   text-align: left;
-
   cursor: pointer;
-
   transition:
     background 150ms ease,
     color 150ms ease,
@@ -631,15 +365,8 @@
 .chat__resposta:focus-visible {
   background: #0a0a0a;
   color: #fff;
-
-  transform:
-    translateX(-3px);
+  transform: translateX(-3px);
 }
-
-
-/* =========================================================
-   CONFIRMAÇÃO DA INTENÇÃO
-   ========================================================= */
 
 .chat__resposta--confirmar {
   background: #0a0a0a;
@@ -652,66 +379,42 @@
 }
 
 .chat__resposta--negar {
-  border-color:
-    rgba(0, 0, 0, 0.24);
-
+  border-color: rgba(0, 0, 0, 0.24);
   font-size: 0.76rem;
 }
 
-
-/* =========================================================
-   REGIÕES
-   ========================================================= */
+/* Regiões */
 
 .chat__regioes {
   margin-top: 1.25rem;
 }
 
 .chat__regioes > p {
-  margin:
-    0
-    0
-    0.75rem;
-
+  margin: 0 0 0.75rem;
   color: #595959;
   font-size: 0.72rem;
   font-weight: 700;
-
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .chat__chips {
   display: flex;
-
   flex-wrap: wrap;
-
   gap: 0.45rem;
 }
 
 .chat__chip {
   min-height: 44px;
-
-  padding:
-    0.65rem
-    0.9rem;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.25);
-
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 999px;
-
   background: #fff;
   color: #0a0a0a;
-
   font: inherit;
-
   font-size: 0.76rem;
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background 150ms ease,
     color 150ms ease,
@@ -722,58 +425,35 @@
 .chat__chip:focus-visible {
   background: #0a0a0a;
   color: #fff;
-
   border-color: #0a0a0a;
 }
 
-
-/* =========================================================
-   CAMPO DE MENSAGEM
-   ========================================================= */
+/* Mensagem livre */
 
 .chat__form-mensagem {
   margin-top: 1.35rem;
-
-  animation:
-    chat-mensagem-entrada
-    220ms
-    ease
-    both;
+  animation: chat-mensagem-entrada 220ms ease both;
 }
 
 .chat__label-mensagem {
   display: block;
-
   margin-bottom: 0.55rem;
-
   font-size: 0.65rem;
   font-weight: 800;
-
   letter-spacing: 0.08em;
   text-transform: uppercase;
-
   opacity: 0.55;
 }
 
 .chat__campo-mensagem {
   position: relative;
-
   display: flex;
-
   align-items: flex-end;
-
   gap: 0.6rem;
-
   padding: 0.45rem;
-
   background: #fff;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.22);
-
+  border: 1px solid rgba(0, 0, 0, 0.22);
   border-radius: 18px;
-
   transition:
     border-color 150ms ease,
     box-shadow 150ms ease;
@@ -781,178 +461,103 @@
 
 .chat__campo-mensagem:focus-within {
   border-color: #0a0a0a;
-
-  box-shadow:
-    0 0 0 2px
-    rgba(0, 0, 0, 0.06);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
 }
 
 .chat__campo-mensagem textarea {
   flex: 1;
-
+  min-width: 0;
   min-height: 88px;
   max-height: 170px;
-
-  padding:
-    0.7rem
-    0.65rem;
-
+  padding: 0.7rem 0.65rem;
   resize: vertical;
-
   border: 0;
   outline: 0;
-
   background: transparent;
   color: #0a0a0a;
-
   font: inherit;
-
   font-size: 0.88rem;
-
   line-height: 1.45;
 }
 
 .chat__campo-mensagem textarea::placeholder {
-  color:
-    rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.4);
 }
 
-
-/* =========================================================
-   BOTÃO ENVIAR
-   ========================================================= */
-
 .chat__enviar-mensagem {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
   width: 44px;
   height: 44px;
-
-  flex: 0 0 auto;
-
-  display: grid;
-
-  place-items: center;
-
   border: 0;
-
   border-radius: 50%;
-
   background: #0a0a0a;
   color: #fff;
-
   font: inherit;
-
   font-size: 1.1rem;
-
   cursor: pointer;
-
   transition:
     transform 150ms ease,
     opacity 150ms ease;
 }
 
 .chat__enviar-mensagem:hover {
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 }
 
-
-/* =========================================================
-   META / ERRO / CONTADOR
-   ========================================================= */
-
 .chat__mensagem-meta {
-  min-height: 20px;
-
   display: flex;
-
   justify-content: space-between;
-
   gap: 1rem;
-
+  min-height: 20px;
   margin-top: 0.4rem;
-
-  padding:
-    0
-    0.2rem;
+  padding: 0 0.2rem;
 }
 
 .chat__erro-mensagem {
-  font-size: 0.65rem;
-
   color: #a11919;
+  font-size: 0.65rem;
 }
 
 .chat__contador {
   margin-left: auto;
-
   font-size: 0.62rem;
-
   opacity: 0.45;
 }
 
-
-/* =========================================================
-   CONFIRMAÇÃO / FINAL
-   ========================================================= */
+/* Confirmação e WhatsApp */
 
 .chat__confirmacao,
 .chat__final {
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-end;
-
   gap: 0.75rem;
-
   margin-top: 1.25rem;
-
-  animation:
-    chat-mensagem-entrada
-    220ms
-    ease
-    both;
+  animation: chat-mensagem-entrada 220ms ease both;
 }
 
 .chat__confirmacao > p:first-child {
   margin: 0;
-
   font-size: 0.7rem;
   font-weight: 700;
-
   opacity: 0.55;
 }
-
-
-/* =========================================================
-   EDITAR MENSAGEM
-   ========================================================= */
 
 .chat__editar {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-
-  padding:
-    0.6rem
-    0.85rem;
-
-  border:
-    1px solid
-    rgba(0, 0, 0, 0.3);
-
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 999px;
-
   background: transparent;
   color: #0a0a0a;
-
   font: inherit;
-
   font-size: 0.7rem;
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background 150ms ease,
     color 150ms ease;
@@ -963,102 +568,63 @@
   color: #fff;
 }
 
-
-/* =========================================================
-   WHATSAPP
-   ========================================================= */
-
 .chat__whatsapp {
-  width:
-    min(100%, 410px);
-
-  min-height: 52px;
-  overflow-wrap: anywhere;
-
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
   gap: 1rem;
-
-  padding:
-    1rem
-    1.1rem;
-
+  width: min(100%, 410px);
+  min-height: 52px;
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
   background: #0a0a0a;
   color: #fff;
-
-  border-radius: 4px;
-
   font-size: 0.86rem;
   font-weight: 800;
-
   text-decoration: none;
   text-transform: uppercase;
-
+  overflow-wrap: anywhere;
   transition:
     transform 150ms ease,
     opacity 150ms ease;
 }
 
 .chat__whatsapp:hover {
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .chat__aviso-whatsapp {
   max-width: 410px;
-
   margin: 0;
-
   color: #494949;
   font-size: 0.72rem;
   line-height: 1.5;
   text-align: right;
 }
 
-
-/* =========================================================
-   RECOMEÇAR
-   ========================================================= */
-
 .chat__reiniciar {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-
   padding: 0;
-
   border: 0;
-
   background: transparent;
   color: inherit;
-
   font: inherit;
-
   font-size: 0.66rem;
   font-weight: 700;
-
   text-decoration: underline;
   text-underline-offset: 3px;
-
   cursor: pointer;
-
   opacity: 0.55;
-
-  transition:
-    opacity 150ms ease;
+  transition: opacity 150ms ease;
 }
 
 .chat__reiniciar:hover {
   opacity: 1;
 }
 
-
-/* =========================================================
-   ACESSIBILIDADE / FOCO
-   ========================================================= */
+/* Acessibilidade */
 
 .chat__resposta:focus-visible,
 .chat__chip:focus-visible,
@@ -1066,22 +632,15 @@
 .chat__whatsapp:focus-visible,
 .chat__reiniciar:focus-visible,
 .chat__enviar-mensagem:focus-visible {
-  outline:
-    2px solid
-    currentColor;
-
+  outline: 2px solid currentColor;
   outline-offset: 3px;
 }
 
-/* Contorno escuro para o botão de envio sobre o campo branco. */
 .chat__enviar-mensagem:focus-visible {
   outline-color: #0a0a0a;
 }
 
-
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* Tablet */
 
 @media (max-width: 980px) {
   .contato {
@@ -1089,7 +648,7 @@
   }
 
   .contato__conteudo {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .contato__foto {
@@ -1101,38 +660,20 @@
   }
 
   .contato__area-chat {
-    padding:
-      4rem
-      1.5rem;
+    padding: 4rem 1.5rem;
   }
 
   .chat {
-    width:
-      min(100%, 680px);
+    width: min(100%, 680px);
   }
 }
 
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
+/* Mobile */
 
 @media (max-width: 600px) {
-
-  /*
-   * Pequeno respiro antes da próxima seção.
-   *
-   * Como o tablet zerou o padding da seção,
-   * recuperamos apenas o padding inferior.
-   */
   .contato {
     padding-bottom: 3rem;
   }
-
-
-  /* -------------------------------------------------------
-     FOTO
-     ------------------------------------------------------- */
 
   .contato__foto {
     min-height: clamp(430px, 65svh, 520px);
@@ -1165,57 +706,24 @@
   }
 
   .contato__foto-legenda strong {
-    font-size:
-      clamp(
-        2.8rem,
-        13vw,
-        4.5rem
-      );
+    font-size: clamp(2.8rem, 13vw, 4.5rem);
   }
-
-
-  /* -------------------------------------------------------
-     ÁREA DO CHAT
-     ------------------------------------------------------- */
 
   .contato__area-chat {
     padding: 0;
   }
 
-
-  /* -------------------------------------------------------
-     CHAT MOBILE
-
-     Mantemos a altura que já foi ajustada anteriormente.
-     ------------------------------------------------------- */
-
   .chat {
     width: 100%;
-
-    height:
-      clamp(
-        560px,
-        78svh,
-        650px
-      );
-
+    height: clamp(560px, 78svh, 650px);
     border-left: 0;
     border-right: 0;
-
     box-shadow: none;
   }
 
-
-  /* -------------------------------------------------------
-     CABEÇALHO
-     ------------------------------------------------------- */
-
   .chat__cabecalho {
     min-height: 76px;
-
-    padding:
-      0.85rem
-      1rem;
+    padding: 0.85rem 1rem;
   }
 
   .chat__avatar {
@@ -1223,14 +731,8 @@
     height: 46px;
   }
 
-
-  /* -------------------------------------------------------
-     CONVERSA
-     ------------------------------------------------------- */
-
   .chat__conversa {
     padding: 1rem;
-
     overscroll-behavior-y: auto;
   }
 
@@ -1238,23 +740,10 @@
     max-width: 88%;
   }
 
-
-  /* -------------------------------------------------------
-     RESPOSTAS
-     ------------------------------------------------------- */
-
-  .chat__resposta {
-    width: 100%;
-  }
-
+  .chat__resposta,
   .chat__confirmar-intencao .chat__resposta {
     width: 100%;
   }
-
-
-  /* -------------------------------------------------------
-     REGIÕES
-     ------------------------------------------------------- */
 
   .chat__chips {
     gap: 0.4rem;
@@ -1264,20 +753,10 @@
     font-size: 0.8rem;
   }
 
-
-  /* -------------------------------------------------------
-     CAMPO DE MENSAGEM
-     ------------------------------------------------------- */
-
   .chat__campo-mensagem textarea {
     min-height: 100px;
-    font-size: 1rem; /* Evita zoom automático no Safari do iPhone. */
+    font-size: 1rem;
   }
-
-
-  /* -------------------------------------------------------
-     WHATSAPP
-     ------------------------------------------------------- */
 
   .chat__whatsapp {
     width: 100%;
@@ -1289,7 +768,6 @@
   }
 }
 
-/* Ajuste adicional para celulares baixos ou em modo paisagem. */
 @media (max-width: 600px) and (max-height: 700px) {
   .chat {
     height: clamp(480px, 78svh, 560px);
@@ -1307,10 +785,7 @@
   }
 }
 
-
-/* =========================================================
-   REDUÇÃO DE MOVIMENTO
-   ========================================================= */
+/* Movimento reduzido */
 
 @media (prefers-reduced-motion: reduce) {
   .chat__linha,

@@ -50,6 +50,7 @@ function Contato() {
   const contadorIdRef = useRef(0);
   const operacaoRef = useRef(0);
   const bloqueadoRef = useRef(false);
+  const montadoRef = useRef(true);
 
   function adicionarMensagem(autor, texto, id) {
     contadorIdRef.current += 1;
@@ -73,7 +74,7 @@ function Contato() {
 
     await esperar(ms);
 
-    if (operacao !== operacaoRef.current) {
+    if (!montadoRef.current || operacao !== operacaoRef.current) {
       return false;
     }
 
@@ -105,9 +106,13 @@ function Contato() {
     if (!conversa) return undefined;
 
     const frame = window.requestAnimationFrame(() => {
+      const reduzido = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+
       conversa.scrollTo({
         top: conversa.scrollHeight,
-        behavior: 'smooth',
+        behavior: reduzido ? 'auto' : 'smooth',
       });
     });
 
@@ -149,6 +154,9 @@ function Contato() {
 
       operacaoRef.current += 1;
       bloqueadoRef.current = false;
+      setDigitando(false);
+      setTextoMensagem('');
+      setErroMensagem('');
 
       setInteresse(interesseSalvo);
       setRegiao('');
@@ -174,9 +182,12 @@ function Contato() {
     verificarInteresse();
 
     window.addEventListener('hashchange', verificarInteresse);
+    window.addEventListener('interesse-contato', verificarInteresse);
 
     return () => {
       window.removeEventListener('hashchange', verificarInteresse);
+      window.removeEventListener('interesse-contato', verificarInteresse);
+      montadoRef.current = false;
       operacaoRef.current += 1;
     };
   }, []);
@@ -283,6 +294,7 @@ function Contato() {
 
     adicionarMensagem('usuario', opcoes.confirmar, 'detector-resposta');
     setInteresse(tipo);
+    setIntencaoDetectada(null);
 
     await responderComRegiao(tipo);
   }
@@ -330,48 +342,46 @@ function Contato() {
     setEtapa('mensagem');
   }
 
-  
-function obterMensagemWhatsApp() {
-  const apresentacao = [
-    'Hey!',
-    '',
-    'Vim pelo site da *Colo de Deus | Missão SP*.',
-  ];
-
-  if (interesse === 'celula' || interesse === 'cenaculo') {
-    const tipo = interesse === 'celula' ? 'Célula' : 'Cenáculo';
-
-    const partes = [
-      ...apresentacao,
+  function obterMensagemWhatsApp() {
+    const apresentacao = [
+      'Hey!',
       '',
-      `Gostaria de conhecer uma *${tipo}* na minha região.`,
-      '',
-      `*Região:* ${regiao}`,
-      '',
-      'Poderiam me passar mais informações?',
+      'Vim pelo site da *Colo de Deus | Missão SP*.',
     ];
 
-    if (mensagemLivre) {
-      partes.push('', '*Minha mensagem:*', mensagemLivre);
+    if (interesse === 'celula' || interesse === 'cenaculo') {
+      const tipo = interesse === 'celula' ? 'Célula' : 'Cenáculo';
+
+      const partes = [
+        ...apresentacao,
+        '',
+        `Gostaria de conhecer uma *${tipo}* na minha região.`,
+        '',
+        `*Região:* ${regiao}`,
+        '',
+        'Poderiam me passar mais informações?',
+      ];
+
+      if (mensagemLivre) {
+        partes.push('', '*Minha mensagem:*', mensagemLivre);
+      }
+
+      partes.push('', 'Desde já, agradeço!');
+
+      return partes.join('\n');
     }
 
-    partes.push('', 'Desde já, agradeço!');
-
-    return partes.join('\n');
+    return [
+      ...apresentacao,
+      '',
+      'Gostaria de conversar com alguém da missão.',
+      '',
+      '*Minha mensagem:*',
+      mensagemLivre,
+      '',
+      'Desde já, agradeço!',
+    ].join('\n');
   }
-
-  return [
-    ...apresentacao,
-    '',
-    'Gostaria de conversar com alguém da missão.',
-    '',
-    '*Minha mensagem:*',
-    mensagemLivre,
-    '',
-    'Desde já, agradeço!',
-  ].join('\n');
-}
-
 
   // Os números são definidos exclusivamente em config/contatos.js.
   function gerarLinkWhatsApp() {
@@ -399,7 +409,9 @@ function obterMensagemWhatsApp() {
     window.requestAnimationFrame(() => {
       conversaRef.current?.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior: window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches ? 'auto' : 'smooth',
       });
     });
   }
@@ -461,14 +473,16 @@ function obterMensagemWhatsApp() {
 
               <div className="chat__identidade">
                 <strong>Missão SP</strong>
-                <span className="chat__status">Online</span>
+                <span className="chat__status">
+                  Atendimento via WhatsApp
+                </span>
               </div>
             </header>
 
             <div
               className="chat__conversa"
               ref={conversaRef}
-              aria-live="polite"
+              aria-label="Conversa com a Missão SP"
             >
               <div className="chat__data">Hoje</div>
 
@@ -482,7 +496,8 @@ function obterMensagemWhatsApp() {
               {digitando && (
                 <div
                   className="chat__linha chat__linha--bot"
-                  aria-label="Missão SP está respondendo"
+                  role="status"
+                  aria-label="Preparando resposta"
                 >
                   <div className="chat__balao chat__balao--digitando">
                     <span />
@@ -545,6 +560,8 @@ function obterMensagemWhatsApp() {
                       id="mensagem-missao"
                       value={textoMensagem}
                       maxLength={LIMITE_MENSAGEM}
+                      aria-invalid={Boolean(erroMensagem)}
+                      aria-describedby="chat-erro-mensagem chat-contador"
                       rows={4}
                       placeholder="Escreva sua mensagem..."
                       onChange={(evento) => {
@@ -568,12 +585,16 @@ function obterMensagemWhatsApp() {
                   <div className="chat__mensagem-meta">
                     <span
                       className="chat__erro-mensagem"
+                      id="chat-erro-mensagem"
                       role="alert"
                     >
                       {erroMensagem}
                     </span>
 
-                    <span className="chat__contador">
+                    <span
+                      className="chat__contador"
+                      id="chat-contador"
+                    >
                       {textoMensagem.length}/{LIMITE_MENSAGEM}
                     </span>
                   </div>

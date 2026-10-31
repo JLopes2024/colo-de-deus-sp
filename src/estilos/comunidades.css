@@ -84,29 +84,18 @@
   color: var(--cor-branco);
   line-height: 0.9;
   transform-origin: left center;
-  animation: comunidades-destaque 800ms
-    cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-@keyframes comunidades-destaque {
-  from {
-    opacity: 0;
-    transform: scaleX(0.85) translateX(-0.08em);
-  }
+/* Descrições */
 
-  to {
-    opacity: 1;
-    transform: scaleX(1) translateX(0);
-  }
-}
-
-/* Descrições — classes utilizadas no Comunidades.jsx */
-
-.comunidades__descricao {
+.comunidades__descricoes {
   width: 100%;
   max-width: 48ch;
   margin-top: clamp(1.75rem, 3vw, 2.75rem);
+}
 
+.comunidades__descricoes p {
+  margin: 0;
   color: inherit;
   font-size: clamp(1rem, 1.1vw, 1.1rem);
   line-height: 1.75;
@@ -114,7 +103,7 @@
   overflow-wrap: break-word;
 }
 
-.comunidades__descricao + .comunidades__descricao {
+.comunidades__descricoes p + p {
   margin-top: 1rem;
 }
 
@@ -209,11 +198,6 @@
   min-width: 0;
 }
 
-.comunidades__imagem::before,
-.comunidades__imagem::after {
-  content: none;
-}
-
 .comunidades__imagem img {
   position: static;
   display: block;
@@ -266,12 +250,12 @@
     line-height: 0.92;
   }
 
-  .comunidades__descricao {
+  .comunidades__descricoes {
     max-width: 100%;
     margin-top: 1.75rem;
   }
 
-  .comunidades__descricao + .comunidades__descricao {
+  .comunidades__descricoes p + p {
     margin-top: 0.9rem;
   }
 
@@ -292,7 +276,7 @@
     font-size: clamp(2.45rem, 10.5vw, 3.5rem);
   }
 
-  .comunidades__descricao {
+  .comunidades__descricoes p {
     font-size: 1rem;
     line-height: 1.7;
   }
@@ -317,10 +301,6 @@
 /* Movimento reduzido */
 
 @media (prefers-reduced-motion: reduce) {
-  .comunidades__titulo-destaque {
-    animation: none;
-  }
-
   .comunidades__acao,
   .comunidades__seta {
     transition: none;
