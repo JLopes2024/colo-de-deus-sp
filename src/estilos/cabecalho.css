@@ -1,16 +1,17 @@
+
 /* =========================================================
-   CABEÇALHO
+   CABEÇALHO — COLO DE DEUS | MISSÃO SP
+   Menu mobile editorial imersivo
    ========================================================= */
 
 .cabecalho {
   position: sticky;
   top: 0;
-
   z-index: 1000;
-
   width: 100%;
 
-  background-color: var(--cor-preto);
+  background: var(--cor-preto);
+  color: var(--cor-branco);
 
   border-bottom: 1px solid transparent;
 
@@ -19,19 +20,13 @@
     box-shadow var(--transicao-padrao);
 }
 
-
-/* Estado aplicado após iniciar a rolagem */
-
 .cabecalho--rolado {
-  border-bottom-color: rgba(242, 241, 237, 0.1);
-
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.15);
+  border-bottom-color: rgba(242, 241, 237, 0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
-
 /* =========================================================
-   CONTEÚDO
+   BARRA SUPERIOR
    ========================================================= */
 
 .cabecalho__conteudo {
@@ -43,21 +38,14 @@
   justify-content: space-between;
 
   min-height: 88px;
-
   gap: var(--espaco-4);
 
-  background-color: var(--cor-preto);
+  background: var(--cor-preto);
 }
-
-
-/* =========================================================
-   LOGO
-   ========================================================= */
 
 .cabecalho__logo {
   display: flex;
   align-items: center;
-
   flex-shrink: 0;
 
   width: clamp(150px, 14vw, 210px);
@@ -65,11 +53,9 @@
 
 .cabecalho__logo img {
   display: block;
-
   width: 100%;
   height: auto;
 }
-
 
 /* =========================================================
    NAVEGAÇÃO DESKTOP
@@ -85,13 +71,13 @@
 .cabecalho__navegacao a {
   position: relative;
 
+  color: var(--cor-branco);
+
   font-size: var(--texto-sm);
   font-weight: 700;
-
   text-transform: uppercase;
 
-  transition:
-    opacity var(--transicao-rapida);
+  transition: opacity var(--transicao-rapida);
 }
 
 .cabecalho__navegacao a::after {
@@ -104,13 +90,12 @@
   width: 100%;
   height: 1px;
 
-  background-color: currentColor;
+  background: currentColor;
 
   transform: scaleX(0);
   transform-origin: right;
 
-  transition:
-    transform var(--transicao-padrao);
+  transition: transform var(--transicao-padrao);
 }
 
 .cabecalho__navegacao a:hover {
@@ -122,25 +107,21 @@
   transform-origin: left;
 }
 
-
-/* =========================================================
-   CTA
-   ========================================================= */
-
 .cabecalho__acao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   min-height: 44px;
-
   padding-inline: 1.25rem;
 
+  white-space: nowrap;
+
   border: 1px solid var(--cor-branco);
+  color: var(--cor-branco);
 
   font-size: var(--texto-sm);
   font-weight: 700;
-
   text-transform: uppercase;
 
   transition:
@@ -149,31 +130,28 @@
 }
 
 .cabecalho__acao:hover {
-  background-color: var(--cor-branco);
+  background: var(--cor-branco);
   color: var(--cor-preto);
 }
 
-
 /* =========================================================
-   BOTÃO MOBILE
+   BOTÃO HAMBÚRGUER
    ========================================================= */
 
 .cabecalho__menu {
   display: none;
-
   position: relative;
-
   flex-shrink: 0;
 
   width: 44px;
   height: 44px;
-
   padding: 8px;
 
   border: 0;
-
   background: transparent;
   color: var(--cor-branco);
+
+  cursor: pointer;
 }
 
 .cabecalho__menu span {
@@ -183,12 +161,12 @@
   width: calc(100% - 16px);
   height: 2px;
 
-  background-color: currentColor;
+  background: currentColor;
 
   transition:
-    transform var(--transicao-padrao),
-    top var(--transicao-padrao),
-    opacity var(--transicao-padrao);
+    top 260ms ease,
+    transform 260ms ease,
+    opacity 180ms ease;
 }
 
 .cabecalho__menu span:nth-child(1) {
@@ -203,14 +181,8 @@
   top: 30px;
 }
 
-
-/* =========================================================
-   BOTÃO MOBILE ABERTO
-   ========================================================= */
-
 .cabecalho__menu--aberto span:nth-child(1) {
   top: 21px;
-
   transform: rotate(45deg);
 }
 
@@ -220,27 +192,53 @@
 
 .cabecalho__menu--aberto span:nth-child(3) {
   top: 21px;
-
   transform: rotate(-45deg);
 }
 
-
-/* =========================================================
-   MENU MOBILE
-   ========================================================= */
+/* Menu indisponível no desktop */
 
 .menu-mobile {
   display: none;
 }
 
+/* =========================================================
+   DESKTOP ESTREITO
+   ========================================================= */
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .cabecalho__conteudo {
+    gap: 1rem;
+  }
+
+  .cabecalho__logo {
+    width: clamp(135px, 13vw, 170px);
+  }
+
+  .cabecalho__navegacao {
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+
+  .cabecalho__navegacao a,
+  .cabecalho__acao {
+    font-size: 0.75rem;
+  }
+
+  .cabecalho__acao {
+    padding-inline: 0.875rem;
+  }
+}
 
 /* =========================================================
-   RESPONSIVIDADE
+   TABLET E MOBILE
    ========================================================= */
 
 @media (max-width: 900px) {
   .cabecalho__conteudo {
     min-height: 72px;
+  }
+
+  .cabecalho__logo {
+    width: 160px;
   }
 
   .cabecalho__navegacao,
@@ -252,22 +250,11 @@
     display: block;
   }
 
-  .cabecalho__logo {
-    width: 160px;
-  }
-
-
-  /* =======================================================
-     MENU MOBILE
-     ======================================================= */
+  /* PAINEL IMERSIVO */
 
   .menu-mobile {
     position: fixed;
-
-    top: 72px;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 72px 0 0;
 
     z-index: 1010;
 
@@ -276,150 +263,366 @@
     overflow-y: auto;
     overscroll-behavior: contain;
 
-    background-color: var(--cor-preto);
+    background: var(--cor-preto);
+    color: var(--cor-branco);
 
     opacity: 0;
     visibility: hidden;
-
     pointer-events: none;
 
-    transform: translateY(-10px);
+    transform: translateY(-12px);
 
     transition:
-      opacity var(--transicao-padrao),
-      visibility var(--transicao-padrao),
-      transform var(--transicao-padrao);
+      opacity 300ms ease,
+      transform 300ms ease,
+      visibility 300ms ease;
   }
 
   .menu-mobile--aberto {
     opacity: 1;
     visibility: visible;
-
     pointer-events: auto;
 
     transform: translateY(0);
   }
 
+  .menu-mobile__interior {
+    display: flex;
+    flex-direction: column;
 
-  /* =======================================================
-     NAVEGAÇÃO MOBILE
-     ======================================================= */
+    min-height: calc(100dvh - 72px);
+
+    padding-top: clamp(1.5rem, 4vh, 3rem);
+    padding-bottom: max(
+      1.5rem,
+      env(safe-area-inset-bottom)
+    );
+  }
+
+  /* ETIQUETA EDITORIAL */
+
+  .menu-mobile__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+
+    border-bottom: 1px solid rgba(242, 241, 237, 0.16);
+  }
+
+  .menu-mobile__etiqueta,
+  .menu-mobile__edicao {
+    color: rgba(242, 241, 237, 0.55);
+
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  /* LINKS PRINCIPAIS */
 
   .menu-mobile__navegacao {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
 
-    min-height: calc(100dvh - 72px);
-
-    padding-top: clamp(2rem, 8vh, 5rem);
-    padding-bottom: var(--espaco-5);
+    padding-block: clamp(1rem, 3vh, 2.25rem);
   }
 
-  .menu-mobile__navegacao > a {
-    font-family: var(--fonte-display);
+  .menu-mobile__link {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) 1.5rem;
+    align-items: center;
 
-    font-size: clamp(2.7rem, 11vw, 5.5rem);
+    gap: clamp(0.5rem, 2vw, 1rem);
+
+    min-height: clamp(3.65rem, 9vh, 5.75rem);
+
+    padding-block: 0.35rem;
+
+    border-bottom: 1px solid rgba(242, 241, 237, 0.10);
+
+    color: var(--cor-branco);
+    text-decoration: none;
+
+    opacity: 1;
+    transform: translateY(0);
+
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .menu-mobile__numero {
+    align-self: center;
+
+    color: rgba(242, 241, 237, 0.45);
+
+    font-family: inherit;
+    font-size: 0.65rem;
     font-weight: 700;
+    letter-spacing: 0.04em;
+  }
 
-    line-height: 0.92;
+  .menu-mobile__texto {
+    min-width: 0;
 
+    font-family: var(--fonte-display);
+    font-size: clamp(2.15rem, 9vw, 4.75rem);
+    font-weight: 700;
+    line-height: 0.98;
     letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
 
+  .menu-mobile__seta {
+    justify-self: end;
+    align-self: center;
+
+    color: rgba(242, 241, 237, 0.50);
+
+    font-family: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+
+    transition:
+      color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .menu-mobile__link:active {
+    background: rgba(242, 241, 237, 0.07);
+  }
+
+  .menu-mobile__link:active .menu-mobile__seta {
+    color: var(--cor-branco);
+    transform: translate(2px, -2px);
+  }
+
+  /* ENTRADA ESCALONADA */
+
+  @keyframes menuLinkEntrar {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .menu-mobile--aberto .menu-mobile__link {
+    animation: menuLinkEntrar 380ms ease both;
+    animation-delay: calc(var(--indice) * 45ms);
+  }
+
+  /* RODAPÉ DO MENU */
+
+  .menu-mobile__rodape {
+    display: flex;
+    flex-direction: column;
+
+    gap: clamp(1rem, 3vh, 1.75rem);
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+
+  .menu-mobile__participar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    min-height: 56px;
+    padding: 1rem 1.125rem;
+
+    background: var(--cor-branco);
+    border: 1px solid var(--cor-branco);
+    color: var(--cor-preto);
+
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.065em;
+    line-height: 1.25;
+    text-decoration: none;
     text-transform: uppercase;
 
     transition:
-      opacity var(--transicao-rapida),
-      transform var(--transicao-rapida);
+      background-color 180ms ease,
+      transform 180ms ease;
   }
 
-  .menu-mobile__navegacao > a + a {
-    margin-top: var(--espaco-2);
+  .menu-mobile__participar span:last-child {
+    font-size: 1.25rem;
+    line-height: 1;
   }
 
-  .menu-mobile__navegacao > a:hover {
-    opacity: 0.6;
-
-    transform: translateX(4px);
+  .menu-mobile__participar:active {
+    transform: scale(0.985);
   }
 
+  .menu-mobile__base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
 
-  /* =======================================================
-     REDES SOCIAIS
-     ======================================================= */
+    gap: 0.75rem 1.5rem;
+  }
+
+  .menu-mobile__assinatura {
+    color: rgba(242, 241, 237, 0.50);
+
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
 
   .menu-mobile__social {
     display: flex;
     flex-wrap: wrap;
 
-    gap: var(--espaco-3);
-
-    margin-top: auto;
-    padding-top: var(--espaco-6);
+    gap: 0.5rem 1.25rem;
   }
 
   .menu-mobile__social a {
-    color: var(--cor-texto-suave);
+    display: inline-flex;
+    align-items: center;
 
-    font-size: var(--texto-xs);
+    min-height: 44px;
+
+    color: var(--cor-branco);
+
+    font-size: 0.7rem;
     font-weight: 700;
-
-    letter-spacing: 0.1em;
-
+    letter-spacing: 0.07em;
+    text-decoration: none;
     text-transform: uppercase;
 
-    transition:
-      color var(--transicao-rapida);
+    transition: opacity 180ms ease;
   }
 
-  .menu-mobile__social a:hover {
-    color: var(--cor-branco);
+  .menu-mobile__social a:active {
+    opacity: 0.6;
   }
 }
 
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
+
+@media (max-width: 420px) {
+  .menu-mobile__link {
+    grid-template-columns: 1.5rem minmax(0, 1fr) 1.25rem;
+    gap: 0.5rem;
+  }
+
+  .menu-mobile__texto {
+    font-size: clamp(1.95rem, 8.6vw, 2.7rem);
+  }
+
+  .menu-mobile__topo {
+    padding-bottom: 1rem;
+  }
+
+  .menu-mobile__rodape {
+    padding-top: 1rem;
+  }
+}
 
 /* =========================================================
-   FOCO DO TECLADO
+   TELAS BAIXAS / HORIZONTAL
+   ========================================================= */
+
+@media (max-width: 900px) and (max-height: 600px) {
+  .menu-mobile__interior {
+    padding-top: 1rem;
+    padding-bottom: max(
+      1rem,
+      env(safe-area-inset-bottom)
+    );
+  }
+
+  .menu-mobile__topo {
+    padding-bottom: 0.75rem;
+  }
+
+  .menu-mobile__navegacao {
+    padding-block: 0.75rem;
+  }
+
+  .menu-mobile__link {
+    min-height: 44px;
+    padding-block: 0.25rem;
+  }
+
+  .menu-mobile__texto {
+    font-size: clamp(1.6rem, 6vh, 2.5rem);
+  }
+
+  .menu-mobile__rodape {
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .menu-mobile__participar {
+    min-height: 48px;
+    padding-block: 0.75rem;
+  }
+}
+
+/* =========================================================
+   HOVER — APENAS MOUSE
+   ========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .menu-mobile__link:hover {
+    color: var(--cor-azul);
+  }
+
+  .menu-mobile__link:hover .menu-mobile__seta {
+    color: var(--cor-azul);
+    transform: translate(3px, -3px);
+  }
+
+  .menu-mobile__participar:hover {
+    background: var(--cor-azul);
+    border-color: var(--cor-azul);
+    color: var(--cor-branco);
+  }
+
+  .menu-mobile__social a:hover {
+    opacity: 0.65;
+  }
+}
+
+/* =========================================================
+   FOCO ACESSÍVEL
    ========================================================= */
 
 .cabecalho__logo:focus-visible,
 .cabecalho__navegacao a:focus-visible,
 .cabecalho__acao:focus-visible,
 .cabecalho__menu:focus-visible,
-.menu-mobile__navegacao a:focus-visible {
+.menu-mobile__link:focus-visible,
+.menu-mobile__social a:focus-visible {
   outline: 2px solid var(--cor-branco);
-  outline-offset: 5px;
+  outline-offset: 4px;
 }
 
-
-/* =========================================================
-   TELAS BAIXAS / CELULAR NA HORIZONTAL
-   ========================================================= */
-
-@media (max-width: 900px) and (max-height: 600px) {
-  .menu-mobile__navegacao {
-    padding-top: 1.25rem;
-    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
-  }
-
-  .menu-mobile__navegacao > a {
-    font-size: clamp(2rem, 7vh, 3rem);
-    line-height: 1;
-  }
-
-  .menu-mobile__navegacao > a + a {
-    margin-top: 0.65rem;
-  }
-
-  .menu-mobile__social {
-    padding-top: 1.5rem;
-  }
+.menu-mobile__participar:focus-visible {
+  outline: 2px solid var(--cor-azul);
+  outline-offset: 4px;
 }
-
 
 /* =========================================================
    MOVIMENTO REDUZIDO
-   Respeita a preferência de acessibilidade do sistema.
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -429,7 +632,190 @@
   .cabecalho__acao,
   .cabecalho__menu span,
   .menu-mobile,
-  .menu-mobile__navegacao > a {
+  .menu-mobile__link,
+  .menu-mobile__seta,
+  .menu-mobile__participar,
+  .menu-mobile__social a {
+    transition: none;
+  }
+
+  .menu-mobile--aberto .menu-mobile__link {
+    animation: none;
+  }
+
+  .menu-mobile__participar:active,
+  .menu-mobile__link:active .menu-mobile__seta {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   INDICADOR DE SEÇÃO ATIVA
+   ========================================================= */
+
+/* DESKTOP — linha azul sob a seção atual */
+
+.cabecalho__navegacao a.cabecalho__link--ativo {
+  opacity: 1;
+}
+
+.cabecalho__navegacao a.cabecalho__link--ativo::after {
+  background-color: var(--cor-azul);
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* MOBILE — destaque editorial */
+
+@media (max-width: 900px) {
+  .menu-mobile__link--ativo .menu-mobile__numero,
+  .menu-mobile__link--ativo .menu-mobile__texto,
+  .menu-mobile__link--ativo .menu-mobile__seta {
+    color: var(--cor-azul);
+  }
+
+  .menu-mobile__link--ativo {
+    border-bottom-color: var(--cor-azul);
+  }
+
+  .menu-mobile__link--ativo .menu-mobile__seta {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* Movimento reduzido */
+
+@media (prefers-reduced-motion: reduce) {
+  .cabecalho__navegacao a.cabecalho__link--ativo::after,
+  .menu-mobile__link--ativo .menu-mobile__seta {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   P2 — CABEÇALHO COMPACTO NO DESKTOP
+   Mantém 88px estruturais para preservar as âncoras.
+   ========================================================= */
+
+@media (min-width: 901px) {
+
+  /*
+   * A barra permanece com 88px no layout.
+   * O conteúdo interno assume aparência de 72px.
+   */
+  .cabecalho__conteudo {
+    transition:
+      padding 260ms ease;
+  }
+
+  /*
+   * O pseudo-elemento cria a faixa visual compacta.
+   * Não altera o fluxo da página.
+   */
+  .cabecalho::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 100%;
+
+    background: var(--cor-preto);
+
+    pointer-events: none;
+
+    transition:
+      height 260ms ease;
+  }
+
+  /*
+   * Ao rolar, a faixa visual passa a 72px.
+   * Os 16px restantes continuam reservados.
+   */
+  .cabecalho--rolado::before {
+    height: 72px;
+  }
+
+  /*
+   * Reposicionamento vertical do conteúdo.
+   * A área estrutural do cabeçalho não muda.
+   */
+  .cabecalho--rolado .cabecalho__conteudo {
+    transform: translateY(-8px);
+  }
+
+  .cabecalho__conteudo {
+    transition:
+      transform 260ms ease;
+  }
+
+  /*
+   * Logo ligeiramente menor.
+   */
+  .cabecalho__logo {
+    transition:
+      transform 260ms ease;
+    transform-origin: left center;
+  }
+
+  .cabecalho--rolado .cabecalho__logo {
+    transform: scale(0.90);
+  }
+
+  /*
+   * CTA levemente mais compacto.
+   * Preserva altura mínima de toque.
+   */
+  .cabecalho__acao {
+    transition:
+      background-color var(--transicao-rapida),
+      color var(--transicao-rapida),
+      padding 260ms ease;
+  }
+
+  .cabecalho--rolado .cabecalho__acao {
+    padding-inline: 1rem;
+  }
+
+  /*
+   * Separador mais discreto.
+   */
+  .cabecalho--rolado {
+    border-bottom-color: rgba(242, 241, 237, 0.08);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* =========================================================
+   MOBILE — PRESERVAR EXATAMENTE A VERSÃO APROVADA
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .cabecalho__conteudo,
+  .cabecalho--rolado .cabecalho__conteudo {
+    transform: none;
+  }
+
+  .cabecalho__logo,
+  .cabecalho--rolado .cabecalho__logo {
+    transform: none;
+  }
+
+  .cabecalho::before {
+    display: none;
+  }
+}
+
+/* =========================================================
+   ACESSIBILIDADE — MOVIMENTO REDUZIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .cabecalho__conteudo,
+  .cabecalho__logo,
+  .cabecalho__acao,
+  .cabecalho::before {
     transition: none;
   }
 }

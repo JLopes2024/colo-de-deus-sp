@@ -10,30 +10,46 @@ const LINKS = [
   { href: '#contato', texto: 'Contato' },
 ];
 
+const REDES = [
+  {
+    nome: 'Instagram',
+    url: 'https://www.instagram.com/colodedeus/?hl=pt-br',
+  },
+  {
+    nome: 'YouTube',
+    url: 'https://www.youtube.com/channel/UCw7SCTLZq2byYiirHtc25-Q',
+  },
+];
+
 function Cabecalho() {
   const [menuAberto, setMenuAberto] = useState(false);
   const [cabecalhoRolado, setCabecalhoRolado] = useState(false);
+  const [secaoAtiva, setSecaoAtiva] = useState(null);
 
   const cabecalhoRef = useRef(null);
   const botaoMenuRef = useRef(null);
   const menuRef = useRef(null);
 
   function fecharMenu() {
-    document.body.style.overflow = '';
     setMenuAberto(false);
   }
 
   function alternarMenu() {
-    if (menuAberto) {
-      fecharMenu();
-    } else {
-      setMenuAberto(true);
-    }
+    setMenuAberto((aberto) => !aberto);
   }
 
+  function navegarPara(href) {
+    setSecaoAtiva(href.slice(1));
+    fecharMenu();
+  }
+
+  // Aparência do cabeçalho após iniciar a rolagem.
   useEffect(() => {
     function verificarRolagem() {
-      setCabecalhoRolado(window.scrollY > 12);
+      setCabecalhoRolado((anterior) => {
+        const rolado = window.scrollY > 12;
+        return anterior === rolado ? anterior : rolado;
+      });
     }
 
     verificarRolagem();
@@ -47,22 +63,98 @@ function Cabecalho() {
     };
   }, []);
 
+  // Identifica a seção correspondente à área de leitura.
+  useEffect(() => {
+    const secoes = LINKS.map(({ href }) => ({
+      id: href.slice(1),
+      elemento: document.getElementById(href.slice(1)),
+    })).filter(({ elemento }) => elemento !== null);
+
+    if (!secoes.length) return undefined;
+
+    function atualizarSecaoAtiva() {
+      const alturaCabecalho =
+        cabecalhoRef.current?.getBoundingClientRect().height ?? 72;
+
+      // Ponto de referência próximo ao terço superior da tela.
+      const pontoLeitura = Math.max(
+        alturaCabecalho + 8,
+        window.innerHeight * 0.35
+      );
+
+      const atual = secoes.find(({ elemento }) => {
+        const limites = elemento.getBoundingClientRect();
+
+        return (
+          limites.top <= pontoLeitura &&
+          limites.bottom > pontoLeitura
+        );
+      });
+
+      setSecaoAtiva(atual?.id ?? null);
+    }
+
+    // O observador aciona a verificação somente quando
+    // uma seção entra ou sai da área relevante.
+    const observador = new IntersectionObserver(
+      atualizarSecaoAtiva,
+      {
+        rootMargin: '-72px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    secoes.forEach(({ elemento }) => {
+      observador.observe(elemento);
+    });
+
+    // Permite sincronizar após atualização do hash,
+    // mudanças de tamanho e carregamento inicial.
+    function atualizarDepoisDaNavegacao() {
+      window.requestAnimationFrame(atualizarSecaoAtiva);
+    }
+
+    window.addEventListener('resize', atualizarDepoisDaNavegacao);
+    window.addEventListener('hashchange', atualizarDepoisDaNavegacao);
+
+    atualizarDepoisDaNavegacao();
+
+    return () => {
+      observador.disconnect();
+
+      window.removeEventListener(
+        'resize',
+        atualizarDepoisDaNavegacao
+      );
+
+      window.removeEventListener(
+        'hashchange',
+        atualizarDepoisDaNavegacao
+      );
+    };
+  }, []);
+
+  // Comportamento acessível do menu mobile.
   useEffect(() => {
     if (!menuAberto) return undefined;
 
     const overflowAnterior = document.body.style.overflow;
-
     document.body.style.overflow = 'hidden';
 
-    menuRef.current
-      ?.querySelector('a')
-      ?.focus({ preventScroll: true });
+    const focoAnterior = document.activeElement;
+
+    const frame = window.requestAnimationFrame(() => {
+      menuRef.current
+        ?.querySelector('.menu-mobile__link')
+        ?.focus({ preventScroll: true });
+    });
 
     function lidarComTeclado(evento) {
       if (evento.key === 'Escape') {
+        evento.preventDefault();
         fecharMenu();
 
-        requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
           botaoMenuRef.current?.focus({
             preventScroll: true,
           });
@@ -73,28 +165,22 @@ function Cabecalho() {
 
       if (evento.key !== 'Tab') return;
 
-      const elementos = cabecalhoRef.current
-        ?.querySelectorAll('a[href], button:not([disabled])');
+      const elementos = [
+        ...cabecalhoRef.current.querySelectorAll(
+          '.cabecalho__logo, .cabecalho__menu'
+        ),
+        ...menuRef.current.querySelectorAll('a[href]'),
+      ];
 
-      if (!elementos?.length) return;
+      if (!elementos.length) return;
 
-      const visiveis = Array.from(elementos).filter(
-        (elemento) => {
-          const estilo = window.getComputedStyle(elemento);
+      const primeiro = elementos[0];
+      const ultimo = elementos[elementos.length - 1];
 
-          return (
-            estilo.display !== 'none' &&
-            estilo.visibility !== 'hidden'
-          );
-        },
-      );
-
-      if (!visiveis.length) return;
-
-      const primeiro = visiveis[0];
-      const ultimo = visiveis[visiveis.length - 1];
-
-      if (evento.shiftKey && document.activeElement === primeiro) {
+      if (
+        evento.shiftKey &&
+        document.activeElement === primeiro
+      ) {
         evento.preventDefault();
         ultimo.focus();
       } else if (
@@ -116,10 +202,26 @@ function Cabecalho() {
     window.addEventListener('resize', verificarLargura);
 
     return () => {
+      window.cancelAnimationFrame(frame);
       document.body.style.overflow = overflowAnterior;
 
-      document.removeEventListener('keydown', lidarComTeclado);
-      window.removeEventListener('resize', verificarLargura);
+      document.removeEventListener(
+        'keydown',
+        lidarComTeclado
+      );
+
+      window.removeEventListener(
+        'resize',
+        verificarLargura
+      );
+
+      if (
+        focoAnterior instanceof HTMLElement &&
+        document.contains(focoAnterior) &&
+        document.activeElement === document.body
+      ) {
+        focoAnterior.focus({ preventScroll: true });
+      }
     };
   }, [menuAberto]);
 
@@ -134,8 +236,11 @@ function Cabecalho() {
         <a
           className="cabecalho__logo"
           href="#inicio"
-          aria-label="Colo de Deus São Paulo - início"
-          onClick={fecharMenu}
+          aria-label="Colo de Deus São Paulo — início"
+          onClick={() => {
+            setSecaoAtiva(null);
+            fecharMenu();
+          }}
         >
           <img
             src="/imagens/logo-branca.png"
@@ -147,24 +252,42 @@ function Cabecalho() {
           className="cabecalho__navegacao"
           aria-label="Navegação principal"
         >
-          {LINKS.map(({ href, texto }) => (
-            <a key={href} href={href}>
-              {texto}
-            </a>
-          ))}
+          {LINKS.map(({ href, texto }) => {
+            const ativa = secaoAtiva === href.slice(1);
+
+            return (
+              <a
+                key={href}
+                href={href}
+                className={
+                  ativa ? 'cabecalho__link--ativo' : undefined
+                }
+                aria-current={ativa ? 'location' : undefined}
+                onClick={() => navegarPara(href)}
+              >
+                {texto}
+              </a>
+            );
+          })}
         </nav>
 
-         <a className="cabecalho__acao" href="#contato">
-          Encontre-nos
+        <a
+          className="cabecalho__acao"
+          href="#contato"
+          onClick={() => navegarPara('#contato')}
+        >
+          Fale com a missão
         </a>
-  
+
         <button
           ref={botaoMenuRef}
           className={`cabecalho__menu${
             menuAberto ? ' cabecalho__menu--aberto' : ''
           }`}
           type="button"
-          aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
+          aria-label={
+            menuAberto ? 'Fechar navegação' : 'Abrir navegação'
+          }
           aria-expanded={menuAberto}
           aria-controls="menu-mobile"
           onClick={alternarMenu}
@@ -181,40 +304,90 @@ function Cabecalho() {
         className={`menu-mobile${
           menuAberto ? ' menu-mobile--aberto' : ''
         }`}
+        inert={!menuAberto}
         aria-hidden={!menuAberto}
       >
-        <nav
-          className="menu-mobile__navegacao container"
-          aria-label="Navegação mobile"
-        >
-          {LINKS.map(({ href, texto }) => (
-            <a
-              key={href}
-              href={href}
-              onClick={fecharMenu}
-            >
-              {texto}
-            </a>
-          ))}
+        <div className="menu-mobile__interior container">
+          <div className="menu-mobile__topo">
+            <span className="menu-mobile__etiqueta">
+              Navegação // Missão SP
+            </span>
 
-          <div className="menu-mobile__social">
-            <a
-              href="https://www.instagram.com/colodedeus/?hl=pt-br"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Instagram ↗
-            </a>
-
-            <a
-              href="https://www.youtube.com/channel/UCw7SCTLZq2byYiirHtc25-Q"
-              target="_blank"
-              rel="noreferrer"
-            >
-              YouTube ↗
-            </a>
+            <span className="menu-mobile__edicao">
+              01 — 05
+            </span>
           </div>
-        </nav>
+
+          <nav
+            className="menu-mobile__navegacao"
+            aria-label="Navegação mobile"
+          >
+            {LINKS.map(({ href, texto }, indice) => {
+              const ativa = secaoAtiva === href.slice(1);
+
+              return (
+                <a
+                  key={href}
+                  className={`menu-mobile__link${
+                    ativa ? ' menu-mobile__link--ativo' : ''
+                  }`}
+                  href={href}
+                  aria-current={ativa ? 'location' : undefined}
+                  onClick={() => navegarPara(href)}
+                  style={{ '--indice': indice }}
+                >
+                  <span
+                    className="menu-mobile__numero"
+                    aria-hidden="true"
+                  >
+                    {String(indice + 1).padStart(2, '0')}
+                  </span>
+
+                  <span className="menu-mobile__texto">
+                    {texto}
+                  </span>
+
+                  <span
+                    className="menu-mobile__seta"
+                    aria-hidden="true"
+                  >
+                    ↗
+                  </span>
+                </a>
+              );
+            })}
+          </nav>
+
+          <div className="menu-mobile__rodape">
+            <a
+              className="menu-mobile__participar"
+              href="#celulas"
+              onClick={() => navegarPara('#celulas')}
+            >
+              <span>Quero participar</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+
+            <div className="menu-mobile__base">
+              <span className="menu-mobile__assinatura">
+                Colo de Deus São Paulo
+              </span>
+
+              <div className="menu-mobile__social">
+                {REDES.map((rede) => (
+                  <a
+                    key={rede.nome}
+                    href={rede.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {rede.nome} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );

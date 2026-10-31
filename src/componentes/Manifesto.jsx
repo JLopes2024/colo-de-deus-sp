@@ -1,6 +1,5 @@
 
 import { useEffect, useRef, useState } from 'react';
-
 import '../estilos/manifesto.css';
 
 const caracteristicas = [
@@ -14,6 +13,7 @@ const caracteristicas = [
 function Manifesto() {
   const secaoRef = useRef(null);
   const [visivel, setVisivel] = useState(false);
+  const [animacaoHabilitada, setAnimacaoHabilitada] = useState(false);
 
   useEffect(() => {
     const secao = secaoRef.current;
@@ -21,7 +21,7 @@ function Manifesto() {
     if (!secao) return undefined;
 
     const movimentoReduzido = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
+      '(prefers-reduced-motion: reduce)'
     ).matches;
 
     if (
@@ -36,15 +36,17 @@ function Manifesto() {
       ([entrada]) => {
         if (entrada.isIntersecting) {
           setVisivel(true);
-          observador.unobserve(secao);
+          observador.disconnect();
         }
       },
       {
-        threshold: 0.15,
-      },
+        threshold: 0.1,
+        rootMargin: '0px 0px -5% 0px',
+      }
     );
 
     observador.observe(secao);
+    setAnimacaoHabilitada(true);
 
     return () => observador.disconnect();
   }, []);
@@ -52,9 +54,11 @@ function Manifesto() {
   return (
     <section
       ref={secaoRef}
-      className={`manifesto ${
-        visivel ? 'manifesto--visivel' : ''
-      }`}
+      className={[
+        'manifesto',
+        animacaoHabilitada ? 'manifesto--animavel' : '',
+        visivel ? 'manifesto--visivel' : '',
+      ].filter(Boolean).join(' ')}
       aria-labelledby="manifesto-titulo"
     >
       {/* FAIXA EDITORIAL */}
@@ -65,6 +69,7 @@ function Manifesto() {
             src="/imagens/gerais/fotos-gerais.jpg"
             alt="Integrantes da comunidade Colo de Deus reunidos"
             loading="lazy"
+            decoding="async"
           />
         </div>
 
@@ -86,10 +91,7 @@ function Manifesto() {
               {caracteristicas.map((palavra, indice) => (
                 <span
                   className="manifesto__linha"
-                  data-eco={palavra}
-                  style={{
-                    '--indice': indice,
-                  }}
+                  style={{ '--indice': indice }}
                   key={palavra}
                 >
                   {palavra}
@@ -113,7 +115,7 @@ function Manifesto() {
       {/* TEXTO ORIGINAL DO MANIFESTO */}
 
       <div className="manifesto__rodape container">
-                <div className="manifesto__paragrafo">
+        <div className="manifesto__paragrafo">
           <p>
             Evangelizamos com criatividade, arte e cultura
             do encontro, apresentando o Cristo que

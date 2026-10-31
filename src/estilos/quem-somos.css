@@ -11,9 +11,7 @@
   color: var(--cor-branco);
 }
 
-/* =========================================================
-   FAIXA PRINCIPAL
-   ========================================================= */
+/* FAIXA PRINCIPAL */
 
 .quem-somos__faixa {
   position: relative;
@@ -26,9 +24,7 @@
   background-color: var(--cor-preto);
 }
 
-/* =========================================================
-   FOTOGRAFIA E CARROSSEL
-   ========================================================= */
+/* CARROSSEL FOTOGRÁFICO */
 
 .quem-somos__imagem {
   position: absolute;
@@ -40,35 +36,32 @@
   background-color: var(--cor-preto);
 }
 
-.quem-somos__imagem img {
+.quem-somos__imagem-atual {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+
   object-fit: cover;
   object-position: center;
+
   filter: saturate(0.9) contrast(0.98);
+
+  opacity: 0;
+  transform: scale(1.025);
+
+  transition:
+    opacity 900ms ease,
+    transform 5s ease;
 }
 
-.quem-somos__imagem-atual {
-  animation: quem-somos-imagem-entrada 700ms ease both;
+.quem-somos__imagem-atual--ativa {
+  opacity: 1;
+  transform: scale(1);
 }
 
-@keyframes quem-somos-imagem-entrada {
-  from {
-    opacity: 0;
-    transform: scale(1.025);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* =========================================================
-   DEGRADÊ
-   A fotografia desaparece para o preto
-   ========================================================= */
+/* DEGRADÊ */
 
 .quem-somos__sobreposicao {
   position: absolute;
@@ -94,9 +87,7 @@
     );
 }
 
-/* =========================================================
-   TÍTULO SOBRE A FAIXA
-   ========================================================= */
+/* CONTEÚDO */
 
 .quem-somos__conteudo {
   position: relative;
@@ -136,8 +127,6 @@
   hyphens: none;
 }
 
-/* Destaque editorial — GERAÇÃO */
-
 .quem-somos__destaque {
   display: inline-block;
   width: fit-content;
@@ -162,16 +151,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .quem-somos__destaque {
-    animation: none;
-  }
-}
-
-/* =========================================================
-   TEXTO EXPLICATIVO
-   Centralizado e integrado ao fundo preto
-   ========================================================= */
+/* TEXTO EXPLICATIVO */
 
 .quem-somos__rodape {
   position: relative;
@@ -179,7 +159,6 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
   width: 100%;
   margin-top: -5px;
   padding:
@@ -187,32 +166,6 @@
     var(--margem-horizontal, 24px)
     clamp(4rem, 7vw, 7rem);
   background-color: var(--cor-preto);
-}
-
-.quem-somos__marcador {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
-  text-align: center;
-}
-
-.quem-somos__marcador span {
-  display: block;
-  width: 28px;
-  height: 2px;
-  flex-shrink: 0;
-  background-color: var(--cor-azul);
-}
-
-.quem-somos__marcador p {
-  margin: 0;
-  color: var(--cor-branco);
-  font-size: var(--texto-xs, 0.75rem);
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  line-height: 1.5;
-  text-transform: uppercase;
 }
 
 .quem-somos__texto {
@@ -230,9 +183,7 @@
   opacity: 0.85;
 }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* TABLET */
 
 @media (max-width: 1000px) {
   .quem-somos__faixa {
@@ -249,10 +200,7 @@
   }
 }
 
-/* =========================================================
-   MOBILE
-   Foto inteira + degradê inferior + título integrado
-   ========================================================= */
+/* MOBILE */
 
 @media (max-width: 760px) {
   .quem-somos__faixa {
@@ -261,32 +209,30 @@
   }
 
   /*
-   * A foto volta ao fluxo normal.
-   * A altura é determinada pela própria imagem,
-   * evitando cortes nas pessoas.
+   * Proporção estável para todas as fotos.
+   * Evita saltos de layout durante a troca.
    */
-
   .quem-somos__imagem {
     position: relative;
     z-index: 0;
     inset: auto;
     width: 100%;
     height: auto;
+    aspect-ratio: 3 / 2;
     overflow: hidden;
   }
 
-  .quem-somos__imagem img {
-    display: block;
+  .quem-somos__imagem-atual {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: contain;
     object-position: center;
+    transform: none;
   }
 
-  /*
-   * Escurecimento apenas na borda inferior
-   * da fotografia.
-   */
+  .quem-somos__imagem-atual--ativa {
+    transform: none;
+  }
 
   .quem-somos__imagem::after {
     content: "";
@@ -307,11 +253,6 @@
   .quem-somos__sobreposicao {
     display: none;
   }
-
-  /*
-   * O título começa próximo à borda inferior
-   * da foto, como no Manifesto.
-   */
 
   .quem-somos__conteudo {
     z-index: 2;
@@ -340,7 +281,6 @@
   }
 
   .quem-somos__rodape {
-    gap: 1.5rem;
     margin-top: 0;
     padding-bottom: 3.5rem;
   }
@@ -355,9 +295,7 @@
   }
 }
 
-/* =========================================================
-   CELULARES PEQUENOS
-   ========================================================= */
+/* CELULARES PEQUENOS */
 
 @media (max-width: 520px) {
   .quem-somos__conteudo {
@@ -376,20 +314,7 @@
   }
 
   .quem-somos__rodape {
-    gap: 1.25rem;
-  }
-
-  .quem-somos__marcador {
-    gap: 0.6rem;
-  }
-
-  .quem-somos__marcador span {
-    width: 20px;
-  }
-
-  .quem-somos__marcador p {
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
+    padding-bottom: 3.5rem;
   }
 
   .quem-somos__texto {
@@ -402,12 +327,30 @@
   }
 }
 
-/* =========================================================
-   ACESSIBILIDADE
-   ========================================================= */
+/* MOVIMENTO REDUZIDO */
 
 @media (prefers-reduced-motion: reduce) {
   .quem-somos__imagem-atual {
+    transition: none;
+    transform: none;
+  }
+
+  .quem-somos__destaque {
     animation: none;
+  }
+}
+
+/* =========================================================
+   CORREÇÃO — CARROSSEL MOBILE SEM FAIXAS PRETAS
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .quem-somos__imagem {
+    aspect-ratio: 4 / 3;
+  }
+
+  .quem-somos__imagem-atual {
+    object-fit: cover;
+    object-position: center;
   }
 }

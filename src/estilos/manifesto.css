@@ -10,9 +10,7 @@
   color: var(--cor-branco);
 }
 
-/* =========================================================
-   FAIXA E FOTOGRAFIA
-   ========================================================= */
+/* FAIXA E FOTOGRAFIA */
 
 .manifesto__faixa {
   position: relative;
@@ -40,14 +38,15 @@
   object-fit: cover;
   object-position: center 40%;
   transform: scale(1.04);
-  transition: transform 1200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 1200ms
+    cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .manifesto--visivel .manifesto__imagem img {
   transform: scale(1);
 }
 
-/* Degradê horizontal e inferior no desktop */
+/* DEGRADÊ */
 
 .manifesto__sobreposicao {
   position: absolute;
@@ -72,9 +71,7 @@
     );
 }
 
-/* =========================================================
-   CONTEÚDO E TIPOGRAFIA
-   ========================================================= */
+/* CONTEÚDO */
 
 .manifesto__conteudo {
   position: relative;
@@ -114,16 +111,26 @@
   text-transform: uppercase;
 }
 
-/* Entrada animada das palavras */
+/* LINHAS DO MANIFESTO */
 
 .manifesto__linha {
   position: relative;
   display: block;
   width: fit-content;
   max-width: 100%;
+}
+
+/*
+ * Só oculta as palavras quando a animação
+ * está habilitada e ainda não começou.
+ */
+.manifesto--animavel:not(.manifesto--visivel)
+.manifesto__linha {
   opacity: 0;
   transform: translateY(22px);
+}
 
+.manifesto--animavel .manifesto__linha {
   transition:
     opacity 650ms ease,
     transform 750ms cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -136,9 +143,7 @@
   transform: translateY(0);
 }
 
-/* =========================================================
-   DESTAQUE CRIATIVOS
-   ========================================================= */
+/* DESTAQUE CRIATIVOS */
 
 .manifesto__destaque {
   display: flex;
@@ -164,9 +169,9 @@
   transform-origin: left center;
 }
 
-.manifesto--visivel .manifesto__criativos {
-  animation:
-    manifesto-destaque 800ms
+.manifesto--animavel.manifesto--visivel
+.manifesto__criativos {
+  animation: manifesto-destaque 800ms
     cubic-bezier(0.2, 0.8, 0.2, 1)
     550ms both;
 }
@@ -183,9 +188,7 @@
   }
 }
 
-/* =========================================================
-   TEXTO EXPLICATIVO
-   ========================================================= */
+/* TEXTO EXPLICATIVO */
 
 .manifesto__rodape {
   position: relative;
@@ -195,39 +198,11 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
   margin-top: -5px;
   padding-top: 0;
   padding-bottom: clamp(4rem, 7vw, 7rem);
   background-color: var(--cor-preto);
   color: var(--cor-branco);
-}
-
-.manifesto__marcador {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
-  width: 100%;
-  text-align: center;
-}
-
-.manifesto__marcador span {
-  display: block;
-  width: 28px;
-  height: 2px;
-  flex-shrink: 0;
-  background-color: var(--cor-azul);
-}
-
-.manifesto__marcador p {
-  margin: 0;
-  color: var(--cor-branco);
-  font-size: var(--texto-xs, 0.75rem);
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  line-height: 1.5;
-  text-transform: uppercase;
 }
 
 .manifesto__paragrafo {
@@ -238,6 +213,7 @@
 }
 
 .manifesto__paragrafo p {
+  margin: 0;
   color: var(--cor-branco);
   font-size: clamp(1rem, 1.35vw, 1.2rem);
   font-weight: 400;
@@ -245,9 +221,7 @@
   opacity: 0.85;
 }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* TABLET */
 
 @media (max-width: 1000px) {
   .manifesto__faixa {
@@ -263,17 +237,13 @@
   }
 }
 
-/* =========================================================
-   MOBILE — FOTO INTEIRA E DEGRADÊ INFERIOR
-   ========================================================= */
+/* MOBILE — FOTO INTEIRA */
 
 @media (max-width: 760px) {
   .manifesto__faixa {
     display: block;
     min-height: 0;
   }
-
-  /* Preserva a proporção da foto e todas as pessoas */
 
   .manifesto__imagem {
     position: relative;
@@ -294,8 +264,6 @@
     transition: none;
   }
 
-  /* A borda inferior da foto desaparece no preto */
-
   .manifesto__imagem::after {
     content: "";
     position: absolute;
@@ -312,13 +280,9 @@
     );
   }
 
-  /* O degradê desktop não é necessário no mobile */
-
   .manifesto__sobreposicao {
     display: none;
   }
-
-  /* Título integrado à borda inferior da foto */
 
   .manifesto__conteudo {
     z-index: 2;
@@ -343,10 +307,7 @@
     line-height: 0.92;
   }
 
-  /* Texto centralizado e próximo ao título */
-
   .manifesto__rodape {
-    gap: 1.5rem;
     margin-top: 0;
     padding-top: 0;
     padding-bottom: 3.5rem;
@@ -362,9 +323,7 @@
   }
 }
 
-/* =========================================================
-   CELULARES PEQUENOS
-   ========================================================= */
+/* CELULARES PEQUENOS */
 
 @media (max-width: 520px) {
   .manifesto__conteudo {
@@ -385,20 +344,7 @@
   }
 
   .manifesto__rodape {
-    gap: 1.25rem;
-  }
-
-  .manifesto__marcador {
-    gap: 0.6rem;
-  }
-
-  .manifesto__marcador span {
-    width: 20px;
-  }
-
-  .manifesto__marcador p {
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
+    padding-bottom: 3.5rem;
   }
 
   .manifesto__paragrafo {
@@ -411,23 +357,21 @@
   }
 }
 
-/* =========================================================
-   ACESSIBILIDADE
-   ========================================================= */
+/* ACESSIBILIDADE */
 
 @media (prefers-reduced-motion: reduce) {
   .manifesto__linha {
-    opacity: 1;
-    transform: none;
-    transition: none;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 
   .manifesto__imagem img {
-    transform: none;
-    transition: none;
+    transform: none !important;
+    transition: none !important;
   }
 
-  .manifesto--visivel .manifesto__criativos {
-    animation: none;
+  .manifesto__criativos {
+    animation: none !important;
   }
 }

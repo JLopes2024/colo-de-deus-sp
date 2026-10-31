@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../estilos/quem-somos.css';
 
 const IMAGENS = [
@@ -19,31 +19,210 @@ const IMAGENS = [
 
 const TEMPO_TROCA = 4500;
 
+function prefereMovimentoReduzido() {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
 function QuemSomos() {
+  const secaoRef = useRef(null);
+  const carregamentosRef = useRef(new Map());
+  const prontasRef = useRef(new Set());
+  const falhasRef = useRef(new Set());
+
   const [imagemAtual, setImagemAtual] = useState(0);
+  const [imagemPronta, setImagemPronta] = useState(false);
+  const [secaoVisivel, setSecaoVisivel] = useState(false);
+  const [abaVisivel, setAbaVisivel] = useState(
+    () =>
+      typeof document === 'undefined' ||
+      document.visibilityState === 'visible'
+  );
+  const [movimentoReduzido, setMovimentoReduzido] = useState(
+    prefereMovimentoReduzido
+  );
+
+  // Observa a visibilidade da seção.
+  useEffect(() => {
+    const secao = secaoRef.current;
+
+    if (!secao) return undefined;
+
+    if (!('IntersectionObserver' in window)) {
+      setSecaoVisivel(true);
+      return undefined;
+    }
+
+    const observador = new IntersectionObserver(
+      ([entrada]) => {
+        setSecaoVisivel(entrada.isIntersecting);
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    observador.observe(secao);
+
+    return () => observador.disconnect();
+  }, []);
+
+  // Pausa quando a aba está oculta.
+  useEffect(() => {
+    function atualizarVisibilidade() {
+      setAbaVisivel(document.visibilityState === 'visible');
+    }
+
+    document.addEventListener(
+      'visibilitychange',
+      atualizarVisibilidade
+    );
+
+    return () => {
+      document.removeEventListener(
+        'visibilitychange',
+        atualizarVisibilidade
+      );
+    };
+  }, []);
+
+  // Acompanha a preferência de movimento do sistema.
+  useEffect(() => {
+    const consulta = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    );
+
+    function atualizarPreferencia(evento) {
+      setMovimentoReduzido(evento.matches);
+    }
+
+    consulta.addEventListener('change', atualizarPreferencia);
+
+    return () => {
+      consulta.removeEventListener(
+        'change',
+        atualizarPreferencia
+      );
+    };
+  }, []);
+
+  // Registra o carregamento de uma imagem.
+  function registrarPronta(indice) {
+    if (prontasRef.current.has(indice)) return;
+
+    prontasRef.current.add(indice);
+
+    if (indice === 0) {
+      setImagemPronta(true);
+    }
+  }
+
+  // Pré-carrega uma imagem sem duplicar solicitações.
+  function prepararImagem(indice) {
+    if (
+      prontasRef.current.has(indice) ||
+      falhasRef.current.has(indice) ||
+      carregamentosRef.current.has(indice)
+    ) {
+      return;
+    }
+
+    const imagem = new Image();
+
+    carregamentosRef.current.set(indice, imagem);
+
+    imagem.onload = () => {
+      registrarPronta(indice);
+      carregamentosRef.current.delete(indice);
+    };
+
+    imagem.onerror = () => {
+      falhasRef.current.add(indice);
+      carregamentosRef.current.delete(indice);
+    };
+
+    imagem.src = IMAGENS[indice].src;
+  }
+
+  // Carrega a primeira foto e prepara a seguinte.
+  useEffect(() => {
+    prepararImagem(0);
+
+    return () => {
+      carregamentosRef.current.forEach((imagem) => {
+        imagem.onload = null;
+        imagem.onerror = null;
+      });
+
+      carregamentosRef.current.clear();
+    };
+  }, []);
 
   useEffect(() => {
-    const prefereMenosMovimento = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
+    if (
+      !secaoVisivel ||
+      !abaVisivel ||
+      movimentoReduzido
+    ) {
+      return;
+    }
 
-    if (prefereMenosMovimento || IMAGENS.length <= 1) {
+    for (let passo = 1; passo < IMAGENS.length; passo += 1) {
+      const indice = (imagemAtual + passo) % IMAGENS.length;
+
+      if (!falhasRef.current.has(indice)) {
+        prepararImagem(indice);
+        break;
+      }
+    }
+  }, [imagemAtual, secaoVisivel, abaVisivel, movimentoReduzido]);
+
+  // Rotação automática somente quando a seção é vista.
+  useEffect(() => {
+    if (
+      !secaoVisivel ||
+      !abaVisivel ||
+      movimentoReduzido ||
+      !imagemPronta ||
+      IMAGENS.length <= 1
+    ) {
       return undefined;
     }
 
     const intervalo = window.setInterval(() => {
-      setImagemAtual((anterior) => (
-        (anterior + 1) % IMAGENS.length
-      ));
+      setImagemAtual((atual) => {
+        for (let passo = 1; passo < IMAGENS.length; passo += 1) {
+          const proxima = (atual + passo) % IMAGENS.length;
+
+          if (falhasRef.current.has(proxima)) {
+            continue;
+          }
+
+          if (prontasRef.current.has(proxima)) {
+            return proxima;
+          }
+
+          prepararImagem(proxima);
+          return atual;
+        }
+
+        return atual;
+      });
     }, TEMPO_TROCA);
 
     return () => window.clearInterval(intervalo);
-  }, []);
-
-  const imagem = IMAGENS[imagemAtual];
+  }, [
+    secaoVisivel,
+    abaVisivel,
+    movimentoReduzido,
+    imagemPronta,
+  ]);
 
   return (
     <section
+      ref={secaoRef}
       className="quem-somos"
       id="quem-somos"
       aria-labelledby="quem-somos-titulo"
@@ -51,13 +230,28 @@ function QuemSomos() {
       {/* FAIXA FOTOGRÁFICA */}
 
       <div className="quem-somos__faixa">
-        <div className="quem-somos__imagem">
-          <img
-            key={imagem.src}
-            src={imagem.src}
-            alt={imagem.alt}
-            className="quem-somos__imagem-atual"
-          />
+        <div
+          className="quem-somos__imagem"
+          aria-hidden="true"
+        >
+          {IMAGENS.map((imagem, indice) => (
+            <img
+              key={imagem.src}
+              src={imagem.src}
+              alt=""
+              className={`quem-somos__imagem-atual${
+                indice === imagemAtual
+                  ? ' quem-somos__imagem-atual--ativa'
+                  : ''
+              }`}
+              loading={indice === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              onLoad={() => registrarPronta(indice)}
+              onError={() => {
+                falhasRef.current.add(indice);
+              }}
+            />
+          ))}
         </div>
 
         <div
@@ -75,10 +269,10 @@ function QuemSomos() {
               className="quem-somos__titulo"
               id="quem-somos-titulo"
             >
-              Chamados a alcançar uma 
-               <span className="quem-somos__destaque">
-    geração
-  </span>
+              Chamados a alcançar uma{' '}
+              <span className="quem-somos__destaque">
+                geração
+              </span>
             </h2>
           </div>
         </div>
