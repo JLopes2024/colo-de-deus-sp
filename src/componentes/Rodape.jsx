@@ -113,8 +113,6 @@ function Rodape() {
               alt="Colo de Deus"
             />
           </a>
-
-          <p>Colo de Deus São Paulo</p>
         </div>
 
         <nav
