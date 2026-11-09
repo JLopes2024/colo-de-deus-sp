@@ -1,0 +1,367 @@
+
+/* =========================================================
+   GALERIA MISSIONÁRIA — COLO DE DEUS | MISSÃO SP
+   Versão limpa: título + fotos + categorias + CTA
+   ========================================================= */
+
+.galeria-missionaria {
+  --galeria-espaco: 1rem;
+  --galeria-largura-item: calc((100% - 2rem) / 3);
+
+  width: 100%;
+  padding-block: clamp(4rem, 7vw, 7rem);
+  overflow: hidden;
+  background: #101010;
+  color: var(--cor-branco, #fff);
+}
+
+.galeria-missionaria__conteudo {
+  min-width: 0;
+}
+
+/* CABEÇALHO */
+
+.galeria-missionaria__cabecalho {
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.galeria-missionaria__indice {
+  margin: 0 0 1.5rem;
+  color: #b6b6b6;
+  font-size: var(--texto-xs, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* TÍTULO EDITORIAL */
+
+.galeria-missionaria__titulo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.08em;
+
+  width: 100%;
+  margin: 0;
+
+  color: #fff;
+  font-size: clamp(2.8rem, 5.6vw, 6.5rem);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+}
+
+.galeria-missionaria__titulo > span {
+  display: block;
+}
+
+.galeria-missionaria__titulo-segunda {
+  display: flex !important;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.16em;
+  max-width: 100%;
+  line-height: 1.16;
+}
+
+/* DESTAQUE AZUL — SOMENTE MOVIMENTO */
+
+.galeria-missionaria__destaque {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.06em 0.12em 0.1em;
+
+  background: var(--cor-azul, #315b96);
+  color: #fff;
+  line-height: 0.92;
+  transform-origin: left center;
+
+  animation: galeria-destaque-entrada
+    800ms cubic-bezier(0.2, 0.8, 0.2, 1)
+    200ms both;
+}
+
+@keyframes galeria-destaque-entrada {
+  from {
+    opacity: 0;
+    transform: scaleX(0.82) translateX(-0.08em);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1) translateX(0);
+  }
+}
+
+/* BARRA COM SETAS À DIREITA */
+
+.galeria-missionaria__barra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.galeria-missionaria__controles {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.galeria-missionaria__botao {
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 44px;
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+
+  background: transparent;
+  color: #fff;
+
+  font: inherit;
+  font-size: 1.35rem;
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.galeria-missionaria__botao:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.galeria-missionaria__botao:focus-visible {
+  outline: 2px solid var(--cor-azul, #315b96);
+  outline-offset: 4px;
+}
+
+/* GALERIA HORIZONTAL */
+
+.galeria-missionaria__trilho {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--galeria-espaco);
+
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding-bottom: 0.9rem;
+
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.galeria-missionaria__trilho:focus-visible {
+  outline: 2px solid var(--cor-azul, #315b96);
+  outline-offset: 3px;
+}
+
+.galeria-missionaria__trilho::-webkit-scrollbar {
+  height: 4px;
+}
+
+.galeria-missionaria__trilho::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* FOTOGRAFIAS COMPACTAS, SEM EFEITOS */
+
+.galeria-missionaria__item {
+  flex: 0 0 var(--galeria-largura-item);
+  min-width: 0;
+  margin: 0;
+  scroll-snap-align: start;
+}
+
+.galeria-missionaria__foto {
+  width: 100%;
+  height: clamp(220px, 29vw, 390px);
+  overflow: hidden;
+  background: #252525;
+}
+
+.galeria-missionaria__foto img,
+.galeria-missionaria__item:hover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  filter: none;
+  transform: none;
+  transition: none;
+  animation: none;
+}
+
+/* CATEGORIAS */
+
+.galeria-missionaria__legenda {
+  padding-top: 0.85rem;
+}
+
+.galeria-missionaria__categoria {
+  display: inline-block;
+  color: #9bafd5;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* CTA NO FECHAMENTO */
+
+.galeria-missionaria__rodape {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  padding-top: 1.5rem;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.galeria-missionaria__rodape a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  min-height: 48px;
+  max-width: 100%;
+  padding: 0.5rem 0;
+
+  border-bottom: 1px solid currentColor;
+  color: #fff;
+
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.galeria-missionaria__rodape a:focus-visible {
+  outline: 2px solid var(--cor-azul, #315b96);
+  outline-offset: 4px;
+}
+
+/* INTERAÇÕES */
+
+@media (hover: hover) and (pointer: fine) {
+  .galeria-missionaria__botao:not(:disabled):hover {
+    background: #fff;
+    border-color: #fff;
+    color: #101010;
+  }
+
+  .galeria-missionaria__rodape a:hover {
+    color: #a9c9ff;
+  }
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+  .galeria-missionaria {
+    --galeria-largura-item: 42%;
+  }
+
+  .galeria-missionaria__titulo {
+    font-size: clamp(2.7rem, 7vw, 4.8rem);
+  }
+
+  .galeria-missionaria__foto {
+    height: clamp(230px, 40vw, 350px);
+  }
+}
+
+/* CELULAR */
+
+@media (max-width: 600px) {
+  .galeria-missionaria {
+    --galeria-largura-item: 72%;
+    --galeria-espaco: 0.75rem;
+
+    padding-block: clamp(4rem, 11vw, 5rem);
+  }
+
+  .galeria-missionaria__indice {
+    margin-bottom: 1.25rem;
+    font-size: 0.67rem;
+  }
+
+  .galeria-missionaria__titulo {
+    font-size: clamp(2.1rem, 8.5vw, 3.8rem);
+    line-height: 0.96;
+  }
+
+  .galeria-missionaria__titulo-segunda {
+    line-height: 1.18;
+  }
+
+  .galeria-missionaria__destaque {
+    padding: 0.06em 0.1em 0.1em;
+  }
+
+  .galeria-missionaria__foto {
+    height: clamp(235px, 76vw, 340px);
+  }
+
+  .galeria-missionaria__categoria {
+    font-size: 0.7rem;
+  }
+
+  .galeria-missionaria__rodape {
+    justify-content: flex-start;
+  }
+}
+
+/* CELULARES ESTREITOS */
+
+@media (max-width: 360px) {
+  .galeria-missionaria__titulo {
+    font-size: clamp(1.9rem, 8.2vw, 2.6rem);
+  }
+
+  .galeria-missionaria__controles {
+    gap: 0.3rem;
+  }
+
+  .galeria-missionaria__foto {
+    height: 245px;
+  }
+}
+
+/* MOVIMENTO REDUZIDO */
+
+@media (prefers-reduced-motion: reduce) {
+  .galeria-missionaria__destaque {
+    animation: none;
+  }
+
+  .galeria-missionaria__botao {
+    transition: none;
+  }
+}

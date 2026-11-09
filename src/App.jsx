@@ -7,6 +7,7 @@ import Agenda from './componentes/Agenda.jsx';
 import Contato from './componentes/Contato.jsx';
 import Rodape from './componentes/Rodape.jsx';
 import Baluartes from './componentes/Baluartes.jsx';
+import GaleriaMissionaria from './componentes/GaleriaMissionaria';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
        <Hero />
         <QuemSomos />
         <Manifesto />
+        <GaleriaMissionaria />
         <Comunidades />
         <Agenda />
         <Contato />
