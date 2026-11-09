@@ -262,7 +262,7 @@ function QuemSomos() {
         <div className="quem-somos__conteudo">
           <div className="quem-somos__cabecalho">
             <p className="quem-somos__indice">
-              01 // Quem somos?
+            // Quem somos?
             </p>
 
             <h2

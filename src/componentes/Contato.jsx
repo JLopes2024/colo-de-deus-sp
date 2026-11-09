@@ -440,7 +440,7 @@ function Contato() {
           />
 
           <div className="contato__foto-legenda">
-            <span>06 // Fale com a gente</span>
+            <span>// Fale com a gente</span>
 
             <strong>
               Aqui tem

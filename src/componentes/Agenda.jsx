@@ -135,7 +135,7 @@ function Agenda() {
       <div className="agenda__conteudo container">
         <header className="agenda__cabecalho">
           <p className="agenda__indice">
-            05 // Agenda
+          // Agenda
           </p>
 
           <h2

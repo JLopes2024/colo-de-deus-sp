@@ -81,7 +81,7 @@ function Manifesto() {
         <div className="manifesto__conteudo container">
           <div className="manifesto__texto">
             <p className="manifesto__indice">
-              02 // Nossa essência
+            // Nossa essência
             </p>
 
             <h2

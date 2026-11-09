@@ -26,7 +26,7 @@ function Comunidades() {
         <div className="comunidades__conteudo container">
           <div className="comunidades__texto">
             <p className="comunidades__indice">
-              03 // Células
+            // Células
             </p>
 
             <h2

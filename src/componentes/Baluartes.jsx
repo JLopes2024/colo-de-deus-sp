@@ -10,7 +10,7 @@ function Baluartes() {
     >
       <div className="baluartes__cabecalho container">
         <p className="baluartes__indice">
-          00 // Nossos baluartes
+        // Nossos baluartes
         </p>
 
         <h2
