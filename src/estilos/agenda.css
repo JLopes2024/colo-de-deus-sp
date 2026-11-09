@@ -1,18 +1,16 @@
 
 /* =========================================================
    AGENDA — COLO DE DEUS | MISSÃO SP
-   Editorial escura / Firebase Firestore
+   Compartilhamento com feedback no próprio botão
    ========================================================= */
 
 .agenda {
   width: 100%;
   padding-block: clamp(5rem, 9vw, 9rem);
   overflow: hidden;
-  background-color: #101010;
+  background: #101010;
   color: #fff;
 }
-
-/* ESTRUTURA */
 
 .agenda__conteudo {
   display: grid;
@@ -27,6 +25,19 @@
   min-width: 0;
 }
 
+.agenda__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* CABEÇALHO */
 
 .agenda__cabecalho {
@@ -35,7 +46,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--espaco-3);
+  gap: var(--espaco-3, 1rem);
   min-width: 0;
 }
 
@@ -76,37 +87,47 @@
 /* EVENTO */
 
 .agenda__evento {
+  position: relative;
+  min-width: 0;
+  padding-block: 1.65rem 1.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  scroll-margin-top: 110px;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease;
+}
+
+.agenda__evento--destacado {
+  border-bottom-color: var(--cor-azul, #315b96);
+  background: rgba(64, 106, 181, 0.1);
+}
+
+.agenda__evento-detalhes {
   display: grid;
   grid-template-columns:
-    minmax(70px, auto)
+    minmax(65px, auto)
     minmax(0, 1fr)
-    24px;
+    20px;
   align-items: center;
-  gap: clamp(1rem, 2.5vw, 2.5rem);
-  min-height: 132px;
-  padding-block: 1.8rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  min-width: 0;
   color: inherit;
   text-decoration: none;
-  transition:
-    background-color 250ms ease,
-    padding-inline 250ms ease;
 }
 
-.agenda__evento--sem-link {
+.agenda__evento-detalhes:not(.agenda__evento-detalhes--link) {
   grid-template-columns:
-    minmax(70px, auto)
+    minmax(65px, auto)
     minmax(0, 1fr);
-  cursor: default;
 }
 
-.agenda__evento--link {
+.agenda__evento-detalhes--link {
   cursor: pointer;
 }
 
-.agenda__evento--link:focus-visible {
-  outline: 2px solid var(--cor-azul);
-  outline-offset: -2px;
+.agenda__evento-detalhes--link:focus-visible {
+  outline: 2px solid var(--cor-azul, #315b96);
+  outline-offset: 5px;
 }
 
 /* DATA */
@@ -182,8 +203,6 @@
   overflow-wrap: break-word;
 }
 
-/* CHAMADA E SETA */
-
 .agenda__chamada {
   display: inline-flex;
   align-items: center;
@@ -209,40 +228,83 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
+  width: 20px;
   height: 24px;
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   line-height: 1;
   transition:
     color 220ms ease,
     transform 220ms ease;
 }
 
-/* INTERAÇÕES PARA MOUSE */
+/* COMPARTILHAMENTO — P1 */
+
+.agenda__compartilhamento {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  margin-top: 1.25rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agenda__compartilhar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.5rem 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #c8c8c8;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.agenda__compartilhar svg {
+  flex: 0 0 auto;
+}
+
+.agenda__compartilhar--confirmado {
+  color: #a9c9ff;
+}
+
+.agenda__compartilhar:focus-visible {
+  outline: 2px solid var(--cor-azul, #315b96);
+  outline-offset: 3px;
+}
+
+/* INTERAÇÕES */
 
 @media (hover: hover) and (pointer: fine) {
-  .agenda__evento--link:hover {
-    background-color: rgba(255, 255, 255, 0.045);
-    padding-inline: 0.75rem;
-  }
-
-  .agenda__evento--link:hover .agenda__nome {
+  .agenda__evento-detalhes--link:hover .agenda__nome {
     color: #dce8ff;
   }
 
-  .agenda__evento--link:hover .agenda__seta {
+  .agenda__evento-detalhes--link:hover .agenda__seta {
     color: #dce8ff;
     transform: translate(3px, -3px);
   }
 
-  .agenda__evento--link:hover .agenda__chamada {
+  .agenda__evento-detalhes--link:hover .agenda__chamada {
     color: #a9c9ff;
     gap: 0.8rem;
   }
+
+  .agenda__compartilhar:hover {
+    color: #a9c9ff;
+  }
 }
 
-/* ESTADOS: CARREGANDO / ERRO / VAZIO */
+/* CARREGANDO, ERRO E ESTADO VAZIO */
 
 .agenda__vazia {
   display: flex;
@@ -284,21 +346,11 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
-  transition:
-    color 180ms ease,
-    gap 180ms ease;
 }
 
 .agenda__tentar:focus-visible {
-  outline: 2px solid var(--cor-azul);
+  outline: 2px solid var(--cor-azul, #315b96);
   outline-offset: 4px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .agenda__tentar:hover {
-    color: #a9c9ff;
-    gap: 1.4rem;
-  }
 }
 
 /* DESKTOP MENOR */
@@ -308,25 +360,11 @@
     grid-template-columns:
       minmax(240px, 0.8fr)
       minmax(0, 1.2fr);
-    gap: var(--espaco-5);
+    gap: var(--espaco-5, 2rem);
   }
 
   .agenda__titulo {
     font-size: clamp(2.8rem, 5.3vw, 5rem);
-  }
-
-  .agenda__evento {
-    grid-template-columns:
-      minmax(60px, auto)
-      minmax(0, 1fr)
-      20px;
-    gap: 1.25rem;
-  }
-
-  .agenda__evento--sem-link {
-    grid-template-columns:
-      minmax(60px, auto)
-      minmax(0, 1fr);
   }
 
   .agenda__nome {
@@ -341,26 +379,15 @@
     grid-template-columns:
       minmax(220px, 0.78fr)
       minmax(0, 1.22fr);
-    gap: var(--espaco-4);
+    gap: var(--espaco-4, 1.5rem);
   }
 
   .agenda__titulo {
     font-size: clamp(2.5rem, 5.5vw, 4.5rem);
   }
 
-  .agenda__evento {
-    grid-template-columns:
-      minmax(55px, auto)
-      minmax(0, 1fr)
-      20px;
-    min-height: 115px;
+  .agenda__evento-detalhes {
     gap: 1rem;
-  }
-
-  .agenda__evento--sem-link {
-    grid-template-columns:
-      minmax(55px, auto)
-      minmax(0, 1fr);
   }
 
   .agenda__dia {
@@ -368,16 +395,16 @@
   }
 }
 
-/* MOBILE — TÍTULO ACIMA DA LISTA */
+/* MOBILE */
 
 @media (max-width: 760px) {
   .agenda {
-    padding-block: var(--espaco-7);
+    padding-block: var(--espaco-7, 4.5rem);
   }
 
   .agenda__conteudo {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--espaco-5);
+    gap: var(--espaco-5, 2rem);
   }
 
   .agenda__cabecalho {
@@ -391,17 +418,7 @@
   }
 
   .agenda__evento {
-    grid-template-columns:
-      minmax(65px, auto)
-      minmax(0, 1fr)
-      20px;
-    min-height: 110px;
-  }
-
-  .agenda__evento--sem-link {
-    grid-template-columns:
-      minmax(65px, auto)
-      minmax(0, 1fr);
+    scroll-margin-top: 80px;
   }
 
   .agenda__dia {
@@ -409,11 +426,11 @@
   }
 }
 
-/* CELULAR */
+/* CELULARES */
 
 @media (max-width: 520px) {
   .agenda {
-    padding-block: var(--espaco-6);
+    padding-block: var(--espaco-6, 3.5rem);
   }
 
   .agenda__titulo {
@@ -421,16 +438,18 @@
   }
 
   .agenda__evento {
+    padding-block: 1.35rem 1rem;
+  }
+
+  .agenda__evento-detalhes {
     grid-template-columns:
       minmax(48px, auto)
       minmax(0, 1fr)
       18px;
     gap: 0.75rem;
-    min-height: 100px;
-    padding-block: 1.4rem;
   }
 
-  .agenda__evento--sem-link {
+  .agenda__evento-detalhes:not(.agenda__evento-detalhes--link) {
     grid-template-columns:
       minmax(48px, auto)
       minmax(0, 1fr);
@@ -464,16 +483,21 @@
     height: 18px;
     font-size: 1.3rem;
   }
+
+  .agenda__compartilhamento {
+    min-height: 56px;
+    margin-top: 1rem;
+  }
 }
 
-/* CELULARES ESTREITOS */
+/* TELAS ESTREITAS */
 
 @media (max-width: 380px) {
   .agenda__titulo {
     font-size: clamp(2.3rem, 10.5vw, 3rem);
   }
 
-  .agenda__evento {
+  .agenda__evento-detalhes {
     grid-template-columns:
       minmax(42px, auto)
       minmax(0, 1fr)
@@ -481,7 +505,7 @@
     gap: 0.6rem;
   }
 
-  .agenda__evento--sem-link {
+  .agenda__evento-detalhes:not(.agenda__evento-detalhes--link) {
     grid-template-columns:
       minmax(42px, auto)
       minmax(0, 1fr);
@@ -503,11 +527,11 @@
   .agenda__nome,
   .agenda__seta,
   .agenda__chamada,
-  .agenda__tentar {
+  .agenda__compartilhar {
     transition: none;
   }
 
-  .agenda__evento--link:hover .agenda__seta {
+  .agenda__evento-detalhes--link:hover .agenda__seta {
     transform: none;
   }
 }

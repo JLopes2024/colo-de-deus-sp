@@ -7,12 +7,13 @@ import {
   orderBy,
   query,
   where,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 
-import { db } from '../servicos/firebase.js';
+import { dbAgenda } from '../servicos/firebaseAgenda.js';
 import '../estilos/agenda.css';
 
 const FUSO_AGENDA = 'America/Sao_Paulo';
+const TEMPO_FEEDBACK = 2500;
 
 const FORMATADOR_MES = new Intl.DateTimeFormat('pt-BR', {
   month: 'short',
@@ -52,7 +53,6 @@ function dataValida(valor) {
   }
 
   const [ano, mes, dia] = valor.split('-').map(Number);
-
   const data = new Date(Date.UTC(ano, mes - 1, dia, 12));
 
   return (
@@ -90,10 +90,7 @@ function validarLink(valor) {
   try {
     const url = new URL(valor.trim());
 
-    if (
-      url.protocol !== 'https:' &&
-      url.protocol !== 'http:'
-    ) {
+    if (!['http:', 'https:'].includes(url.protocol)) {
       return '';
     }
 
@@ -146,17 +143,152 @@ function obterLocal(evento) {
     .join(' // ');
 }
 
-function EventoAgenda({ evento }) {
+function obterDescricaoData(evento) {
+  const inicio = formatarData(evento.dataInicio);
+
+  if (evento.dataInicio === evento.dataFim) {
+    return inicio.completa;
+  }
+
+  const fim = formatarData(evento.dataFim);
+
+  return `De ${inicio.completa} até ${fim.completa}`;
+}
+
+function obterLinkCompartilhamento(id) {
+  const url = new URL('/', window.location.origin);
+
+  url.searchParams.set('evento', id);
+  url.hash = 'agenda';
+
+  return url.href;
+}
+
+async function compartilharEvento(evento) {
+  const url = obterLinkCompartilhamento(evento.id);
+  const local = obterLocal(evento);
+
+  const texto = [
+    `Vamos ao ${evento.nome}?`,
+    obterDescricaoData(evento),
+    local ? `Local: ${local.replace(' // ', ' - ')}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  // O compartilhamento nativo começa diretamente
+  // a partir da interação do visitante.
+  if (
+    typeof navigator.share === 'function' &&
+    (
+      typeof navigator.canShare !== 'function' ||
+      navigator.canShare({ url })
+    )
+  ) {
+    try {
+      await navigator.share({
+        title: `${evento.nome} | Colo de Deus - Missão SP`,
+        text: texto,
+        url,
+      });
+
+      return 'compartilhado';
+    } catch (erro) {
+      if (erro?.name === 'AbortError') {
+        return 'cancelado';
+      }
+
+      // Outros erros seguem para a cópia do link.
+    }
+  }
+
+  try {
+    if (!navigator.clipboard?.writeText) {
+      throw new Error('Área de transferência indisponível.');
+    }
+
+    await navigator.clipboard.writeText(url);
+
+    return 'copiado';
+  } catch {
+    // Alternativa para navegadores sem Clipboard API.
+    const linkManual = window.prompt(
+      'Copie o link deste encontro:',
+      url
+    );
+
+    return linkManual === null ? 'cancelado' : 'manual';
+  }
+}
+
+function IconeCompartilhar() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="m8.7 10.7 6.6-4.4M8.7 13.3l6.6 4.4" />
+    </svg>
+  );
+}
+
+function IconeConfirmacao() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
+function EventoAgenda({
+  evento,
+  destacado,
+  aoCompartilhar,
+  statusCompartilhamento,
+}) {
   const inicio = formatarData(evento.dataInicio);
   const fim = formatarData(evento.dataFim);
 
   const temPeriodo = evento.dataFim !== evento.dataInicio;
+  const descricaoData = obterDescricaoData(evento);
+  const local = obterLocal(evento);
 
-  const descricaoData = temPeriodo
-    ? `De ${inicio.completa} até ${fim.completa}`
-    : inicio.completa;
+  const copiado = statusCompartilhamento === 'copiado';
+  const compartilhado =
+    statusCompartilhamento === 'compartilhado';
+  const manual = statusCompartilhamento === 'manual';
 
-  const conteudo = (
+  const confirmado = copiado || compartilhado;
+
+  const textoBotao = copiado
+    ? 'Link copiado'
+    : compartilhado
+      ? 'Compartilhado'
+      : manual
+        ? 'Copiar link'
+        : 'Compartilhar ';
+
+  const detalhes = (
     <>
       <time
         className="agenda__data"
@@ -184,9 +316,9 @@ function EventoAgenda({ evento }) {
           {evento.nome}
         </h3>
 
-        {obterLocal(evento) && (
+        {local && (
           <p className="agenda__local">
-            {obterLocal(evento)}
+            {local}
           </p>
         )}
 
@@ -199,34 +331,64 @@ function EventoAgenda({ evento }) {
       </div>
 
       {evento.link && (
-        <span
-          className="agenda__seta"
-          aria-hidden="true"
-        >
+        <span className="agenda__seta" aria-hidden="true">
           ↗
         </span>
       )}
     </>
   );
 
-  if (!evento.link) {
-    return (
-      <article className="agenda__evento agenda__evento--sem-link">
-        {conteudo}
-      </article>
-    );
-  }
-
   return (
-    <a
-      className="agenda__evento agenda__evento--link"
-      href={evento.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`Ver detalhes de ${evento.nome}, ${descricaoData}. Abre em uma nova aba.`}
+    <article
+      id={`evento-${evento.id}`}
+      className={[
+        'agenda__evento',
+        destacado ? 'agenda__evento--destacado' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-label={`${evento.nome}, ${descricaoData}`}
     >
-      {conteudo}
-    </a>
+      {evento.link ? (
+        <a
+          className="agenda__evento-detalhes agenda__evento-detalhes--link"
+          href={evento.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Ver detalhes de ${evento.nome}. Abre em uma nova aba.`}
+        >
+          {detalhes}
+        </a>
+      ) : (
+        <div className="agenda__evento-detalhes">
+          {detalhes}
+        </div>
+      )}
+
+      <div className="agenda__compartilhamento">
+        <button
+          type="button"
+          className={[
+            'agenda__compartilhar',
+            confirmado
+              ? 'agenda__compartilhar--confirmado'
+              : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          onClick={() => aoCompartilhar(evento)}
+          aria-label={`${textoBotao}: ${evento.nome}`}
+        >
+          {confirmado ? (
+            <IconeConfirmacao />
+          ) : (
+            <IconeCompartilhar />
+          )}
+
+          <span>{textoBotao}</span>
+        </button>
+      </div>
+    </article>
   );
 }
 
@@ -236,7 +398,19 @@ function Agenda() {
   const [erro, setErro] = useState('');
   const [tentativa, setTentativa] = useState(0);
 
+  const [retorno, setRetorno] = useState({
+    id: '',
+    status: '',
+  });
+
   const ultimoDiaConsultadoRef = useRef('');
+  const linkDiretoAplicadoRef = useRef(false);
+  const ultimaAcaoCompartilharRef = useRef(0);
+  const timerFeedbackRef = useRef(null);
+
+  const eventoDoLink = new URLSearchParams(
+    window.location.search
+  ).get('evento');
 
   useEffect(() => {
     let ativo = true;
@@ -249,16 +423,14 @@ function Agenda() {
       ultimoDiaConsultadoRef.current = hoje;
 
       try {
-        const referencia = collection(db, 'eventos');
+        const referencia = collection(dbAgenda, 'eventos');
 
-        // Eventos que começam hoje ou no futuro.
         const consultaFuturos = query(
           referencia,
           where('data_evento', '>=', hoje),
           orderBy('data_evento', 'asc')
         );
 
-        // Eventos que começaram antes, mas ainda estão em andamento.
         const consultaEmAndamento = query(
           referencia,
           where('data_fim_evento', '>=', hoje),
@@ -285,16 +457,20 @@ function Agenda() {
           }
         }
 
-        const ordenados = Array.from(porId.values())
-          .sort((a, b) => {
-            const comparacao =
-              a.dataInicio.localeCompare(b.dataInicio);
+        const ordenados = Array.from(porId.values()).sort(
+          (a, b) => {
+            const diferenca = a.dataInicio.localeCompare(
+              b.dataInicio
+            );
 
-            return comparacao || a.nome.localeCompare(b.nome, 'pt-BR');
-          });
+            return (
+              diferenca ||
+              a.nome.localeCompare(b.nome, 'pt-BR')
+            );
+          }
+        );
 
         setEventos(ordenados);
-        setErro('');
       } catch (erroCarregamento) {
         if (!ativo) return;
 
@@ -321,7 +497,40 @@ function Agenda() {
     };
   }, [tentativa]);
 
-  // Atualiza quando o visitante retorna à aba em um novo dia.
+  useEffect(() => {
+    if (
+      carregando ||
+      erro ||
+      !eventoDoLink ||
+      linkDiretoAplicadoRef.current
+    ) {
+      return undefined;
+    }
+
+    const encontrado = eventos.some(
+      (evento) => evento.id === eventoDoLink
+    );
+
+    if (!encontrado) return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      const elemento = document.getElementById(
+        `evento-${eventoDoLink}`
+      );
+
+      if (!elemento) return;
+
+      elemento.scrollIntoView({
+        behavior: 'auto',
+        block: 'center',
+      });
+
+      linkDiretoAplicadoRef.current = true;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [eventos, carregando, erro, eventoDoLink]);
+
   useEffect(() => {
     function verificarMudancaDeDia() {
       if (
@@ -356,6 +565,56 @@ function Agenda() {
     };
   }, []);
 
+  // Evita deixar timers ativos quando o componente sai da tela.
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(timerFeedbackRef.current);
+      ultimaAcaoCompartilharRef.current += 1;
+    };
+  }, []);
+
+  async function aoCompartilhar(evento) {
+    window.clearTimeout(timerFeedbackRef.current);
+
+    const acao = ++ultimaAcaoCompartilharRef.current;
+
+    setRetorno({ id: '', status: '' });
+
+    const resultado = await compartilharEvento(evento);
+
+    // Ignora respostas de uma ação anterior.
+    if (acao !== ultimaAcaoCompartilharRef.current) {
+      return;
+    }
+
+    if (
+      resultado !== 'copiado' &&
+      resultado !== 'compartilhado' &&
+      resultado !== 'manual'
+    ) {
+      return;
+    }
+
+    setRetorno({
+      id: evento.id,
+      status: resultado,
+    });
+
+    timerFeedbackRef.current = window.setTimeout(() => {
+      setRetorno({ id: '', status: '' });
+      timerFeedbackRef.current = null;
+    }, TEMPO_FEEDBACK);
+  }
+
+  const mensagemAcessivel =
+    retorno.status === 'copiado'
+      ? 'Link do encontro copiado.'
+      : retorno.status === 'compartilhado'
+        ? 'Compartilhamento concluído.'
+        : retorno.status === 'manual'
+          ? 'Link exibido para cópia manual.'
+          : '';
+
   return (
     <section
       className="agenda"
@@ -378,6 +637,15 @@ function Agenda() {
         </header>
 
         <div className="agenda__resultados">
+          <span
+            className="agenda__sr-only"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {mensagemAcessivel}
+          </span>
+
           {carregando && (
             <div
               className="agenda__vazia"
@@ -411,6 +679,13 @@ function Agenda() {
                 <EventoAgenda
                   key={evento.id}
                   evento={evento}
+                  destacado={evento.id === eventoDoLink}
+                  aoCompartilhar={aoCompartilhar}
+                  statusCompartilhamento={
+                    retorno.id === evento.id
+                      ? retorno.status
+                      : ''
+                  }
                 />
               ))}
             </div>

@@ -1,3 +1,4 @@
+
 import Cabecalho from './componentes/Cabecalho.jsx';
 import Hero from './componentes/Hero.jsx';
 import QuemSomos from './componentes/QuemSomos.jsx';
@@ -15,15 +16,14 @@ function App() {
       <Cabecalho />
 
       <main>
-       <Hero />
+        <Hero />
         <QuemSomos />
         <Manifesto />
         <GaleriaMissionaria />
         <Comunidades />
         <Agenda />
         <Contato />
-                <Baluartes />
-
+        <Baluartes />
       </main>
 
       <Rodape />
