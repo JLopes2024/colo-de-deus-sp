@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   collection,
@@ -10,65 +10,259 @@ import {
 } from 'firebase/firestore';
 
 import { db } from '../servicos/firebase.js';
-
 import '../estilos/agenda.css';
 
-// Formata a data sem converter para outro fuso horário.
-function formatarData(data) {
-  const dataEvento = new Date(`${data}T12:00:00`);
+const FUSO_AGENDA = 'America/Sao_Paulo';
+
+const FORMATADOR_MES = new Intl.DateTimeFormat('pt-BR', {
+  month: 'short',
+  timeZone: 'UTC',
+});
+
+const FORMATADOR_COMPLETO = new Intl.DateTimeFormat('pt-BR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+const FORMATADOR_HOJE = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  timeZone: FUSO_AGENDA,
+});
+
+function obterDataHoje() {
+  const partes = FORMATADOR_HOJE.formatToParts(new Date());
+
+  const valores = Object.fromEntries(
+    partes.map(({ type, value }) => [type, value])
+  );
+
+  return `${valores.year}-${valores.month}-${valores.day}`;
+}
+
+function dataValida(valor) {
+  if (
+    typeof valor !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(valor)
+  ) {
+    return false;
+  }
+
+  const [ano, mes, dia] = valor.split('-').map(Number);
+
+  const data = new Date(Date.UTC(ano, mes - 1, dia, 12));
+
+  return (
+    data.getUTCFullYear() === ano &&
+    data.getUTCMonth() === mes - 1 &&
+    data.getUTCDate() === dia
+  );
+}
+
+function criarData(valor) {
+  const [ano, mes, dia] = valor.split('-').map(Number);
+
+  return new Date(Date.UTC(ano, mes - 1, dia, 12));
+}
+
+function formatarData(valor) {
+  const data = criarData(valor);
 
   return {
-    dia: new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-    }).format(dataEvento),
-    mes: new Intl.DateTimeFormat('pt-BR', {
-      month: 'short',
-    })
-      .format(dataEvento)
+    dia: String(data.getUTCDate()).padStart(2, '0'),
+    mes: FORMATADOR_MES
+      .format(data)
       .replace('.', '')
       .toUpperCase(),
-    ano: data.slice(0, 4),
+    ano: String(data.getUTCFullYear()),
+    completa: FORMATADOR_COMPLETO.format(data),
   };
 }
 
-function obterDataHoje() {
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dia = String(hoje.getDate()).padStart(2, '0');
+function validarLink(valor) {
+  if (typeof valor !== 'string' || !valor.trim()) {
+    return '';
+  }
 
-  return `${ano}-${mes}-${dia}`;
+  try {
+    const url = new URL(valor.trim());
+
+    if (
+      url.protocol !== 'https:' &&
+      url.protocol !== 'http:'
+    ) {
+      return '';
+    }
+
+    return url.href;
+  } catch {
+    return '';
+  }
+}
+
+function prepararEvento(documento) {
+  const dados = documento.data();
+
+  if (
+    !dataValida(dados.data_evento) ||
+    typeof dados.nome_evento !== 'string' ||
+    !dados.nome_evento.trim()
+  ) {
+    return null;
+  }
+
+  const fimValido = dataValida(dados.data_fim_evento)
+    ? dados.data_fim_evento
+    : '';
+
+  const dataFim =
+    fimValido && fimValido >= dados.data_evento
+      ? fimValido
+      : dados.data_evento;
+
+  return {
+    id: documento.id,
+    nome: dados.nome_evento.trim(),
+    dataInicio: dados.data_evento,
+    dataFim,
+    cidade:
+      typeof dados.cidade_evento === 'string'
+        ? dados.cidade_evento.trim()
+        : '',
+    estado:
+      typeof dados.estado_evento === 'string'
+        ? dados.estado_evento.trim()
+        : '',
+    link: validarLink(dados.link_ingresso),
+  };
+}
+
+function obterLocal(evento) {
+  return [evento.cidade, evento.estado]
+    .filter(Boolean)
+    .join(' // ');
+}
+
+function EventoAgenda({ evento }) {
+  const inicio = formatarData(evento.dataInicio);
+  const fim = formatarData(evento.dataFim);
+
+  const temPeriodo = evento.dataFim !== evento.dataInicio;
+
+  const descricaoData = temPeriodo
+    ? `De ${inicio.completa} até ${fim.completa}`
+    : inicio.completa;
+
+  const conteudo = (
+    <>
+      <time
+        className="agenda__data"
+        dateTime={evento.dataInicio}
+        aria-label={descricaoData}
+      >
+        <span className="agenda__dia" aria-hidden="true">
+          {inicio.dia}
+        </span>
+
+        <span className="agenda__mes" aria-hidden="true">
+          {inicio.mes}
+        </span>
+
+        {temPeriodo && (
+          <span className="agenda__periodo" aria-hidden="true">
+            ATÉ {fim.dia} {fim.mes}
+            {fim.ano !== inicio.ano ? ` ${fim.ano}` : ''}
+          </span>
+        )}
+      </time>
+
+      <div className="agenda__informacoes">
+        <h3 className="agenda__nome">
+          {evento.nome}
+        </h3>
+
+        {obterLocal(evento) && (
+          <p className="agenda__local">
+            {obterLocal(evento)}
+          </p>
+        )}
+
+        {evento.link && (
+          <span className="agenda__chamada">
+            Ver detalhes
+            <span aria-hidden="true">↗</span>
+          </span>
+        )}
+      </div>
+
+      {evento.link && (
+        <span
+          className="agenda__seta"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
+      )}
+    </>
+  );
+
+  if (!evento.link) {
+    return (
+      <article className="agenda__evento agenda__evento--sem-link">
+        {conteudo}
+      </article>
+    );
+  }
+
+  return (
+    <a
+      className="agenda__evento agenda__evento--link"
+      href={evento.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Ver detalhes de ${evento.nome}, ${descricaoData}. Abre em uma nova aba.`}
+    >
+      {conteudo}
+    </a>
+  );
 }
 
 function Agenda() {
   const [eventos, setEventos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [tentativa, setTentativa] = useState(0);
+
+  const ultimoDiaConsultadoRef = useRef('');
 
   useEffect(() => {
-    let componenteAtivo = true;
+    let ativo = true;
 
     async function carregarEventos() {
       setCarregando(true);
       setErro('');
 
+      const hoje = obterDataHoje();
+      ultimoDiaConsultadoRef.current = hoje;
+
       try {
-        const hoje = obterDataHoje();
         const referencia = collection(db, 'eventos');
 
-        // Eventos futuros, inclusive os de apenas um dia.
+        // Eventos que começam hoje ou no futuro.
         const consultaFuturos = query(
           referencia,
           where('data_evento', '>=', hoje),
-          orderBy('data_evento', 'asc'),
+          orderBy('data_evento', 'asc')
         );
 
-        // Eventos que começaram antes de hoje,
-        // mas ainda não terminaram.
+        // Eventos que começaram antes, mas ainda estão em andamento.
         const consultaEmAndamento = query(
           referencia,
           where('data_fim_evento', '>=', hoje),
-          orderBy('data_fim_evento', 'asc'),
+          orderBy('data_fim_evento', 'asc')
         );
 
         const [futuros, emAndamento] = await Promise.all([
@@ -76,44 +270,45 @@ function Agenda() {
           getDocs(consultaEmAndamento),
         ]);
 
-        if (!componenteAtivo) {
-          return;
-        }
+        if (!ativo) return;
 
-        // Remove duplicatas das duas consultas.
-        const eventosPorId = new Map();
+        const porId = new Map();
 
         for (const documento of [
           ...futuros.docs,
           ...emAndamento.docs,
         ]) {
-          eventosPorId.set(documento.id, {
-            id: documento.id,
-            ...documento.data(),
+          const evento = prepararEvento(documento);
+
+          if (evento && evento.dataFim >= hoje) {
+            porId.set(evento.id, evento);
+          }
+        }
+
+        const ordenados = Array.from(porId.values())
+          .sort((a, b) => {
+            const comparacao =
+              a.dataInicio.localeCompare(b.dataInicio);
+
+            return comparacao || a.nome.localeCompare(b.nome, 'pt-BR');
           });
-        }
 
-        const eventosCarregados = Array.from(
-          eventosPorId.values(),
-        )
-          .filter((evento) => (
-            (evento.data_fim_evento || evento.data_evento) >= hoje
-          ))
-          .sort((a, b) => (
-            a.data_evento.localeCompare(b.data_evento)
-          ));
+        setEventos(ordenados);
+        setErro('');
+      } catch (erroCarregamento) {
+        if (!ativo) return;
 
-        setEventos(eventosCarregados);
-      } catch (error) {
-        if (!componenteAtivo) {
-          return;
-        }
+        console.error(
+          'Erro ao carregar agenda:',
+          erroCarregamento
+        );
 
-        console.error('Erro ao carregar agenda:', error);
-        setErro('Não foi possível carregar a agenda agora.');
         setEventos([]);
+        setErro(
+          'Não foi possível carregar os encontros agora.'
+        );
       } finally {
-        if (componenteAtivo) {
+        if (ativo) {
           setCarregando(false);
         }
       }
@@ -122,7 +317,42 @@ function Agenda() {
     carregarEventos();
 
     return () => {
-      componenteAtivo = false;
+      ativo = false;
+    };
+  }, [tentativa]);
+
+  // Atualiza quando o visitante retorna à aba em um novo dia.
+  useEffect(() => {
+    function verificarMudancaDeDia() {
+      if (
+        document.visibilityState === 'visible' &&
+        ultimoDiaConsultadoRef.current &&
+        obterDataHoje() !== ultimoDiaConsultadoRef.current
+      ) {
+        setTentativa((anterior) => anterior + 1);
+      }
+    }
+
+    document.addEventListener(
+      'visibilitychange',
+      verificarMudancaDeDia
+    );
+
+    window.addEventListener(
+      'focus',
+      verificarMudancaDeDia
+    );
+
+    return () => {
+      document.removeEventListener(
+        'visibilitychange',
+        verificarMudancaDeDia
+      );
+
+      window.removeEventListener(
+        'focus',
+        verificarMudancaDeDia
+      );
     };
   }, []);
 
@@ -135,7 +365,7 @@ function Agenda() {
       <div className="agenda__conteudo container">
         <header className="agenda__cabecalho">
           <p className="agenda__indice">
-          // Agenda
+            // Agenda
           </p>
 
           <h2
@@ -147,123 +377,51 @@ function Agenda() {
           </h2>
         </header>
 
-        {carregando && (
-          <div className="agenda__vazia" role="status">
-            <p>Carregando agenda...</p>
-          </div>
-        )}
+        <div className="agenda__resultados">
+          {carregando && (
+            <div
+              className="agenda__vazia"
+              role="status"
+              aria-live="polite"
+            >
+              <p>Carregando agenda...</p>
+            </div>
+          )}
 
-        {!carregando && erro && (
-          <div className="agenda__vazia" role="alert">
-            <p>{erro}</p>
-          </div>
-        )}
+          {!carregando && erro && (
+            <div className="agenda__vazia" role="alert">
+              <p>{erro}</p>
 
-        {!carregando && !erro && eventos.length > 0 && (
-          <div className="agenda__lista">
-            {eventos.map((evento) => {
-              const inicio = formatarData(evento.data_evento);
+              <button
+                type="button"
+                className="agenda__tentar"
+                onClick={() =>
+                  setTentativa((anterior) => anterior + 1)
+                }
+              >
+                Tentar novamente
+                <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          )}
 
-              const temPeriodo = Boolean(
-                evento.data_fim_evento
-                && evento.data_fim_evento !== evento.data_evento,
-              );
-
-              const fim = temPeriodo
-                ? formatarData(evento.data_fim_evento)
-                : null;
-
-              const conteudoEvento = (
-                <>
-                  <time
-                    className="agenda__data"
-                    dateTime={evento.data_evento}
-                    aria-label={
-                      temPeriodo
-                        ? `De ${evento.data_evento} até ${evento.data_fim_evento}`
-                        : `Em ${evento.data_evento}`
-                    }
-                  >
-                    <span className="agenda__dia">
-                      {inicio.dia}
-                    </span>
-
-                    <span className="agenda__mes">
-                      {inicio.mes}
-                    </span>
-
-                    {fim && (
-                      <span className="agenda__periodo">
-                        ATÉ {fim.dia} {fim.mes}
-                        {fim.ano !== inicio.ano
-                          ? ` ${fim.ano}`
-                          : ''}
-                      </span>
-                    )}
-                  </time>
-
-                  <div className="agenda__informacoes">
-                    <h3 className="agenda__nome">
-                      {evento.nome_evento}
-                    </h3>
-
-                    <p className="agenda__local">
-                      {evento.cidade_evento}
-                      {' // '}
-                      {evento.estado_evento}
-                    </p>
-
-                    {evento.link_ingresso && (
-                      <span className="agenda__chamada">
-                        Ver detalhes
-                        <span aria-hidden="true">↗</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {evento.link_ingresso && (
-                    <span
-                      className="agenda__seta"
-                      aria-hidden="true"
-                    >
-                      ↗
-                    </span>
-                  )}
-                </>
-              );
-
-              if (!evento.link_ingresso) {
-                return (
-                  <div
-                    className="agenda__evento agenda__evento--sem-link"
-                    key={evento.id}
-                  >
-                    {conteudoEvento}
-                  </div>
-                );
-              }
-
-              return (
-                <a
-                  className="agenda__evento agenda__evento--link"
-                  href={evento.link_ingresso}
-                  target="_blank"
-                  rel="noopener noreferrer"
+          {!carregando && !erro && eventos.length > 0 && (
+            <div className="agenda__lista">
+              {eventos.map((evento) => (
+                <EventoAgenda
                   key={evento.id}
-                  aria-label={`Ver informações ou ingressos de ${evento.nome_evento} (abre em nova aba)`}
-                >
-                  {conteudoEvento}
-                </a>
-              );
-            })}
-          </div>
-        )}
+                  evento={evento}
+                />
+              ))}
+            </div>
+          )}
 
-        {!carregando && !erro && eventos.length === 0 && (
-          <div className="agenda__vazia">
-            <p>Novas datas em breve.</p>
-          </div>
-        )}
+          {!carregando && !erro && eventos.length === 0 && (
+            <div className="agenda__vazia">
+              <p>Novas datas em breve.</p>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

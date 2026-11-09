@@ -310,12 +310,10 @@ function Cabecalho() {
         <div className="menu-mobile__interior container">
           <div className="menu-mobile__topo">
             <span className="menu-mobile__etiqueta">
-              Navegação // Missão SP
+            // Missão SP
             </span>
 
-            <span className="menu-mobile__edicao">
-              01 — 05
-            </span>
+       
           </div>
 
           <nav
@@ -336,12 +334,7 @@ function Cabecalho() {
                   onClick={() => navegarPara(href)}
                   style={{ '--indice': indice }}
                 >
-                  <span
-                    className="menu-mobile__numero"
-                    aria-hidden="true"
-                  >
-                    {String(indice + 1).padStart(2, '0')}
-                  </span>
+               
 
                   <span className="menu-mobile__texto">
                     {texto}

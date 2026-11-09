@@ -819,3 +819,15 @@
     transition: none;
   }
 }
+
+/* MENU MOBILE — LINKS SEM NUMERAÇÃO */
+
+@media (max-width: 900px) {
+  .menu-mobile__link {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .menu-mobile__numero {
+    display: none;
+  }
+}

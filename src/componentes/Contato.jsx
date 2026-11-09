@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import {
   detectarIntencao,
-  obterOpcoesConfirmacao,
+  normalizarTexto,
   obterPerguntaConfirmacao,
+  obterOpcoesConfirmacao,
 } from '../servicos/detectorIntencao.js';
 
 import {
@@ -15,91 +16,485 @@ import {
 import '../estilos/contato.css';
 
 const LIMITE_MENSAGEM = 500;
-
-const OPCOES_INICIAIS = [
-  { id: 'celula', texto: 'Quero encontrar uma célula' },
-  { id: 'cenaculo', texto: 'Quero conhecer um cenáculo' },
-  { id: 'missao', texto: 'Quero falar com alguém da missão' },
-];
+const ATRASO_RESPOSTA = 420;
 
 const MENSAGENS_INICIAIS = [
-  { id: 'inicio-1', autor: 'bot', texto: 'Oi! 👋' },
+  {
+    id: 'inicio-1',
+    autor: 'bot',
+    texto: 'Oi! Que bom ter você por aqui. 💛',
+  },
   {
     id: 'inicio-2',
     autor: 'bot',
-    texto: 'Que bom ter você por aqui. Como a gente pode te ajudar?',
+    texto: 'Como podemos te ajudar hoje?',
   },
 ];
 
-const esperar = (ms) =>
-  new Promise((resolve) => window.setTimeout(resolve, ms));
+const CAMINHOS = [
+  {
+    id: 'celula',
+    titulo: 'Encontrar uma célula',
+    detalhe: 'Quero participar de um grupo',
+  },
+  {
+    id: 'cenaculo',
+    titulo: 'Conhecer um cenáculo',
+    detalhe: 'Quero receber uma visita',
+  },
+  {
+    id: 'missao',
+    titulo: 'Conversar com a missão',
+    detalhe: 'Tenho outra pergunta',
+  },
+];
+
+const RESPOSTAS_POSITIVAS =
+  /^(sim|isso|isso mesmo|exatamente|exato|correto|confirmo|quero|pode ser|claro|com certeza)\b/;
+
+const RESPOSTAS_NEGATIVAS =
+  /^(nao|negativo|outra coisa|nada disso|nao e isso|errado)\b/;
+
+function obterHorario() {
+  return new Date().toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function obterNomeInteresse(tipo) {
+  if (tipo === 'celula') return 'uma célula';
+  if (tipo === 'cenaculo') return 'um cenáculo';
+  return 'a missão';
+}
+
+function identificarRegiao(texto) {
+  const normalizado = normalizarTexto(texto).trim();
+
+  if (!normalizado) return null;
+
+  return (
+    REGIOES.find((item) => {
+      const nome = normalizarTexto(item.nome);
+
+      return (
+        normalizado === nome ||
+        normalizado.includes(nome) ||
+        (normalizado.length >= 5 && nome.includes(normalizado))
+      );
+    }) ?? null
+  );
+}
+
+function Mensagem({ mensagem }) {
+  const usuario = mensagem.autor === 'usuario';
+
+  return (
+    <div
+      className={`chat__linha ${
+        usuario ? 'chat__linha--usuario' : 'chat__linha--bot'
+      }`}
+    >
+      <div
+        className={`chat__balao ${
+          usuario ? 'chat__balao--usuario' : 'chat__balao--bot'
+        }`}
+      >
+        <p>{mensagem.texto}</p>
+
+        {mensagem.horario && (
+          <span className="chat__horario">
+            {mensagem.horario}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function Contato() {
   const [mensagens, setMensagens] = useState(MENSAGENS_INICIAIS);
   const [etapa, setEtapa] = useState('inicio');
   const [interesse, setInteresse] = useState('');
   const [regiao, setRegiao] = useState('');
+  const [texto, setTexto] = useState('');
+  const [observacoes, setObservacoes] = useState([]);
+  const [intencaoPendente, setIntencaoPendente] = useState(null);
   const [digitando, setDigitando] = useState(false);
-  const [textoMensagem, setTextoMensagem] = useState('');
-  const [mensagemLivre, setMensagemLivre] = useState('');
-  const [erroMensagem, setErroMensagem] = useState('');
-  const [intencaoDetectada, setIntencaoDetectada] = useState(null);
+  const [erro, setErro] = useState('');
 
   const conversaRef = useRef(null);
-  const textareaRef = useRef(null);
-  const contadorIdRef = useRef(0);
+  const campoRef = useRef(null);
+  const timerRef = useRef(null);
   const operacaoRef = useRef(0);
+  const sequenciaRef = useRef(0);
   const bloqueadoRef = useRef(false);
-  const montadoRef = useRef(true);
 
-  function adicionarMensagem(autor, texto, id) {
-    contadorIdRef.current += 1;
+  function adicionarMensagem(autor, mensagem) {
+    sequenciaRef.current += 1;
 
     setMensagens((atuais) => [
       ...atuais,
       {
-        id: id ?? `mensagem-${contadorIdRef.current}`,
+        id: `mensagem-${sequenciaRef.current}`,
         autor,
-        texto,
+        texto: mensagem,
+        horario: obterHorario(),
       },
     ]);
   }
 
-  async function iniciarEspera(ms = 500) {
+  function cancelarResposta() {
+    window.clearTimeout(timerRef.current);
+    timerRef.current = null;
+
+    operacaoRef.current += 1;
+    bloqueadoRef.current = false;
+
+    setDigitando(false);
+  }
+
+  function responder(mensagem, proximaEtapa, atraso = ATRASO_RESPOSTA) {
+    window.clearTimeout(timerRef.current);
+
     const operacao = ++operacaoRef.current;
 
     bloqueadoRef.current = true;
-    setEtapa('aguardando');
     setDigitando(true);
+    setEtapa('aguardando');
 
-    await esperar(ms);
+    timerRef.current = window.setTimeout(() => {
+      if (operacao !== operacaoRef.current) return;
 
-    if (!montadoRef.current || operacao !== operacaoRef.current) {
-      return false;
+      adicionarMensagem('bot', mensagem);
+      bloqueadoRef.current = false;
+      setDigitando(false);
+      setEtapa(proximaEtapa);
+      timerRef.current = null;
+    }, atraso);
+  }
+
+  function reiniciarConversa() {
+    cancelarResposta();
+
+    setMensagens(MENSAGENS_INICIAIS);
+    setEtapa('inicio');
+    setInteresse('');
+    setRegiao('');
+    setTexto('');
+    setObservacoes([]);
+    setIntencaoPendente(null);
+    setErro('');
+
+    try {
+      sessionStorage.removeItem('interesse-contato');
+    } catch {
+      // O chat funciona sem armazenamento.
+    }
+  }
+
+  function escolherCaminho(tipo, rotulo, registrar = true) {
+    if (bloqueadoRef.current) return;
+
+    if (registrar) {
+      adicionarMensagem('usuario', rotulo);
     }
 
-    bloqueadoRef.current = false;
-    setDigitando(false);
+    setInteresse(tipo);
+    setRegiao('');
+    setIntencaoPendente(null);
+    setErro('');
 
-    return true;
-  }
+    if (tipo === 'celula') {
+      responder(
+        'Que alegria! 💛 Vamos te ajudar a encontrar uma célula. Em qual região de São Paulo você está?',
+        'regiao'
+      );
+      return;
+    }
 
-  async function responderComRegiao(tipo) {
-    const concluido = await iniciarEspera();
+    if (tipo === 'cenaculo') {
+      responder(
+        'Vai ser um prazer ajudar! 🙌 Em qual região você gostaria de conhecer um cenáculo?',
+        'regiao'
+      );
+      return;
+    }
 
-    if (!concluido) return;
-
-    adicionarMensagem(
-      'bot',
-      tipo === 'celula'
-        ? 'Que bom! 💛 Vamos te ajudar a encontrar uma célula perto de você. Em qual região você está?'
-        : 'Bora! 🙌 Vamos te ajudar a encontrar um cenáculo. Em qual região você está?',
+    responder(
+      'Pode contar com a gente. 💛 Escreva sua dúvida aqui ou continue pelo WhatsApp.',
+      'conversar'
     );
-
-    setEtapa('regiao');
   }
 
-  // Rola apenas a área interna do chatbot.
+  function escolherRegiao(nome, registrar = true) {
+    if (bloqueadoRef.current) return;
+
+    const valida = REGIOES.some((item) => item.nome === nome);
+
+    if (!valida) return;
+
+    if (registrar) {
+      adicionarMensagem('usuario', nome);
+    }
+
+    setRegiao(nome);
+
+    responder(
+      'Perfeito! 💛 Preparei seu contato para o WhatsApp. Se quiser, você também pode acrescentar uma mensagem aqui.',
+      'final'
+    );
+  }
+
+  function confirmarIntencao(aceitou, registrar = true) {
+    if (bloqueadoRef.current || !intencaoPendente) return;
+
+    const tipo = intencaoPendente.intencao;
+    const opcoes = obterOpcoesConfirmacao(tipo);
+
+    if (registrar && opcoes) {
+      adicionarMensagem(
+        'usuario',
+        aceitou ? opcoes.confirmar : opcoes.negar
+      );
+    }
+
+    setIntencaoPendente(null);
+
+    if (aceitou && ['celula', 'cenaculo'].includes(tipo)) {
+      setInteresse(tipo);
+      setRegiao('');
+
+      responder(
+        `Entendi! 💛 Vamos falar sobre ${obterNomeInteresse(tipo)}. Em qual região de São Paulo você está?`,
+        'regiao'
+      );
+      return;
+    }
+
+    setInteresse('missao');
+    setRegiao('');
+
+    responder(
+      aceitou
+        ? 'Entendi! 💛 Você pode me contar mais ou continuar pelo WhatsApp.'
+        : 'Sem problema! 💛 Pode me contar um pouco mais ou falar diretamente com a missão pelo WhatsApp.',
+      'conversar'
+    );
+  }
+
+  function registrarObservacao(mensagem) {
+    setObservacoes((atuais) => [...atuais, mensagem]);
+  }
+
+  function interpretarMensagem(mensagem) {
+    const normalizada = normalizarTexto(mensagem).trim();
+
+    // Interpreta respostas a uma pergunta de confirmação.
+    if (etapa === 'confirmar' && intencaoPendente) {
+      if (RESPOSTAS_POSITIVAS.test(normalizada)) {
+        confirmarIntencao(true, false);
+        return;
+      }
+
+      if (RESPOSTAS_NEGATIVAS.test(normalizada)) {
+        confirmarIntencao(false, false);
+        return;
+      }
+
+      responder(
+        'Só para confirmar: é sobre isso que você gostaria de conversar? Você pode responder sim ou não, ou usar as opções abaixo.',
+        'confirmar'
+      );
+      return;
+    }
+
+    // Reconhece a região escrita em linguagem natural.
+    if (etapa === 'regiao') {
+      const encontrada = identificarRegiao(mensagem);
+
+      if (encontrada) {
+        escolherRegiao(encontrada.nome, false);
+      } else {
+        responder(
+          'Não consegui identificar essa região. 💛 Selecione uma das opções abaixo para continuarmos.',
+          'regiao'
+        );
+      }
+
+      return;
+    }
+
+    // Em conversa já encaminhada, guarda observações
+    // para compor a mensagem final do WhatsApp.
+    if (etapa === 'final') {
+      registrarObservacao(mensagem);
+
+      responder(
+        'Anotei sua mensagem. 💛 Ela será incluída no texto que você poderá enviar pelo WhatsApp.',
+        'final'
+      );
+      return;
+    }
+
+    // Identificação local, sem uso de IA externa.
+    const resultado = detectarIntencao(mensagem);
+
+    if (
+      resultado?.encontrada &&
+      ['celula', 'cenaculo'].includes(resultado.intencao)
+    ) {
+      registrarObservacao(mensagem);
+      setIntencaoPendente(resultado);
+
+      responder(
+        obterPerguntaConfirmacao(resultado.intencao),
+        'confirmar'
+      );
+      return;
+    }
+
+    registrarObservacao(mensagem);
+    setInteresse('missao');
+    setIntencaoPendente(null);
+
+    responder(
+      'Entendi. 💛 Sua mensagem está preparada para nossa equipe. Você pode acrescentar mais informações ou continuar pelo WhatsApp.',
+      'conversar'
+    );
+  }
+
+  function enviarMensagem(evento) {
+    evento.preventDefault();
+
+    if (bloqueadoRef.current) return;
+
+    const mensagem = texto.trim();
+
+    if (!mensagem) {
+      setErro('Escreva uma mensagem antes de enviar.');
+      campoRef.current?.focus({ preventScroll: true });
+      return;
+    }
+
+    adicionarMensagem('usuario', mensagem);
+    setTexto('');
+    setErro('');
+
+    interpretarMensagem(mensagem);
+  }
+
+  function obterMensagemWhatsApp() {
+    const partes = [
+      'Oi! 💛',
+      '',
+      'Vim pelo site da *Colo de Deus | Missão SP*.',
+    ];
+
+    if (interesse === 'celula' || interesse === 'cenaculo') {
+      const nome = interesse === 'celula' ? 'Célula' : 'Cenáculo';
+
+      partes.push(
+        '',
+        `Gostaria de conhecer um(a) *${nome}* na minha região.`
+      );
+
+      if (regiao) {
+        partes.push(`*Região:* ${regiao}`);
+      }
+    } else {
+      partes.push(
+        '',
+        'Gostaria de conversar com alguém da missão.'
+      );
+    }
+
+    if (observacoes.length > 0) {
+      partes.push(
+        '',
+        '*Informações que escrevi no site:*',
+        ...observacoes.map((item) => `• ${item}`)
+      );
+    }
+
+    partes.push('', 'Obrigado!');
+
+    return partes.join('\n');
+  }
+
+  function gerarLinkWhatsApp() {
+    return obterLinkWhatsApp(
+      regiao,
+      obterMensagemWhatsApp(),
+      interesse !== 'celula' && interesse !== 'cenaculo'
+    );
+  }
+
+  // Integração com os botões das seções Células e Cenáculos.
+  useEffect(() => {
+    function verificarInteresse() {
+      let salvo;
+
+      try {
+        salvo = sessionStorage.getItem('interesse-contato');
+
+        if (!['celula', 'cenaculo'].includes(salvo)) {
+          return;
+        }
+
+        sessionStorage.removeItem('interesse-contato');
+      } catch {
+        return;
+      }
+
+      cancelarResposta();
+
+      setMensagens([
+        {
+          id: 'entrada-1',
+          autor: 'bot',
+          texto: 'Oi! Que bom ter você aqui. 💛',
+        },
+        {
+          id: 'entrada-2',
+          autor: 'usuario',
+          texto:
+            salvo === 'celula'
+              ? 'Quero encontrar uma célula'
+              : 'Quero conhecer um cenáculo',
+        },
+      ]);
+
+      setInteresse(salvo);
+      setRegiao('');
+      setTexto('');
+      setObservacoes([]);
+      setIntencaoPendente(null);
+      setErro('');
+
+      responder(
+        salvo === 'celula'
+          ? 'Que bom! 💛 Em qual região você gostaria de encontrar uma célula?'
+          : 'Que alegria! 🙌 Em qual região você gostaria de conhecer um cenáculo?',
+        'regiao'
+      );
+    }
+
+    verificarInteresse();
+
+    window.addEventListener('hashchange', verificarInteresse);
+    window.addEventListener('interesse-contato', verificarInteresse);
+
+    return () => {
+      window.removeEventListener('hashchange', verificarInteresse);
+      window.removeEventListener('interesse-contato', verificarInteresse);
+
+      window.clearTimeout(timerRef.current);
+      operacaoRef.current += 1;
+    };
+  }, []);
+
+  // Rolagem somente dentro da conversa.
   useEffect(() => {
     const conversa = conversaRef.current;
 
@@ -117,308 +512,19 @@ function Contato() {
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [mensagens, digitando, etapa]);
+  }, [mensagens, etapa, digitando]);
 
-  // Foco no campo de mensagem, sem deslocar a página.
-  useEffect(() => {
-    if (etapa !== 'mensagem') return undefined;
+  const disponivel = !digitando && etapa !== 'aguardando';
 
-    const timeout = window.setTimeout(() => {
-      textareaRef.current?.focus({ preventScroll: true });
-    }, 150);
-
-    return () => window.clearTimeout(timeout);
-  }, [etapa]);
-
-  // Recebe os interesses enviados pelos botões de Células e Cenáculos.
-  useEffect(() => {
-    function verificarInteresse() {
-      let interesseSalvo;
-
-      try {
-        interesseSalvo = sessionStorage.getItem('interesse-contato');
-
-        if (!['celula', 'cenaculo'].includes(interesseSalvo)) {
-          return;
-        }
-
-        sessionStorage.removeItem('interesse-contato');
-      } catch {
-        return;
-      }
-
-      const texto =
-        interesseSalvo === 'celula'
-          ? 'Quero encontrar uma célula'
-          : 'Quero conhecer um cenáculo';
-
-      operacaoRef.current += 1;
-      bloqueadoRef.current = false;
-      setDigitando(false);
-      setTextoMensagem('');
-      setErroMensagem('');
-
-      setInteresse(interesseSalvo);
-      setRegiao('');
-      setMensagemLivre('');
-      setIntencaoDetectada(null);
-
-      setMensagens([
-        {
-          id: 'entrada-1',
-          autor: 'bot',
-          texto: 'Oi! 👋 Que bom ter você por aqui.',
-        },
-        {
-          id: 'entrada-2',
-          autor: 'usuario',
-          texto,
-        },
-      ]);
-
-      responderComRegiao(interesseSalvo);
-    }
-
-    verificarInteresse();
-
-    window.addEventListener('hashchange', verificarInteresse);
-    window.addEventListener('interesse-contato', verificarInteresse);
-
-    return () => {
-      window.removeEventListener('hashchange', verificarInteresse);
-      window.removeEventListener('interesse-contato', verificarInteresse);
-      montadoRef.current = false;
-      operacaoRef.current += 1;
-    };
-  }, []);
-
-  async function escolherInteresse(opcao) {
-    if (bloqueadoRef.current) return;
-
-    setInteresse(opcao.id);
-    adicionarMensagem('usuario', opcao.texto);
-
-    if (opcao.id === 'celula' || opcao.id === 'cenaculo') {
-      await responderComRegiao(opcao.id);
-      return;
-    }
-
-    const concluido = await iniciarEspera();
-
-    if (!concluido) return;
-
-    adicionarMensagem(
-      'bot',
-      'Claro! 💛 Pode contar pra gente. O que você gostaria de falar?',
-    );
-
-    setEtapa('mensagem');
-  }
-
-  async function escolherRegiao(novaRegiao) {
-    if (bloqueadoRef.current) return;
-
-    if (!REGIOES.some((item) => item.nome === novaRegiao)) {
-      return;
-    }
-
-    setRegiao(novaRegiao);
-    adicionarMensagem('usuario', novaRegiao);
-
-    const concluido = await iniciarEspera();
-
-    if (!concluido) return;
-
-    adicionarMensagem(
-      'bot',
-      interesse === 'celula'
-        ? 'Perfeito! 💛 Já sabemos por onde começar. Vamos continuar pelo WhatsApp?'
-        : 'Perfeito! 🙌 Já sabemos por onde começar. Vamos continuar pelo WhatsApp?',
-    );
-
-    setEtapa('final');
-  }
-
-  async function enviarMensagemLivre(evento) {
-    evento.preventDefault();
-
-    if (bloqueadoRef.current) return;
-
-    const mensagem = textoMensagem.trim();
-
-    if (!mensagem) {
-      setErroMensagem('Escreva uma mensagem antes de continuar.');
-      textareaRef.current?.focus({ preventScroll: true });
-      return;
-    }
-
-    setErroMensagem('');
-    setMensagemLivre(mensagem);
-    setTextoMensagem('');
-
-    adicionarMensagem('usuario', mensagem, 'mensagem-livre');
-
-    const concluido = await iniciarEspera(550);
-
-    if (!concluido) return;
-
-    const resultado = detectarIntencao(mensagem);
-
-    if (resultado.encontrada) {
-      setIntencaoDetectada(resultado);
-
-      adicionarMensagem(
-        'bot',
-        obterPerguntaConfirmacao(resultado.intencao),
-        'detector-confirmacao',
-      );
-
-      setEtapa('confirmacao-intencao');
-      return;
-    }
-
-    adicionarMensagem(
-      'bot',
-      'Entendi 💛 Sua mensagem está pronta. Se estiver tudo certo, podemos continuar pelo WhatsApp.',
-      'confirmacao-mensagem',
-    );
-
-    setEtapa('confirmacao');
-  }
-
-  async function confirmarIntencao() {
-    if (!intencaoDetectada || bloqueadoRef.current) return;
-
-    const tipo = intencaoDetectada.intencao;
-    const opcoes = obterOpcoesConfirmacao(tipo);
-
-    adicionarMensagem('usuario', opcoes.confirmar, 'detector-resposta');
-    setInteresse(tipo);
-    setIntencaoDetectada(null);
-
-    await responderComRegiao(tipo);
-  }
-
-  async function negarIntencao() {
-    if (!intencaoDetectada || bloqueadoRef.current) return;
-
-    const opcoes = obterOpcoesConfirmacao(intencaoDetectada.intencao);
-
-    adicionarMensagem('usuario', opcoes.negar, 'detector-resposta');
-
-    setInteresse('missao');
-    setIntencaoDetectada(null);
-
-    const concluido = await iniciarEspera();
-
-    if (!concluido) return;
-
-    adicionarMensagem(
-      'bot',
-      'Sem problema 💛 Vamos continuar com a sua mensagem do jeito que você escreveu.',
-      'confirmacao-mensagem',
-    );
-
-    setEtapa('confirmacao');
-  }
-
-  function editarMensagemLivre() {
-    const idsRemovidos = new Set([
-      'mensagem-livre',
-      'detector-confirmacao',
-      'detector-resposta',
-      'confirmacao-mensagem',
-    ]);
-
-    setMensagens((atuais) =>
-      atuais.filter((mensagem) => !idsRemovidos.has(mensagem.id)),
-    );
-
-    setInteresse('missao');
-    setRegiao('');
-    setIntencaoDetectada(null);
-    setTextoMensagem(mensagemLivre);
-    setErroMensagem('');
-    setEtapa('mensagem');
-  }
-
-  function obterMensagemWhatsApp() {
-    const apresentacao = [
-      'Hey!',
-      '',
-      'Vim pelo site da *Colo de Deus | Missão SP*.',
-    ];
-
-    if (interesse === 'celula' || interesse === 'cenaculo') {
-      const tipo = interesse === 'celula' ? 'Célula' : 'Cenáculo';
-
-      const partes = [
-        ...apresentacao,
-        '',
-        `Gostaria de conhecer uma *${tipo}* na minha região.`,
-        '',
-        `*Região:* ${regiao}`,
-        '',
-        'Poderiam me passar mais informações?',
-      ];
-
-      if (mensagemLivre) {
-        partes.push('', '*Minha mensagem:*', mensagemLivre);
-      }
-
-      partes.push('', 'Desde já, agradeço!');
-
-      return partes.join('\n');
-    }
-
-    return [
-      ...apresentacao,
-      '',
-      'Gostaria de conversar com alguém da missão.',
-      '',
-      '*Minha mensagem:*',
-      mensagemLivre,
-      '',
-      'Desde já, agradeço!',
-    ].join('\n');
-  }
-
-  // Os números são definidos exclusivamente em config/contatos.js.
-  function gerarLinkWhatsApp() {
-    return obterLinkWhatsApp(
-      regiao,
-      obterMensagemWhatsApp(),
-      interesse === 'missao',
-    );
-  }
-
-  function reiniciarConversa() {
-    operacaoRef.current += 1;
-    bloqueadoRef.current = false;
-
-    setMensagens(MENSAGENS_INICIAIS);
-    setEtapa('inicio');
-    setInteresse('');
-    setRegiao('');
-    setDigitando(false);
-    setTextoMensagem('');
-    setMensagemLivre('');
-    setErroMensagem('');
-    setIntencaoDetectada(null);
-
-    window.requestAnimationFrame(() => {
-      conversaRef.current?.scrollTo({
-        top: 0,
-        behavior: window.matchMedia(
-          '(prefers-reduced-motion: reduce)'
-        ).matches ? 'auto' : 'smooth',
-      });
-    });
-  }
-
-  const opcoesIntencao = intencaoDetectada
-    ? obterOpcoesConfirmacao(intencaoDetectada.intencao)
+  const opcoesConfirmacao = intencaoPendente
+    ? obterOpcoesConfirmacao(intencaoPendente.intencao)
     : null;
+
+  const exibirCaminhos =
+    disponivel && (etapa === 'inicio' || etapa === 'conversar');
+
+  const exibirWhatsApp =
+    disponivel && (etapa === 'final' || etapa === 'conversar');
 
   return (
     <section
@@ -427,11 +533,14 @@ function Contato() {
       aria-labelledby="contato-titulo"
     >
       <div className="contato__conteudo container">
+        {/* FOTO */}
+
         <div className="contato__foto">
           <img
             src="/imagens/contato-servico.jpg"
             alt="Pessoa servindo em uma ação da Colo de Deus"
             loading="lazy"
+            decoding="async"
           />
 
           <div
@@ -449,6 +558,8 @@ function Contato() {
             </strong>
           </div>
         </div>
+
+        {/* CHAT */}
 
         <div className="contato__area-chat">
           <div className="contato__seo">
@@ -468,6 +579,7 @@ function Contato() {
                 <img
                   src="/imagens/contato-atendimento.jpg"
                   alt=""
+                  decoding="async"
                 />
               </div>
 
@@ -477,6 +589,16 @@ function Contato() {
                   Atendimento via WhatsApp
                 </span>
               </div>
+
+              <button
+                type="button"
+                className="chat__reiniciar"
+                onClick={reiniciarConversa}
+                title="Recomeçar conversa"
+                aria-label="Recomeçar conversa"
+              >
+                ↻
+              </button>
             </header>
 
             <div
@@ -484,48 +606,74 @@ function Contato() {
               ref={conversaRef}
               aria-label="Conversa com a Missão SP"
             >
-              <div className="chat__data">Hoje</div>
+              <div className="chat__data">
+                Conversa no site
+              </div>
 
-              {mensagens.map((mensagem) => (
-                <Mensagem
-                  key={mensagem.id}
-                  mensagem={mensagem}
-                />
-              ))}
+              <div
+                className="chat__mensagens"
+                role="log"
+                aria-live="polite"
+                aria-relevant="additions"
+                aria-label="Mensagens da conversa"
+              >
+                {mensagens.map((mensagem) => (
+                  <Mensagem
+                    key={mensagem.id}
+                    mensagem={mensagem}
+                  />
+                ))}
 
-              {digitando && (
-                <div
-                  className="chat__linha chat__linha--bot"
-                  role="status"
-                  aria-label="Preparando resposta"
-                >
-                  <div className="chat__balao chat__balao--digitando">
-                    <span />
-                    <span />
-                    <span />
+                {digitando && (
+                  <div
+                    className="chat__linha chat__linha--bot"
+                    role="status"
+                    aria-label="Preparando resposta"
+                  >
+                    <div className="chat__balao chat__balao--digitando">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              {!digitando && etapa === 'inicio' && (
-                <div className="chat__respostas">
-                  {OPCOES_INICIAIS.map((opcao) => (
+              {exibirCaminhos && (
+                <div className="chat__opcoes">
+                  {CAMINHOS.map((caminho) => (
                     <button
-                      key={opcao.id}
+                      key={caminho.id}
                       type="button"
-                      className="chat__resposta"
-                      onClick={() => escolherInteresse(opcao)}
+                      className="chat__opcao"
+                      onClick={() =>
+                        escolherCaminho(
+                          caminho.id,
+                          caminho.titulo
+                        )
+                      }
                     >
-                      <span>{opcao.texto}</span>
-                      <span aria-hidden="true">→</span>
+                      <span className="chat__opcao-conteudo">
+                        <strong>{caminho.titulo}</strong>
+                        <small>{caminho.detalhe}</small>
+                      </span>
+
+                      <span
+                        className="chat__opcao-seta"
+                        aria-hidden="true"
+                      >
+                        ↗
+                      </span>
                     </button>
                   ))}
                 </div>
               )}
 
-              {!digitando && etapa === 'regiao' && (
+              {disponivel && etapa === 'regiao' && (
                 <div className="chat__regioes">
-                  <p>Escolha uma região</p>
+                  <p className="chat__auxiliar">
+                    Selecione sua região
+                  </p>
 
                   <div className="chat__chips">
                     {REGIOES.map((item) => (
@@ -533,7 +681,9 @@ function Contato() {
                         key={item.nome}
                         type="button"
                         className="chat__chip"
-                        onClick={() => escolherRegiao(item.nome)}
+                        onClick={() =>
+                          escolherRegiao(item.nome)
+                        }
                       >
                         {item.nome}
                       </button>
@@ -542,128 +692,36 @@ function Contato() {
                 </div>
               )}
 
-              {!digitando && etapa === 'mensagem' && (
-                <form
-                  className="chat__form-mensagem"
-                  onSubmit={enviarMensagemLivre}
-                >
-                  <label
-                    className="chat__label-mensagem"
-                    htmlFor="mensagem-missao"
-                  >
-                    Sua mensagem
-                  </label>
-
-                  <div className="chat__campo-mensagem">
-                    <textarea
-                      ref={textareaRef}
-                      id="mensagem-missao"
-                      value={textoMensagem}
-                      maxLength={LIMITE_MENSAGEM}
-                      aria-invalid={Boolean(erroMensagem)}
-                      aria-describedby="chat-erro-mensagem chat-contador"
-                      rows={4}
-                      placeholder="Escreva sua mensagem..."
-                      onChange={(evento) => {
-                        setTextoMensagem(evento.target.value);
-
-                        if (erroMensagem) {
-                          setErroMensagem('');
-                        }
-                      }}
-                    />
-
-                    <button
-                      type="submit"
-                      className="chat__enviar-mensagem"
-                      aria-label="Enviar mensagem no chat"
-                    >
-                      →
-                    </button>
-                  </div>
-
-                  <div className="chat__mensagem-meta">
-                    <span
-                      className="chat__erro-mensagem"
-                      id="chat-erro-mensagem"
-                      role="alert"
-                    >
-                      {erroMensagem}
-                    </span>
-
-                    <span
-                      className="chat__contador"
-                      id="chat-contador"
-                    >
-                      {textoMensagem.length}/{LIMITE_MENSAGEM}
-                    </span>
-                  </div>
-                </form>
-              )}
-
-              {!digitando &&
-                etapa === 'confirmacao-intencao' &&
-                opcoesIntencao && (
+              {disponivel &&
+                etapa === 'confirmar' &&
+                opcoesConfirmacao && (
                   <div className="chat__confirmar-intencao">
                     <button
                       type="button"
                       className="chat__resposta chat__resposta--confirmar"
-                      onClick={confirmarIntencao}
+                      onClick={() =>
+                        confirmarIntencao(true)
+                      }
                     >
-                      <span>{opcoesIntencao.confirmar}</span>
+                      <span>
+                        {opcoesConfirmacao.confirmar}
+                      </span>
                       <span aria-hidden="true">→</span>
                     </button>
 
                     <button
                       type="button"
                       className="chat__resposta chat__resposta--negar"
-                      onClick={negarIntencao}
+                      onClick={() =>
+                        confirmarIntencao(false)
+                      }
                     >
-                      <span>{opcoesIntencao.negar}</span>
+                      {opcoesConfirmacao.negar}
                     </button>
                   </div>
                 )}
 
-              {!digitando && etapa === 'confirmacao' && (
-                <div className="chat__confirmacao">
-                  <p>Sua mensagem está pronta.</p>
-
-                  <button
-                    type="button"
-                    className="chat__editar"
-                    onClick={editarMensagemLivre}
-                  >
-                    Editar mensagem
-                  </button>
-
-                  <a
-                    className="chat__whatsapp"
-                    href={gerarLinkWhatsApp()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span>
-                      Confirmar e ir para o WhatsApp
-                    </span>
-                    <span aria-hidden="true">↗</span>
-                  </a>
-
-                  <p className="chat__aviso-whatsapp">
-                    A mensagem será aberta no WhatsApp
-                    para você confirmar o envio.
-                  </p>
-
-                  <button
-                    type="button"
-                    className="chat__reiniciar"
-                    onClick={reiniciarConversa}
-                  >
-                    Recomeçar conversa
-                  </button>
-                </div>
-              )}
-
-              {!digitando && etapa === 'final' && (
+              {exibirWhatsApp && (
                 <div className="chat__final">
                   <a
                     className="chat__whatsapp"
@@ -675,41 +733,96 @@ function Contato() {
                     <span aria-hidden="true">↗</span>
                   </a>
 
-                  <button
-                    type="button"
-                    className="chat__reiniciar"
-                    onClick={reiniciarConversa}
-                  >
-                    Recomeçar conversa
-                  </button>
+                  <p>
+                    Você poderá revisar e enviar sua
+                    mensagem no WhatsApp.
+                  </p>
                 </div>
               )}
             </div>
+
+            {/* CAMPO FIXO NO RODAPÉ DO CHAT */}
+
+            <form
+              className="chat__rodape"
+              onSubmit={enviarMensagem}
+            >
+              <label
+                className="chat__sr-only"
+                htmlFor="mensagem-missao"
+              >
+                Sua mensagem
+              </label>
+
+              <div className="chat__campo-mensagem">
+                <textarea
+                  ref={campoRef}
+                  id="mensagem-missao"
+                  value={texto}
+                  maxLength={LIMITE_MENSAGEM}
+                  rows={1}
+                  disabled={!disponivel}
+                  placeholder="Escreva sua mensagem..."
+                  aria-invalid={Boolean(erro)}
+                  aria-describedby="chat-erro-mensagem"
+                  onChange={(evento) => {
+                    setTexto(evento.target.value);
+                    setErro('');
+                  }}
+                  onKeyDown={(evento) => {
+                    if (
+                      evento.key === 'Enter' &&
+                      !evento.shiftKey &&
+                      !evento.nativeEvent.isComposing
+                    ) {
+                      evento.preventDefault();
+                      evento.currentTarget.form?.requestSubmit();
+                    }
+                  }}
+                />
+
+                <button
+                  type="submit"
+                  className="chat__enviar-mensagem"
+                  disabled={!disponivel || !texto.trim()}
+                  aria-label="Enviar mensagem no chat"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m5 12 14-7-4 14-3-6-7-1Z" />
+                    <path d="m12 13 7-8" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="chat__rodape-info">
+                <span
+                  id="chat-erro-mensagem"
+                  role="alert"
+                >
+                  {erro}
+                </span>
+
+                <span>
+                  {texto.length > 400
+                    ? `${texto.length}/${LIMITE_MENSAGEM}`
+                    : 'Enter para enviar · Shift + Enter para nova linha'}
+                </span>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function Mensagem({ mensagem }) {
-  const ehUsuario = mensagem.autor === 'usuario';
-
-  return (
-    <div
-      className={`chat__linha ${
-        ehUsuario ? 'chat__linha--usuario' : 'chat__linha--bot'
-      }`}
-    >
-      <div
-        className={`chat__balao ${
-          ehUsuario ? 'chat__balao--usuario' : 'chat__balao--bot'
-        }`}
-      >
-        <p>{mensagem.texto}</p>
-        <span className="chat__horario">agora</span>
-      </div>
-    </div>
   );
 }
 

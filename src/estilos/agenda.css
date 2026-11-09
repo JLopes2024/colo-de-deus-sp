@@ -1,103 +1,64 @@
 
 /* =========================================================
-   AGENDA — EDITORIAL ESCURA
-
-   Referência visual:
-   Find Your Home
-
-   Integração:
-   Firebase / Firestore
-   ========================================================= */
-
-/* =========================================================
-   SEÇÃO
+   AGENDA — COLO DE DEUS | MISSÃO SP
+   Editorial escura / Firebase Firestore
    ========================================================= */
 
 .agenda {
   width: 100%;
-
-  background-color: #101010;
-  color: #ffffff;
-
   padding-block: clamp(5rem, 9vw, 9rem);
-
   overflow: hidden;
+  background-color: #101010;
+  color: #fff;
 }
 
-/* =========================================================
-   ESTRUTURA PRINCIPAL
-   ========================================================= */
+/* ESTRUTURA */
 
 .agenda__conteudo {
   display: grid;
-
   grid-template-columns:
     minmax(280px, 0.82fr)
     minmax(0, 1.18fr);
-
-  gap: clamp(3rem, 6vw, 7rem);
-
   align-items: start;
+  gap: clamp(3rem, 6vw, 7rem);
 }
 
-/* =========================================================
-   CABEÇALHO
-   ========================================================= */
-
-.agenda__cabecalho {
-  position: sticky;
-
-  top: 120px;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: flex-start;
-
-  gap: var(--espaco-3);
-
+.agenda__resultados {
   min-width: 0;
 }
 
-/* =========================================================
-   ÍNDICE
-   ========================================================= */
+/* CABEÇALHO */
+
+.agenda__cabecalho {
+  position: sticky;
+  top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  min-width: 0;
+}
 
 .agenda__indice {
   margin: 0;
-
   color: #a0a0a0;
-
-  font-size: var(--texto-xs);
+  font-size: var(--texto-xs, 0.75rem);
   font-weight: 700;
-
   letter-spacing: 0.12em;
-
   text-transform: uppercase;
 }
-
-/* =========================================================
-   TÍTULO
-   ========================================================= */
 
 .agenda__titulo {
   display: flex;
   flex-direction: column;
-
   width: 100%;
   max-width: 9ch;
-
   margin: 0;
-
-  color: #ffffff;
-
+  color: #fff;
   font-size: clamp(3.2rem, 5.3vw, 6.3rem);
   font-weight: 700;
-
   line-height: 0.86;
-
   letter-spacing: -0.055em;
-
   text-transform: uppercase;
 }
 
@@ -105,288 +66,248 @@
   display: block;
 }
 
-/* =========================================================
-   DESCRIÇÃO
-   ========================================================= */
-
-.agenda__descricao {
-  max-width: 30ch;
-
-  margin: var(--espaco-3) 0 0;
-
-  color: #a9a9a9;
-
-  font-size: clamp(0.9rem, 1vw, 1.05rem);
-
-  font-weight: 400;
-
-  line-height: 1.7;
-}
-
-/* =========================================================
-   LISTA
-   ========================================================= */
+/* LISTA */
 
 .agenda__lista {
   min-width: 0;
-
   border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-/* =========================================================
-   LINHA DO EVENTO
-   ========================================================= */
+/* EVENTO */
 
 .agenda__evento {
   display: grid;
-
   grid-template-columns:
-    70px
+    minmax(70px, auto)
     minmax(0, 1fr)
     24px;
-
-  gap: clamp(1rem, 2.5vw, 2.5rem);
-
   align-items: center;
-
+  gap: clamp(1rem, 2.5vw, 2.5rem);
   min-height: 132px;
-
   padding-block: 1.8rem;
-
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.25);
-
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
   color: inherit;
-
   text-decoration: none;
-
   transition:
     background-color 250ms ease,
-    padding 250ms ease;
+    padding-inline 250ms ease;
 }
 
-/* =========================================================
-   EVENTO COM LINK
-   ========================================================= */
+.agenda__evento--sem-link {
+  grid-template-columns:
+    minmax(70px, auto)
+    minmax(0, 1fr);
+  cursor: default;
+}
 
 .agenda__evento--link {
   cursor: pointer;
 }
 
-.agenda__evento--link:hover {
-  background-color: rgba(255, 255, 255, 0.045);
-
-  padding-inline: 0.75rem;
-}
-
 .agenda__evento--link:focus-visible {
   outline: 2px solid var(--cor-azul);
-
   outline-offset: -2px;
 }
 
-/* =========================================================
-   EVENTO SEM LINK
-   ========================================================= */
-
-.agenda__evento--sem-link {
-  cursor: default;
-}
-
-/* =========================================================
-   DATA
-   ========================================================= */
+/* DATA */
 
 .agenda__data {
   display: flex;
   flex-direction: column;
-
   align-items: flex-start;
-
   justify-content: center;
-
   min-width: 0;
-
   line-height: 1;
 }
 
-/* =========================================================
-   DIA
-   ========================================================= */
-
 .agenda__dia {
-  color: #ffffff;
-
+  color: #fff;
   font-size: clamp(2.3rem, 3.2vw, 3.6rem);
   font-weight: 600;
-
   line-height: 0.95;
-
   letter-spacing: -0.06em;
-
   font-variant-numeric: tabular-nums;
 }
 
-/* =========================================================
-   MÊS
-   ========================================================= */
-
 .agenda__mes {
   margin-top: 0.45rem;
-
-  color: #a9a9a9;
-
+  color: #b7b7b7;
   font-size: 0.72rem;
   font-weight: 700;
-
   letter-spacing: 0.14em;
-
   text-transform: uppercase;
 }
 
-/* =========================================================
-   INFORMAÇÕES
-   ========================================================= */
+.agenda__periodo {
+  display: block;
+  margin-top: 0.55rem;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+/* INFORMAÇÕES */
 
 .agenda__informacoes {
   display: flex;
   flex-direction: column;
-
   align-items: flex-start;
-
   gap: 0.65rem;
-
   min-width: 0;
 }
 
-/* =========================================================
-   NOME DO EVENTO
-   ========================================================= */
-
 .agenda__nome {
   margin: 0;
-
-  color: #ffffff;
-
+  color: #fff;
   font-size: clamp(1.2rem, 1.8vw, 1.9rem);
   font-weight: 600;
-
   line-height: 1.12;
-
   letter-spacing: -0.035em;
-
   text-transform: uppercase;
-
-  overflow-wrap: break-word;
-
+  overflow-wrap: anywhere;
   transition: color 220ms ease;
 }
 
-/* =========================================================
-   LOCALIZAÇÃO
-   ========================================================= */
-
 .agenda__local {
   margin: 0;
-
-  color: #a9a9a9;
-
+  color: #b7b7b7;
   font-size: 0.8rem;
   font-weight: 500;
-
   line-height: 1.5;
-
   letter-spacing: 0.08em;
-
   text-transform: uppercase;
+  overflow-wrap: break-word;
 }
 
-/* =========================================================
-   SETA DIAGONAL
-   ========================================================= */
+/* CHAMADA E SETA */
+
+.agenda__chamada {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid currentColor;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition:
+    color 220ms ease,
+    gap 220ms ease;
+}
+
+.agenda__chamada span {
+  font-size: 1rem;
+}
 
 .agenda__seta {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   width: 24px;
   height: 24px;
-
-  color: #ffffff;
-
+  color: #fff;
   font-size: 1.6rem;
-  font-weight: 400;
-
   line-height: 1;
-
   transition:
     color 220ms ease,
     transform 220ms ease;
 }
 
-/* =========================================================
-   INTERAÇÃO
-   ========================================================= */
+/* INTERAÇÕES PARA MOUSE */
 
-.agenda__evento--link:hover .agenda__nome {
-  color: #dce8ff;
+@media (hover: hover) and (pointer: fine) {
+  .agenda__evento--link:hover {
+    background-color: rgba(255, 255, 255, 0.045);
+    padding-inline: 0.75rem;
+  }
+
+  .agenda__evento--link:hover .agenda__nome {
+    color: #dce8ff;
+  }
+
+  .agenda__evento--link:hover .agenda__seta {
+    color: #dce8ff;
+    transform: translate(3px, -3px);
+  }
+
+  .agenda__evento--link:hover .agenda__chamada {
+    color: #a9c9ff;
+    gap: 0.8rem;
+  }
 }
 
-.agenda__evento--link:hover .agenda__seta {
-  color: #dce8ff;
-
-  transform: translate(3px, -3px);
-}
-
-/* =========================================================
-   ESTADOS
-   Carregando / Erro / Sem eventos
-   ========================================================= */
+/* ESTADOS: CARREGANDO / ERRO / VAZIO */
 
 .agenda__vazia {
   display: flex;
-
-  align-items: center;
-
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.5rem;
   min-width: 0;
   min-height: 180px;
-
   padding-block: 2rem;
-
-  border-top:
-    1px solid rgba(255, 255, 255, 0.25);
-
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .agenda__vazia p {
   margin: 0;
-
   color: #b8b8b8;
-
   font-size: clamp(1.15rem, 2vw, 1.8rem);
   font-weight: 600;
-
   line-height: 1.3;
-
   letter-spacing: -0.025em;
-
   text-transform: uppercase;
 }
 
-/* =========================================================
-   DESKTOP MENOR
-   ========================================================= */
+.agenda__tentar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0.6rem 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    gap 180ms ease;
+}
+
+.agenda__tentar:focus-visible {
+  outline: 2px solid var(--cor-azul);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .agenda__tentar:hover {
+    color: #a9c9ff;
+    gap: 1.4rem;
+  }
+}
+
+/* DESKTOP MENOR */
 
 @media (max-width: 1100px) {
   .agenda__conteudo {
     grid-template-columns:
       minmax(240px, 0.8fr)
       minmax(0, 1.2fr);
-
     gap: var(--espaco-5);
   }
 
@@ -396,11 +317,16 @@
 
   .agenda__evento {
     grid-template-columns:
-      60px
+      minmax(60px, auto)
       minmax(0, 1fr)
       20px;
-
     gap: 1.25rem;
+  }
+
+  .agenda__evento--sem-link {
+    grid-template-columns:
+      minmax(60px, auto)
+      minmax(0, 1fr);
   }
 
   .agenda__nome {
@@ -408,16 +334,13 @@
   }
 }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* TABLET */
 
 @media (max-width: 900px) {
   .agenda__conteudo {
     grid-template-columns:
       minmax(220px, 0.78fr)
       minmax(0, 1.22fr);
-
     gap: var(--espaco-4);
   }
 
@@ -427,28 +350,25 @@
 
   .agenda__evento {
     grid-template-columns:
-      55px
+      minmax(55px, auto)
       minmax(0, 1fr)
       20px;
-
     min-height: 115px;
-
     gap: 1rem;
+  }
+
+  .agenda__evento--sem-link {
+    grid-template-columns:
+      minmax(55px, auto)
+      minmax(0, 1fr);
   }
 
   .agenda__dia {
     font-size: 2.4rem;
   }
-
-  .agenda__descricao {
-    font-size: 0.9rem;
-  }
 }
 
-/* =========================================================
-   MOBILE
-   Cabeçalho acima da lista
-   ========================================================= */
+/* MOBILE — TÍTULO ACIMA DA LISTA */
 
 @media (max-width: 760px) {
   .agenda {
@@ -456,8 +376,7 @@
   }
 
   .agenda__conteudo {
-    grid-template-columns: 1fr;
-
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espaco-5);
   }
 
@@ -467,23 +386,22 @@
 
   .agenda__titulo {
     max-width: 10ch;
-
     font-size: clamp(3rem, 10vw, 5rem);
-
     line-height: 0.88;
-  }
-
-  .agenda__descricao {
-    max-width: 38ch;
   }
 
   .agenda__evento {
     grid-template-columns:
-      65px
+      minmax(65px, auto)
       minmax(0, 1fr)
       20px;
-
     min-height: 110px;
+  }
+
+  .agenda__evento--sem-link {
+    grid-template-columns:
+      minmax(65px, auto)
+      minmax(0, 1fr);
   }
 
   .agenda__dia {
@@ -491,9 +409,7 @@
   }
 }
 
-/* =========================================================
-   CELULAR
-   ========================================================= */
+/* CELULAR */
 
 @media (max-width: 520px) {
   .agenda {
@@ -506,15 +422,18 @@
 
   .agenda__evento {
     grid-template-columns:
-      48px
+      minmax(48px, auto)
       minmax(0, 1fr)
       18px;
-
     gap: 0.75rem;
-
     min-height: 100px;
-
     padding-block: 1.4rem;
+  }
+
+  .agenda__evento--sem-link {
+    grid-template-columns:
+      minmax(48px, auto)
+      minmax(0, 1fr);
   }
 
   .agenda__dia {
@@ -525,33 +444,29 @@
     font-size: 0.65rem;
   }
 
+  .agenda__periodo {
+    font-size: 0.6rem;
+    letter-spacing: 0;
+  }
+
   .agenda__nome {
     font-size: 1.05rem;
-
     line-height: 1.18;
   }
 
   .agenda__local {
     font-size: 0.72rem;
-
     letter-spacing: 0.04em;
   }
 
   .agenda__seta {
     width: 18px;
     height: 18px;
-
     font-size: 1.3rem;
-  }
-
-  .agenda__evento--link:hover {
-    padding-inline: 0.35rem;
   }
 }
 
-/* =========================================================
-   CELULARES PEQUENOS
-   ========================================================= */
+/* CELULARES ESTREITOS */
 
 @media (max-width: 380px) {
   .agenda__titulo {
@@ -560,11 +475,16 @@
 
   .agenda__evento {
     grid-template-columns:
-      42px
+      minmax(42px, auto)
       minmax(0, 1fr)
       16px;
-
     gap: 0.6rem;
+  }
+
+  .agenda__evento--sem-link {
+    grid-template-columns:
+      minmax(42px, auto)
+      minmax(0, 1fr);
   }
 
   .agenda__dia {
@@ -576,120 +496,18 @@
   }
 }
 
-/* =========================================================
-   MOVIMENTO REDUZIDO
-   ========================================================= */
+/* MOVIMENTO REDUZIDO */
 
 @media (prefers-reduced-motion: reduce) {
   .agenda__evento,
   .agenda__nome,
-  .agenda__seta {
+  .agenda__seta,
+  .agenda__chamada,
+  .agenda__tentar {
     transition: none;
   }
 
   .agenda__evento--link:hover .agenda__seta {
     transform: none;
-  }
-}
-
-/* Chamada visual para eventos clicáveis */
-
-.agenda__chamada {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  width: fit-content;
-
-  color: #ffffff;
-
-  font-size: 0.72rem;
-  font-weight: 700;
-
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 0.3rem;
-
-  transition:
-    color 220ms ease,
-    gap 220ms ease;
-}
-
-.agenda__chamada span {
-  font-size: 1rem;
-}
-
-.agenda__evento--link:hover .agenda__chamada {
-  color: #a9c9ff;
-  gap: 0.8rem;
-}
-
-.agenda__evento--link {
-  cursor: pointer;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .agenda__chamada {
-    transition: none;
-  }
-}
-
-/* =========================================================
-   EVENTOS COM MAIS DE UM DIA
-   ========================================================= */
-
-.agenda__periodo {
-  display: block;
-  margin-top: 0.55rem;
-
-  color: #ffffff;
-
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.035em;
-  line-height: 1.3;
-  text-transform: uppercase;
-}
-
-/* =========================================================
-   CHAMADA VISUAL PARA EVENTOS COM LINK
-   ========================================================= */
-
-.agenda__chamada {
-  display: inline-flex;
-  align-items: center;
-
-  gap: 0.5rem;
-  width: fit-content;
-
-  padding-bottom: 0.3rem;
-  border-bottom: 1px solid currentColor;
-
-  color: #ffffff;
-
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-
-  transition:
-    color 220ms ease,
-    gap 220ms ease;
-}
-
-.agenda__chamada span {
-  font-size: 1rem;
-}
-
-.agenda__evento--link:hover .agenda__chamada {
-  color: #a9c9ff;
-  gap: 0.8rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .agenda__chamada {
-    transition: none;
   }
 }
