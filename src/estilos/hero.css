@@ -509,3 +509,50 @@
     transform: none;
   }
 }
+
+/* =========================================================
+   ACESSIBILIDADE — CONTROLE DO CARROSSEL DO HERO
+   ========================================================= */
+
+.hero__controle {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+
+  width: 44px;
+  height: 44px;
+  padding: 0;
+
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 50%;
+
+  background: rgba(242, 241, 237, 0.88);
+  color: #0a0a0a;
+
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.hero__controle svg {
+  display: block;
+}
+
+.hero__controle:focus-visible {
+  outline: 3px solid #0a0a0a;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero__controle:hover {
+    background: #ffffff;
+    border-color: #0a0a0a;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__controle {
+    transition: none;
+  }
+}

@@ -109,8 +109,37 @@ function IconeRede({ tipo }) {
   return null;
 }
 
+function IconeControle({ pausado }) {
+  return pausado ? (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m8 5 11 7-11 7V5Z" />
+    </svg>
+  ) : (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="6" y="4" width="4" height="16" rx="1" />
+      <rect x="14" y="4" width="4" height="16" rx="1" />
+    </svg>
+  );
+}
+
 function Hero() {
   const [fotoAtual, setFotoAtual] = useState(0);
+  const [pausado, setPausado] = useState(false);
 
   const [movimentoReduzido, setMovimentoReduzido] = useState(
     () =>
@@ -124,13 +153,12 @@ function Hero() {
       document.visibilityState === 'visible'
   );
 
-  const [imagensProntas, setImagensProntas] = useState(() => [0]);
+  const [, setImagensProntas] = useState(() => [0]);
 
   const imagensProntasRef = useRef(new Set([0]));
   const imagensComFalhaRef = useRef(new Set());
   const carregamentosRef = useRef(new Map());
 
-  // Observa alterações na preferência de movimento.
   useEffect(() => {
     const consulta = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -145,14 +173,18 @@ function Hero() {
     consulta.addEventListener('change', atualizarPreferencia);
 
     return () => {
-      consulta.removeEventListener('change', atualizarPreferencia);
+      consulta.removeEventListener(
+        'change',
+        atualizarPreferencia
+      );
     };
   }, []);
 
-  // Suspende o carrossel quando a aba não está visível.
   useEffect(() => {
     function atualizarVisibilidade() {
-      setAbaVisivel(document.visibilityState === 'visible');
+      setAbaVisivel(
+        document.visibilityState === 'visible'
+      );
     }
 
     document.addEventListener(
@@ -170,7 +202,6 @@ function Hero() {
     };
   }, []);
 
-  // Marca uma imagem como pronta somente após seu carregamento.
   function registrarImagemPronta(indice) {
     if (imagensProntasRef.current.has(indice)) {
       return;
@@ -183,7 +214,6 @@ function Hero() {
     );
   }
 
-  // Pré-carrega uma fotografia e reutiliza carregamentos existentes.
   function prepararImagem(indice) {
     if (
       imagensProntasRef.current.has(indice) ||
@@ -210,42 +240,70 @@ function Hero() {
     imagem.src = fotosHero[indice].src;
   }
 
-  // Prepara a próxima imagem assim que a atual é exibida.
+  // Não prepara novas fotos enquanto o carrossel
+  // estiver pausado ou a aba estiver oculta.
   useEffect(() => {
-    if (movimentoReduzido || !abaVisivel) {
+    if (
+      movimentoReduzido ||
+      !abaVisivel ||
+      pausado
+    ) {
       return;
     }
 
-    for (let passo = 1; passo < fotosHero.length; passo += 1) {
-      const indice = (fotoAtual + passo) % fotosHero.length;
+    for (
+      let passo = 1;
+      passo < fotosHero.length;
+      passo += 1
+    ) {
+      const indice =
+        (fotoAtual + passo) % fotosHero.length;
 
       if (!imagensComFalhaRef.current.has(indice)) {
         prepararImagem(indice);
         break;
       }
     }
-  }, [fotoAtual, movimentoReduzido, abaVisivel]);
+  }, [
+    fotoAtual,
+    movimentoReduzido,
+    abaVisivel,
+    pausado,
+  ]);
 
-  // Avança apenas para uma fotografia já carregada.
+  // A rotação fica suspensa enquanto a pessoa
+  // escolher manter a fotografia atual.
   useEffect(() => {
-    if (movimentoReduzido || !abaVisivel) {
+    if (
+      movimentoReduzido ||
+      !abaVisivel ||
+      pausado
+    ) {
       return undefined;
     }
 
     const intervalo = window.setInterval(() => {
       setFotoAtual((atual) => {
-        for (let passo = 1; passo < fotosHero.length; passo += 1) {
-          const proxima = (atual + passo) % fotosHero.length;
+        for (
+          let passo = 1;
+          passo < fotosHero.length;
+          passo += 1
+        ) {
+          const proxima =
+            (atual + passo) % fotosHero.length;
 
-          if (imagensComFalhaRef.current.has(proxima)) {
+          if (
+            imagensComFalhaRef.current.has(proxima)
+          ) {
             continue;
           }
 
-          if (imagensProntasRef.current.has(proxima)) {
+          if (
+            imagensProntasRef.current.has(proxima)
+          ) {
             return proxima;
           }
 
-          // Mantém a fotografia atual enquanto a próxima carrega.
           prepararImagem(proxima);
           return atual;
         }
@@ -257,9 +315,12 @@ function Hero() {
     return () => {
       window.clearInterval(intervalo);
     };
-  }, [movimentoReduzido, abaVisivel]);
+  }, [
+    movimentoReduzido,
+    abaVisivel,
+    pausado,
+  ]);
 
-  // Limpa carregamentos pendentes ao desmontar.
   useEffect(() => {
     const carregamentos = carregamentosRef.current;
 
@@ -279,7 +340,10 @@ function Hero() {
       id="inicio"
       aria-labelledby="hero-titulo"
     >
-      <div className="hero__carrossel" aria-hidden="true">
+      <div
+        className="hero__carrossel"
+        aria-hidden="true"
+      >
         {fotosHero.map((foto, indice) => (
           <img
             key={foto.src}
@@ -289,12 +353,20 @@ function Hero() {
                 : ''
             }`}
             src={foto.src}
-            style={{ objectPosition: foto.posicao }}
+            style={{
+              objectPosition: foto.posicao,
+            }}
             alt=""
-            loading={indice === 0 ? 'eager' : 'lazy'}
-            fetchPriority={indice === 0 ? 'high' : 'auto'}
+            loading={
+              indice === 0 ? 'eager' : 'lazy'
+            }
+            fetchPriority={
+              indice === 0 ? 'high' : 'auto'
+            }
             decoding="async"
-            onLoad={() => registrarImagemPronta(indice)}
+            onLoad={() =>
+              registrarImagemPronta(indice)
+            }
             onError={() => {
               imagensComFalhaRef.current.add(indice);
             }}
@@ -302,17 +374,45 @@ function Hero() {
         ))}
       </div>
 
-      <div className="hero__camada" aria-hidden="true" />
+      <div
+        className="hero__camada"
+        aria-hidden="true"
+      />
 
       <div className="hero__conteudo container">
         <div className="hero__topo">
           <p className="hero__identificacao">
             Colo de Deus // Missão SP
           </p>
+
+          {!movimentoReduzido && (
+            <button
+              type="button"
+              className="hero__controle"
+              onClick={() =>
+                setPausado((atual) => !atual)
+              }
+              aria-label={
+                pausado
+                  ? 'Retomar fotografias do início'
+                  : 'Pausar fotografias do início'
+              }
+              title={
+                pausado
+                  ? 'Retomar fotografias'
+                  : 'Pausar fotografias'
+              }
+            >
+              <IconeControle pausado={pausado} />
+            </button>
+          )}
         </div>
 
         <div className="hero__principal">
-          <h1 className="hero__titulo" id="hero-titulo">
+          <h1
+            className="hero__titulo"
+            id="hero-titulo"
+          >
             <span>Gente</span>
             <span>imperfeita</span>
             <span>cuidando de</span>

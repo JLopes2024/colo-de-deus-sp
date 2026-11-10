@@ -5,15 +5,12 @@ import '../estilos/quem-somos.css';
 const IMAGENS = [
   {
     src: '/imagens/gerais/acao-evangelizacao.webp',
-    alt: 'Comunidade Colo de Deus em ação de evangelização',
   },
   {
     src: '/imagens/gerais/acao-evangelizacao1.webp',
-    alt: 'Missionários da Colo de Deus durante ação de evangelização',
   },
   {
     src: '/imagens/gerais/acao-evangelizacao2.webp',
-    alt: 'Encontro durante ação de evangelização da Colo de Deus',
   },
 ];
 
@@ -22,7 +19,37 @@ const TEMPO_TROCA = 4500;
 function prefereMovimentoReduzido() {
   return (
     typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+  );
+}
+
+function IconeControle({ pausado }) {
+  return pausado ? (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m8 5 11 7-11 7V5Z" />
+    </svg>
+  ) : (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="6" y="4" width="4" height="16" rx="1" />
+      <rect x="14" y="4" width="4" height="16" rx="1" />
+    </svg>
   );
 }
 
@@ -35,16 +62,20 @@ function QuemSomos() {
   const [imagemAtual, setImagemAtual] = useState(0);
   const [imagemPronta, setImagemPronta] = useState(false);
   const [secaoVisivel, setSecaoVisivel] = useState(false);
+  const [pausado, setPausado] = useState(false);
+
   const [abaVisivel, setAbaVisivel] = useState(
     () =>
       typeof document === 'undefined' ||
       document.visibilityState === 'visible'
   );
-  const [movimentoReduzido, setMovimentoReduzido] = useState(
-    prefereMovimentoReduzido
-  );
 
-  // Observa a visibilidade da seção.
+  const [
+    movimentoReduzido,
+    setMovimentoReduzido,
+  ] = useState(prefereMovimentoReduzido);
+
+  // Observa quando a seção entra ou sai da tela.
   useEffect(() => {
     const secao = secaoRef.current;
 
@@ -66,13 +97,17 @@ function QuemSomos() {
 
     observador.observe(secao);
 
-    return () => observador.disconnect();
+    return () => {
+      observador.disconnect();
+    };
   }, []);
 
-  // Pausa quando a aba está oculta.
+  // Pausa automaticamente quando a aba está oculta.
   useEffect(() => {
     function atualizarVisibilidade() {
-      setAbaVisivel(document.visibilityState === 'visible');
+      setAbaVisivel(
+        document.visibilityState === 'visible'
+      );
     }
 
     document.addEventListener(
@@ -88,7 +123,6 @@ function QuemSomos() {
     };
   }, []);
 
-  // Acompanha a preferência de movimento do sistema.
   useEffect(() => {
     const consulta = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -98,7 +132,12 @@ function QuemSomos() {
       setMovimentoReduzido(evento.matches);
     }
 
-    consulta.addEventListener('change', atualizarPreferencia);
+    setMovimentoReduzido(consulta.matches);
+
+    consulta.addEventListener(
+      'change',
+      atualizarPreferencia
+    );
 
     return () => {
       consulta.removeEventListener(
@@ -108,9 +147,10 @@ function QuemSomos() {
     };
   }, []);
 
-  // Registra o carregamento de uma imagem.
   function registrarPronta(indice) {
-    if (prontasRef.current.has(indice)) return;
+    if (prontasRef.current.has(indice)) {
+      return;
+    }
 
     prontasRef.current.add(indice);
 
@@ -119,7 +159,6 @@ function QuemSomos() {
     }
   }
 
-  // Pré-carrega uma imagem sem duplicar solicitações.
   function prepararImagem(indice) {
     if (
       prontasRef.current.has(indice) ||
@@ -146,7 +185,7 @@ function QuemSomos() {
     imagem.src = IMAGENS[indice].src;
   }
 
-  // Carrega a primeira foto e prepara a seguinte.
+  // Prepara a primeira fotografia.
   useEffect(() => {
     prepararImagem(0);
 
@@ -160,31 +199,46 @@ function QuemSomos() {
     };
   }, []);
 
+  // Carrega a próxima foto somente quando a rotação
+  // estiver ativa e a seção estiver visível.
   useEffect(() => {
     if (
       !secaoVisivel ||
       !abaVisivel ||
-      movimentoReduzido
+      movimentoReduzido ||
+      pausado
     ) {
       return;
     }
 
-    for (let passo = 1; passo < IMAGENS.length; passo += 1) {
-      const indice = (imagemAtual + passo) % IMAGENS.length;
+    for (
+      let passo = 1;
+      passo < IMAGENS.length;
+      passo += 1
+    ) {
+      const indice =
+        (imagemAtual + passo) % IMAGENS.length;
 
       if (!falhasRef.current.has(indice)) {
         prepararImagem(indice);
         break;
       }
     }
-  }, [imagemAtual, secaoVisivel, abaVisivel, movimentoReduzido]);
+  }, [
+    imagemAtual,
+    secaoVisivel,
+    abaVisivel,
+    movimentoReduzido,
+    pausado,
+  ]);
 
-  // Rotação automática somente quando a seção é vista.
+  // Mantém os 4,5 segundos originais de rotação.
   useEffect(() => {
     if (
       !secaoVisivel ||
       !abaVisivel ||
       movimentoReduzido ||
+      pausado ||
       !imagemPronta ||
       IMAGENS.length <= 1
     ) {
@@ -193,8 +247,13 @@ function QuemSomos() {
 
     const intervalo = window.setInterval(() => {
       setImagemAtual((atual) => {
-        for (let passo = 1; passo < IMAGENS.length; passo += 1) {
-          const proxima = (atual + passo) % IMAGENS.length;
+        for (
+          let passo = 1;
+          passo < IMAGENS.length;
+          passo += 1
+        ) {
+          const proxima =
+            (atual + passo) % IMAGENS.length;
 
           if (falhasRef.current.has(proxima)) {
             continue;
@@ -212,11 +271,14 @@ function QuemSomos() {
       });
     }, TEMPO_TROCA);
 
-    return () => window.clearInterval(intervalo);
+    return () => {
+      window.clearInterval(intervalo);
+    };
   }, [
     secaoVisivel,
     abaVisivel,
     movimentoReduzido,
+    pausado,
     imagemPronta,
   ]);
 
@@ -227,8 +289,6 @@ function QuemSomos() {
       id="quem-somos"
       aria-labelledby="quem-somos-titulo"
     >
-      {/* FAIXA FOTOGRÁFICA */}
-
       <div className="quem-somos__faixa">
         <div
           className="quem-somos__imagem"
@@ -244,9 +304,13 @@ function QuemSomos() {
                   ? ' quem-somos__imagem-atual--ativa'
                   : ''
               }`}
-              loading={indice === 0 ? 'eager' : 'lazy'}
+              loading={
+                indice === 0 ? 'eager' : 'lazy'
+              }
               decoding="async"
-              onLoad={() => registrarPronta(indice)}
+              onLoad={() =>
+                registrarPronta(indice)
+              }
               onError={() => {
                 falhasRef.current.add(indice);
               }}
@@ -259,10 +323,32 @@ function QuemSomos() {
           aria-hidden="true"
         />
 
+        {!movimentoReduzido && (
+          <button
+            type="button"
+            className="quem-somos__controle"
+            onClick={() =>
+              setPausado((atual) => !atual)
+            }
+            aria-label={
+              pausado
+                ? 'Retomar fotografias de Quem Somos'
+                : 'Pausar fotografias de Quem Somos'
+            }
+            title={
+              pausado
+                ? 'Retomar fotografias'
+                : 'Pausar fotografias'
+            }
+          >
+            <IconeControle pausado={pausado} />
+          </button>
+        )}
+
         <div className="quem-somos__conteudo">
           <div className="quem-somos__cabecalho">
             <p className="quem-somos__indice">
-            // Quem somos?
+              // Quem somos?
             </p>
 
             <h2
@@ -278,17 +364,15 @@ function QuemSomos() {
         </div>
       </div>
 
-      {/* TEXTO INTEGRADO AO FUNDO PRETO */}
-
       <div className="quem-somos__rodape">
         <div className="quem-somos__texto">
           <p>
-            Somos uma Comunidade Católica, nascida como
-            parte da Primavera da Igreja, com essência
-            Mariana. Nosso carisma nos move a trazer de
-            volta ao seio da igreja aqueles que se
-            afastaram da fé, gestando uma humanidade
-            cheia de Pentecostes.
+            Somos uma Comunidade Católica, nascida
+            como parte da Primavera da Igreja, com
+            essência Mariana. Nosso carisma nos move
+            a trazer de volta ao seio da igreja aqueles
+            que se afastaram da fé, gestando uma
+            humanidade cheia de Pentecostes.
           </p>
         </div>
       </div>

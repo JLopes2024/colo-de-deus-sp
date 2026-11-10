@@ -354,3 +354,63 @@
     object-position: center;
   }
 }
+
+/* =========================================================
+   ACESSIBILIDADE — CONTROLE DO CARROSSEL QUEM SOMOS
+   ========================================================= */
+
+.quem-somos__controle {
+  position: absolute;
+  z-index: 4;
+
+  top: clamp(1rem, 3vw, 2rem);
+  right: clamp(1rem, 3vw, 2rem);
+
+  display: inline-grid;
+  place-items: center;
+
+  width: 44px;
+  height: 44px;
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+
+  background: rgba(10, 10, 10, 0.78);
+  color: #ffffff;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.quem-somos__controle svg {
+  display: block;
+}
+
+.quem-somos__controle:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quem-somos__controle:hover {
+    background: #0a0a0a;
+    border-color: #ffffff;
+  }
+}
+
+@media (max-width: 760px) {
+  .quem-somos__controle {
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quem-somos__controle {
+    transition: none;
+  }
+}

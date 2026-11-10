@@ -286,7 +286,7 @@ function EventoAgenda({
       ? 'Compartilhado'
       : manual
         ? 'Copiar link'
-        : 'Compartilhar ';
+        : 'Compartilhar';
 
   const detalhes = (
     <>

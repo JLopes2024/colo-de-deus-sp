@@ -36,7 +36,6 @@ const REGISTROS = [
   {
     id: 'missao7',
     imagem: '/imagens/missao/missao7.webp',
-    categoria: 'Oração',
     alt: 'Crianças reunidas em um momento de oração.',
   },
   {
@@ -44,29 +43,26 @@ const REGISTROS = [
     imagem: '/imagens/missao/missao8.webp',
     alt: 'Atividade de acolhimento com uma criança.',
   },
-  
-{
-  id: 'missao9',
-  imagem: '/imagens/missao/missao9.webp',
-  alt: 'Duas mulheres em um abraço durante uma ação missionária.',
-},
-
-{
-  id: 'missao10',
-  imagem: '/imagens/missao/missao10.webp',
-  alt: 'Comunidade reunida em uma casa.',
-},
-{
-  id: 'missao11',
-  imagem: '/imagens/missao/missao11.webp',
-  alt: 'Grupo da comunidade reunido em um encontro.',
-},
-{
-  id: 'missao12',
-  imagem: '/imagens/missao/missao12.webp',
-  alt: 'Famílias e participantes reunidos em uma casa.',
-},
-
+  {
+    id: 'missao9',
+    imagem: '/imagens/missao/missao9.webp',
+    alt: 'Duas mulheres em um abraço durante uma ação missionária.',
+  },
+  {
+    id: 'missao10',
+    imagem: '/imagens/missao/missao10.webp',
+    alt: 'Comunidade reunida em uma casa.',
+  },
+  {
+    id: 'missao11',
+    imagem: '/imagens/missao/missao11.webp',
+    alt: 'Grupo da comunidade reunido em um encontro.',
+  },
+  {
+    id: 'missao12',
+    imagem: '/imagens/missao/missao12.webp',
+    alt: 'Famílias e participantes reunidos em uma casa.',
+  },
 ];
 
 function GaleriaMissionaria() {
@@ -79,7 +75,10 @@ function GaleriaMissionaria() {
   function obterDistanciaEntreFotos() {
     const trilho = trilhoRef.current;
 
-    if (!trilho || trilho.children.length < 2) {
+    if (
+      !trilho ||
+      trilho.children.length < 2
+    ) {
       return 0;
     }
 
@@ -109,12 +108,16 @@ function GaleriaMissionaria() {
   }
 
   function atualizarNaRolagem() {
-    if (frameRef.current !== null) return;
+    if (frameRef.current !== null) {
+      return;
+    }
 
-    frameRef.current = window.requestAnimationFrame(() => {
-      frameRef.current = null;
-      sincronizarNavegacao();
-    });
+    frameRef.current = window.requestAnimationFrame(
+      () => {
+        frameRef.current = null;
+        sincronizarNavegacao();
+      }
+    );
   }
 
   function navegar(direcao) {
@@ -124,7 +127,9 @@ function GaleriaMissionaria() {
 
     const distancia = obterDistanciaEntreFotos();
 
-    if (distancia <= 0) return;
+    if (distancia <= 0) {
+      return;
+    }
 
     const limite = Math.max(
       0,
@@ -145,14 +150,18 @@ function GaleriaMissionaria() {
 
     trilho.scrollTo({
       left: destino,
-      behavior: reduzirMovimento ? 'auto' : 'smooth',
+      behavior: reduzirMovimento
+        ? 'auto'
+        : 'smooth',
     });
   }
 
   useEffect(() => {
     const trilho = trilhoRef.current;
 
-    if (!trilho) return undefined;
+    if (!trilho) {
+      return undefined;
+    }
 
     const atualizar = () => atualizarNaRolagem();
 
@@ -167,16 +176,26 @@ function GaleriaMissionaria() {
       observador?.observe(trilho.children[0]);
     }
 
-    window.addEventListener('resize', atualizar);
+    window.addEventListener(
+      'resize',
+      atualizar
+    );
 
     atualizar();
 
     return () => {
       observador?.disconnect();
-      window.removeEventListener('resize', atualizar);
+
+      window.removeEventListener(
+        'resize',
+        atualizar
+      );
 
       if (frameRef.current !== null) {
-        window.cancelAnimationFrame(frameRef.current);
+        window.cancelAnimationFrame(
+          frameRef.current
+        );
+
         frameRef.current = null;
       }
     };
@@ -188,8 +207,6 @@ function GaleriaMissionaria() {
       aria-labelledby="galeria-missionaria-titulo"
     >
       <div className="galeria-missionaria__conteudo container">
-        {/* TÍTULO */}
-
         <div className="galeria-missionaria__cabecalho">
           <p className="galeria-missionaria__indice">
             Registros missionários // Missão SP
@@ -210,8 +227,6 @@ function GaleriaMissionaria() {
             </span>
           </h2>
         </div>
-
-        {/* SETAS DE NAVEGAÇÃO */}
 
         <div className="galeria-missionaria__barra">
           <div
@@ -241,8 +256,6 @@ function GaleriaMissionaria() {
           </div>
         </div>
 
-        {/* FOTOGRAFIAS + CATEGORIAS */}
-
         <div
           ref={trilhoRef}
           className="galeria-missionaria__trilho"
@@ -265,17 +278,9 @@ function GaleriaMissionaria() {
                   decoding="async"
                 />
               </div>
-
-              <figcaption className="galeria-missionaria__legenda">
-                <span className="galeria-missionaria__categoria">
-                  {registro.categoria}
-                </span>
-              </figcaption>
             </figure>
           ))}
         </div>
-
-        {/* CHAMADA PARA PARTICIPAÇÃO */}
 
         <div className="galeria-missionaria__rodape">
           <a href="#celulas">
