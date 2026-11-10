@@ -537,7 +537,7 @@ function Contato() {
 
         <div className="contato__foto">
           <img
-            src="/imagens/contato-servico.jpg"
+            src="/imagens/contato-servico.webp"
             alt="Pessoa servindo em uma ação da Colo de Deus"
             loading="lazy"
             decoding="async"
@@ -577,7 +577,7 @@ function Contato() {
             <header className="chat__cabecalho">
               <div className="chat__avatar">
                 <img
-                  src="/imagens/contato-atendimento.jpg"
+                  src="/imagens/contato-atendimento.webp"
                   alt=""
                   decoding="async"
                 />

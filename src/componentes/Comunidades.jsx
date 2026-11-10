@@ -96,7 +96,7 @@ function Comunidades() {
             data-numero="03"
           >
             <img
-              src="/imagens/comunidades/logo-celulas.jpg"
+            src="/imagens/comunidades/logo-celulas.jpg"
               alt="Imagem de apresentação das Células da Colo de Deus"
               loading="lazy"
               decoding="async"
@@ -184,7 +184,7 @@ function Comunidades() {
             data-numero="04"
           >
             <img
-              src="/imagens/comunidades/logo-cenaculos.jpg"
+              src="/imagens/comunidades/logo-cenaculos.webp"
               alt="Imagem de apresentação dos Cenáculos da Colo de Deus"
               loading="lazy"
               decoding="async"

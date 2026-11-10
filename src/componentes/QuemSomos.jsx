@@ -4,15 +4,15 @@ import '../estilos/quem-somos.css';
 
 const IMAGENS = [
   {
-    src: '/imagens/gerais/acao-evangelizacao.JPG',
+    src: '/imagens/gerais/acao-evangelizacao.webp',
     alt: 'Comunidade Colo de Deus em ação de evangelização',
   },
   {
-    src: '/imagens/gerais/acao-evangelizacao1.JPG',
+    src: '/imagens/gerais/acao-evangelizacao1.webp',
     alt: 'Missionários da Colo de Deus durante ação de evangelização',
   },
   {
-    src: '/imagens/gerais/acao-evangelizacao2.JPG',
+    src: '/imagens/gerais/acao-evangelizacao2.webp',
     alt: 'Encontro durante ação de evangelização da Colo de Deus',
   },
 ];
