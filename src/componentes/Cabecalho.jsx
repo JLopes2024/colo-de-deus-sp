@@ -245,7 +245,9 @@ function Cabecalho() {
           <img
             src="/imagens/logo-branca.png"
             alt="Colo de Deus"
-          />
+              width={2650}
+              height={500}
+            />
         </a>
 
         <nav

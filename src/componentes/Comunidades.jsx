@@ -100,6 +100,8 @@ function Comunidades() {
               alt="Imagem de apresentação das Células da Colo de Deus"
               loading="lazy"
               decoding="async"
+              width={1080}
+              height={1080}
             />
           </div>
         </div>
@@ -188,6 +190,8 @@ function Comunidades() {
               alt="Imagem de apresentação dos Cenáculos da Colo de Deus"
               loading="lazy"
               decoding="async"
+              width={1200}
+              height={1800}
             />
           </div>
         </div>
