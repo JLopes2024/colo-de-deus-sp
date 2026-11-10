@@ -1,0 +1,6 @@
+
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://colo-de-deus-sp.vercel.app/sitemap.xml
