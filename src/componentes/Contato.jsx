@@ -576,11 +576,13 @@ function Contato() {
           <div className="chat">
             <header className="chat__cabecalho">
               <div className="chat__avatar">
-                <img
-                  src="/imagens/contato-atendimento.webp"
-                  alt=""
-                  decoding="async"
-                />
+              <img
+              src="/imagens/contato-atendimento-avatar.webp"
+              alt=""
+              width={240}
+              height={240}
+              decoding="async"
+              />
               </div>
 
               <div className="chat__identidade">

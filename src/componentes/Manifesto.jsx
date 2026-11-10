@@ -66,7 +66,7 @@ function Manifesto() {
       <div className="manifesto__faixa">
         <div className="manifesto__imagem">
           <img
-            src="/imagens/gerais/fotos-gerais.jpg"
+            src="/imagens/gerais/fotos-gerais.webp"
             alt="Integrantes da comunidade Colo de Deus reunidos"
             loading="lazy"
             decoding="async"
