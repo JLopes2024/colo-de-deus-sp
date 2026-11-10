@@ -310,3 +310,52 @@
     transform: none;
   }
 }
+
+/* =========================================================
+   ACESSIBILIDADE — CONTRASTE DOS TEXTOS
+   ========================================================= */
+
+/* Células: fundo claro */
+
+.comunidades__bloco--celulas
+.comunidades__orientacao {
+  color: #242424;
+}
+
+.comunidades__bloco--celulas
+.comunidades__orientacao-indice {
+  color: #454545;
+  opacity: 1;
+}
+
+.comunidades__bloco--celulas
+.comunidades__orientacao > p:last-child {
+  color: #383838;
+  opacity: 1;
+}
+
+/* Cenáculos: fundo escuro */
+
+.comunidades__bloco--cenaculos
+.comunidades__orientacao {
+  color: #f5f5f5;
+}
+
+.comunidades__bloco--cenaculos
+.comunidades__orientacao-indice {
+  color: #d1d1d1;
+  opacity: 1;
+}
+
+.comunidades__bloco--cenaculos
+.comunidades__orientacao > p:last-child {
+  color: #e0e0e0;
+  opacity: 1;
+}
+
+/* Títulos internos dos dois blocos */
+
+.comunidades__orientacao h3 {
+  color: inherit;
+  opacity: 1;
+}

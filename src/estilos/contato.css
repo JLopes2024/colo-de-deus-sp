@@ -826,3 +826,49 @@
     transform: none;
   }
 }
+
+/* =========================================================
+   ACESSIBILIDADE — CONTRASTE DO CHAT
+   ========================================================= */
+
+/* Balões do atendimento */
+
+.chat__balao--bot {
+  background-color: #ffffff;
+  color: #242424;
+}
+
+.chat__balao--bot p {
+  color: #242424;
+  opacity: 1;
+}
+
+/* Mensagens do visitante */
+
+.chat__balao--usuario {
+  background-color: #242424;
+  color: #ffffff;
+}
+
+.chat__balao--usuario p {
+  color: #ffffff;
+  opacity: 1;
+}
+
+/* Instruções abaixo da caixa de mensagem */
+
+.chat__rodape-info {
+  color: #595959;
+}
+
+/* Preserva a ênfase das mensagens de erro */
+
+.chat__rodape-info span:first-child {
+  color: #a72c2c;
+}
+
+/* Texto de ajuda: Enter / Shift + Enter */
+
+.chat__rodape-info span:last-child {
+  color: #595959;
+}
