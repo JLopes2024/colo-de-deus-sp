@@ -25,34 +25,6 @@ function prefereMovimentoReduzido() {
   );
 }
 
-function IconeControle({ pausado }) {
-  return pausado ? (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m8 5 11 7-11 7V5Z" />
-    </svg>
-  ) : (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <rect x="6" y="4" width="4" height="16" rx="1" />
-      <rect x="14" y="4" width="4" height="16" rx="1" />
-    </svg>
-  );
-}
-
 function QuemSomos() {
   const secaoRef = useRef(null);
   const carregamentosRef = useRef(new Map());
@@ -62,7 +34,6 @@ function QuemSomos() {
   const [imagemAtual, setImagemAtual] = useState(0);
   const [imagemPronta, setImagemPronta] = useState(false);
   const [secaoVisivel, setSecaoVisivel] = useState(false);
-  const [pausado, setPausado] = useState(false);
 
   const [abaVisivel, setAbaVisivel] = useState(
     () =>
@@ -102,7 +73,7 @@ function QuemSomos() {
     };
   }, []);
 
-  // Pausa automaticamente quando a aba está oculta.
+  // Suspende a rotação quando a aba está oculta.
   useEffect(() => {
     function atualizarVisibilidade() {
       setAbaVisivel(
@@ -115,6 +86,8 @@ function QuemSomos() {
       atualizarVisibilidade
     );
 
+    atualizarVisibilidade();
+
     return () => {
       document.removeEventListener(
         'visibilitychange',
@@ -123,6 +96,7 @@ function QuemSomos() {
     };
   }, []);
 
+  // Respeita a preferência por movimento reduzido.
   useEffect(() => {
     const consulta = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -147,6 +121,7 @@ function QuemSomos() {
     };
   }, []);
 
+  // Registra as imagens carregadas.
   function registrarPronta(indice) {
     if (prontasRef.current.has(indice)) {
       return;
@@ -159,6 +134,7 @@ function QuemSomos() {
     }
   }
 
+  // Prepara as fotografias para exibição.
   function prepararImagem(indice) {
     if (
       prontasRef.current.has(indice) ||
@@ -199,14 +175,13 @@ function QuemSomos() {
     };
   }, []);
 
-  // Carrega a próxima foto somente quando a rotação
-  // estiver ativa e a seção estiver visível.
+  // Prepara a próxima fotografia quando a seção
+  // estiver visível e a rotação estiver ativa.
   useEffect(() => {
     if (
       !secaoVisivel ||
       !abaVisivel ||
-      movimentoReduzido ||
-      pausado
+      movimentoReduzido
     ) {
       return;
     }
@@ -229,16 +204,14 @@ function QuemSomos() {
     secaoVisivel,
     abaVisivel,
     movimentoReduzido,
-    pausado,
   ]);
 
-  // Mantém os 4,5 segundos originais de rotação.
+  // Alternância automática a cada 4,5 segundos.
   useEffect(() => {
     if (
       !secaoVisivel ||
       !abaVisivel ||
       movimentoReduzido ||
-      pausado ||
       !imagemPronta ||
       IMAGENS.length <= 1
     ) {
@@ -278,7 +251,6 @@ function QuemSomos() {
     secaoVisivel,
     abaVisivel,
     movimentoReduzido,
-    pausado,
     imagemPronta,
   ]);
 
@@ -322,28 +294,6 @@ function QuemSomos() {
           className="quem-somos__sobreposicao"
           aria-hidden="true"
         />
-
-        {!movimentoReduzido && (
-          <button
-            type="button"
-            className="quem-somos__controle"
-            onClick={() =>
-              setPausado((atual) => !atual)
-            }
-            aria-label={
-              pausado
-                ? 'Retomar fotografias de Quem Somos'
-                : 'Pausar fotografias de Quem Somos'
-            }
-            title={
-              pausado
-                ? 'Retomar fotografias'
-                : 'Pausar fotografias'
-            }
-          >
-            <IconeControle pausado={pausado} />
-          </button>
-        )}
 
         <div className="quem-somos__conteudo">
           <div className="quem-somos__cabecalho">
