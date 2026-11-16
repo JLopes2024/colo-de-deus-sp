@@ -109,37 +109,8 @@ function IconeRede({ tipo }) {
   return null;
 }
 
-function IconeControle({ pausado }) {
-  return pausado ? (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m8 5 11 7-11 7V5Z" />
-    </svg>
-  ) : (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <rect x="6" y="4" width="4" height="16" rx="1" />
-      <rect x="14" y="4" width="4" height="16" rx="1" />
-    </svg>
-  );
-}
-
 function Hero() {
   const [fotoAtual, setFotoAtual] = useState(0);
-  const [pausado, setPausado] = useState(false);
 
   const [movimentoReduzido, setMovimentoReduzido] = useState(
     () =>
@@ -159,6 +130,7 @@ function Hero() {
   const imagensComFalhaRef = useRef(new Set());
   const carregamentosRef = useRef(new Map());
 
+  // Detecta a preferência por movimento reduzido.
   useEffect(() => {
     const consulta = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -180,6 +152,7 @@ function Hero() {
     };
   }, []);
 
+  // Detecta quando a aba está visível.
   useEffect(() => {
     function atualizarVisibilidade() {
       setAbaVisivel(
@@ -202,6 +175,7 @@ function Hero() {
     };
   }, []);
 
+  // Registra imagens carregadas.
   function registrarImagemPronta(indice) {
     if (imagensProntasRef.current.has(indice)) {
       return;
@@ -214,6 +188,7 @@ function Hero() {
     );
   }
 
+  // Prepara a próxima imagem.
   function prepararImagem(indice) {
     if (
       imagensProntasRef.current.has(indice) ||
@@ -240,13 +215,11 @@ function Hero() {
     imagem.src = fotosHero[indice].src;
   }
 
-  // Não prepara novas fotos enquanto o carrossel
-  // estiver pausado ou a aba estiver oculta.
+  // Prepara a próxima fotografia quando necessário.
   useEffect(() => {
     if (
       movimentoReduzido ||
-      !abaVisivel ||
-      pausado
+      !abaVisivel
     ) {
       return;
     }
@@ -268,16 +241,13 @@ function Hero() {
     fotoAtual,
     movimentoReduzido,
     abaVisivel,
-    pausado,
   ]);
 
-  // A rotação fica suspensa enquanto a pessoa
-  // escolher manter a fotografia atual.
+  // Alternância automática das fotografias.
   useEffect(() => {
     if (
       movimentoReduzido ||
-      !abaVisivel ||
-      pausado
+      !abaVisivel
     ) {
       return undefined;
     }
@@ -318,9 +288,9 @@ function Hero() {
   }, [
     movimentoReduzido,
     abaVisivel,
-    pausado,
   ]);
 
+  // Limpeza dos carregamentos ao desmontar.
   useEffect(() => {
     const carregamentos = carregamentosRef.current;
 
@@ -384,28 +354,6 @@ function Hero() {
           <p className="hero__identificacao">
             Colo de Deus // Missão SP
           </p>
-
-          {!movimentoReduzido && (
-            <button
-              type="button"
-              className="hero__controle"
-              onClick={() =>
-                setPausado((atual) => !atual)
-              }
-              aria-label={
-                pausado
-                  ? 'Retomar fotografias do início'
-                  : 'Pausar fotografias do início'
-              }
-              title={
-                pausado
-                  ? 'Retomar fotografias'
-                  : 'Pausar fotografias'
-              }
-            >
-              <IconeControle pausado={pausado} />
-            </button>
-          )}
         </div>
 
         <div className="hero__principal">
